@@ -10,6 +10,7 @@ DD [0-9]
 NL [\n]
 ALPHA [a-zA-Z]
 LETTER [a-zA-Z_]
+UNICODE_CHAR            [^\n]
 
 %x SINGLE_LINE_COMMENT
 %x MULTI_LINE_COMMENT
@@ -17,6 +18,9 @@ LETTER [a-zA-Z_]
 %%
     /* reserved keyword */
 
+"true" {column+=yyleng; return TRUE;}
+"false" {column+=yyleng; return FALSE;}
+"nil" {column+=yyleng; return NULLPOINTER;}
 "break" {column+=yyleng; return BREAK;}
 "func" {column+=yyleng; return FUNC;}
 "struct" {column+=yyleng; return STRUCT;}
@@ -25,11 +29,36 @@ LETTER [a-zA-Z_]
 "if" {column+=yyleng; return IF;}
 "continue" {column+=yyleng; return CONTINUE;}
 "for" {column+=yyleng; return FOR;}
+"range" {column+=yyleng; return RANGE;}
 "import" {column+=yyleng; return IMPORT;}
 "return" {column+=yyleng; return RETURN;}
 "var" {column+=yyleng; return VAR;}
+"switch" {column+=yyleng; return SWITCH;}
+"case" {column+=yyleng; return CASE;}
 "new" {column+=yyleng; return NEW;}
 "const" {column+=yyleng; return CONST;}
+"fallthrough" {column+=yyleng; return FALLTHORUGH;}
+"map" {column+=yyleng; return MAP;}
+"default" {column+=yyleng; return DEFAULT;}
+"make" {column+=yyleng; return MAKE;}
+"goto" {column+=yyleng; return GOTO;}
+"type" {column+=yyleng; return TYPE;}
+
+"++" {column+=yyleng; return PLUSPLUS;}
+"--" {column+=yyleng; return MINUSMINUS;}
+"+=" {column+=yyleng; return PLUSEQUAL;}
+"-=" {column+=yyleng; return MINUSEQUAL;}
+"*=" {column+=yyleng; return MULTEQUAL;}
+"/=" {column+=yyleng; return DIVEQUAL;}
+"&=" {column+=yyleng; return BITANDEQUAL;}
+"|=" {column+=yyleng; return BITOREQUAL;}
+"^=" {column+=yyleng; return BITXOREQUAL;}
+"%=" {column+=yyleng; return MODULOEQUAL;}
+"<<=" {column+=yyleng; return LEFTSHIFTEQUAL;}
+">>=" {column+=yyleng; return RIGHTSHIFTEQUAL;}
+"&^" {column+=yyleng; return ANDNOT;}
+
+"..." {column+=yyleng; return ELIPSIS;}
 
     /* unary operators */
 "+" {column+=yyleng; return ADD;}
@@ -39,6 +68,7 @@ LETTER [a-zA-Z_]
 "*" {column+=yyleng; return MUL;}
 "&" {column+=yyleng; return AND;}
 "|" {column+=yyleng; return OR;}
+
 
     /* binary operators */
 "||" {column+=yyleng; return LOGOR;}
@@ -54,30 +84,49 @@ LETTER [a-zA-Z_]
 "<<" {column+=yyleng; return SHL;}
 ">>" {column+=yyleng; return SHR;}
 
+
+
     /* Assignment */
 "=" {column+=yyleng; return EQ;}
 ":=" {column+=yyleng; return INFER_EQ;}
 
     /*Paranthesis, Punctuations*/
-"(" {column+=yyleng; return LP;}
-")" {column+=yyleng; return RP;}
-"{" {column+=yyleng; return LB;}
-"}" {column+=yyleng; return RB;}
-"[" {column+=yyleng; return LSQ;}
-"]" {column+=yyleng; return RSQ;}
+"(" {column+=yyleng; return LEFTPARAN;}
+")" {column+=yyleng; return RIGHTPARAN;}
+"{" {column+=yyleng; return LEFTBRACE;}
+"}" {column+=yyleng; return RIGHTBRACE;}
+"[" {column+=yyleng; return LEFTSQUARE;}
+"]" {column+=yyleng; return RIGHTSQUARE;}
 ";" {column+=yyleng; return SCOLON;}
 ":" {column+=yyleng; return COLON;}
 "." {column+=yyleng; return DOT;}
 "," {column+=yyleng; return COMMA;}
-
+  
     /*Identifiers and datatypes*/
 
-[+-]?{DD}+\.({DD})* {column+=yyleng; return FLOAT;}
-[+-]?{DD}+\.({DD})*[eE]{DD}+ {column+=yyleng; return FLOAT;}
+
+
+[+-]?{DD}*\.({DD})* {column+=yyleng; return FLOAT;}
+[+-]?{DD}+\.?({DD})*[eE][+-]?{DD}+ {column+=yyleng; return FLOAT;}
+[+-]?{DD}*\.?({DD})+[eE][+-]?{DD}+ {column+=yyleng; return FLOAT;}
 [+-]?{DD}+ {column+=yyleng; return INTEGER;}
+\"([^\\\n\"]|(\\.))*\"  {column+=yyleng; return STRING;}
+\'{UNICODE_CHAR}\'  {column+=yyleng; return BYTE_VAL;}
 
 {ALPHA}({LETTER}|{DD})* {column+=yyleng; return IDENTIFIER;}
-[ \t] {column+=yyleng; return SPACE;}
+[ ] {column+=yyleng;}
+[\t] {column+=4;yyleng=4;}
+[\n] {column=1;return NEWLINE;}
+
+
+"//" {column+=yyleng; BEGIN(SINGLE_LINE_COMMENT); return COMMENT;}
+<SINGLE_LINE_COMMENT>{NL} {column=1; BEGIN(INITIAL);}
+<SINGLE_LINE_COMMENT>[^\n]* ;
+
+"/*" {column+=yyleng; BEGIN(MULTI_LINE_COMMENT); return COMMENT;}
+<MULTI_LINE_COMMENT>"*/" {column=1; BEGIN(INITIAL);}
+<MULTI_LINE_COMMENT>[^*]* ;
+
 . {cout<<"Bad character in "<<yylineno<<" column number "<<column;}
 
 %%

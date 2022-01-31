@@ -16,7 +16,7 @@
 // OPERATORS
 // UNARY
 #define ADD 269
-#define SUB 269
+#define SUB 308
 #define NOT 270
 #define XOR 271
 #define MUL 272
@@ -40,12 +40,12 @@
 #define INFER_EQ 304
 
 // PARANTHESIS
-#define LP 288
-#define RP 289
-#define LB 290
-#define RB 291
-#define LSQ 292
-#define RSQ 293
+#define LEFTPARAN 288
+#define RIGHTPARAN 289
+#define LEFTBRACE 290
+#define RIGHTBRACE 291
+#define LEFTSQUARE 292
+#define RIGHTSQUARE 293
 #define SCOLON 294
 #define COLON 295
 #define DOT 296
@@ -59,3 +59,36 @@
 //COMMENT
 #define COMMENT 302
 #define SPACE 303
+#define TAB 305
+#define NEWLINE 311
+
+// 
+#define PLUSPLUS 306
+#define PLUSEQUAL 307
+#define MINUSMINUS 309
+#define MINUSEQUAL 310
+#define MULTEQUAL 325
+#define DIVEQUAL 326
+#define BITANDEQUAL 327
+#define BITOREQUAL 328
+#define BITXOREQUAL 329
+#define MODULOEQUAL 330
+#define LEFTSHIFTEQUAL 331
+#define RIGHTSHIFTEQUAL 332
+#define ANDNOT 333
+
+#define ELIPSIS 312
+#define MAP 313
+#define MAKE 314
+#define NULLPOINTER 315
+#define TRUE 316
+#define FALSE 317
+#define SWITCH 320
+#define CASE 321
+#define DEFAULT 322
+#define FALLTHORUGH 318
+#define GOTO 319
+#define TYPE 323
+#define RANGE 324
+#define STRING 334
+#define BYTE_VAL 335
