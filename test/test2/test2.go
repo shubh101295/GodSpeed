@@ -26,9 +26,6 @@ func main(){
 		target[i] = 255
 	}
 
-
-	
-
 	for ( bytes.Compare(target,hash) == 1) {
 		b = a + strconv.Itoa(nonce)
 		hash:= sha256.Sum256([]byte(b))
