@@ -14,7 +14,7 @@ func BinarySearch(x int, arr [1000]int, len int)bool{
 		} else if ( arr[m]<x ){
 			l = m+1;
 		} else {
-			r = m - 1
+			r = m-1
 		}
 	}
 	return false

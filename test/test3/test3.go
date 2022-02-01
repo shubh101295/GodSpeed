@@ -75,3 +75,4 @@ func main(){
 		fmt.Printf("%d ",A[i])
 	}
 }
+
