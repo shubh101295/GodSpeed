@@ -34,7 +34,7 @@ func main(){
 		case 10:
 			b -= a
 		default:
-			c = a+b
+			c <<= a+b
 	}
 
 	fmt.Printf("a: %d, b: %d, c: %d\n",a,b,c)
