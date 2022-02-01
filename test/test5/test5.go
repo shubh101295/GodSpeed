@@ -17,9 +17,8 @@ func in(s string, trie Node, n int){
 		_, flag = a.m[s[i]]
 
 		if(!flag) {
-			var b *Node
-			b.m = make(map[byte]*Node)
-			a.m[s[i]] = b
+			a.m[s[i]] = new(Node)
+			a.m[s[i]].m = make(map[byte]*Node)
 		}
 		a= *a.m[s[i]]
 	}
