@@ -74,6 +74,5 @@ func main(){
 	for i:=0;i<n;i++ {
 		fmt.Printf("%d ",A[i])
 	}
-	// return arr
 }
 
