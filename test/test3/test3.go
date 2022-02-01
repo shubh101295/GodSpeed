@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func merge(arr []int, l int , r int ){
+func merge(arr [1000]int, l int , r int ){
 
 	var m int = l + (r-l)/2
 	var i,j,k int
@@ -12,8 +12,8 @@ func merge(arr []int, l int , r int ){
 	y = r-m
 	k = l
 
-	var A[x] int
-	var B[y] int
+	var A[1000] int
+	var B[1000] int
 
 	for i = 0; i < x; i++ {
 		A[i] = arr[l + i]
@@ -48,14 +48,29 @@ func merge(arr []int, l int , r int ){
 		j++
         k++
 	}
-
 }
 
-func mergesort(arr []int, l int, r int){
+func mergesort(arr[1000] int, l int, r int) [1000] int{
 	if (l < r){
 		var m int = l + (r-l)/2
 		mergesort(arr,l,m)
 		mergesort(arr,m+1,r)
 		merge(arr,l,r)
+	}
+	return arr
+}
+
+func main(){
+	var n int
+	fmt.Scanf("%d",&n)
+	var A[1000] int
+	for i:=0;i<n;i++ {
+		fmt.Scanln(&A[i])
+	}
+
+	A=mergesort(A,0,n)
+
+	for i:=0;i<n;i++{
+		fmt.Printf("%d ",A[i])
 	}
 }
