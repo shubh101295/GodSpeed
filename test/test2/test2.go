@@ -1,39 +1,42 @@
 package main
 
 import (
-	"crypto/sha256"
-	"strconv"
 	"fmt"
-	"bytes"
 )
 
 func main(){
-	var a string = "abc"
+	var n int;
+	fmt.Scanln(&n)
 
-	var nonce = 0
+	var a,b,c int
+	fmt.Scanf("%d %d",&a,&b);
+	c = 0
 
-	var b string
-	b = a + strconv.Itoa(nonce)
-
-	var hash  [32]byte
-	for i:=0; i<32; i++ {
-		hash[i] = 255
+	switch n%12 {
+		case 0:
+			c = a | b
+		case 1:
+			c = a % b
+		case 2:
+			c = a ^ b
+		case 3:
+			c = a & b
+		case 4:
+			c = a * b
+		case 5:
+			a = a << 2
+			fallthrough
+		case 6:
+			b = b >> 2
+		case 7:
+			a += b
+			fallthrough
+		case 10:
+			b -= a
+		default:
+			c = a+b
 	}
 
-	var target [32]byte
-
-	for i:=1; i<32; i++ {
-		target[i] = 255
-	}
-
-	for ( bytes.Compare(target,hash) == 1) {
-		b = a + strconv.Itoa(nonce)
-		hash:= sha256.Sum256([]byte(b))
-		nonce += 1
-	}
-
-	fmt.Println("Target Hash: ", target)
-	fmt.Println("calculated Hash: ", hash)
-	fmt.Println("Nonce Value: ", nonce)
+	fmt.Printf("a: %d, b: %d, c: %d\n",a,b,c)
 
 }
