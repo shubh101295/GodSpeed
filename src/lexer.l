@@ -120,7 +120,7 @@ BACKSLASH_BYTE_CHAR          [nt\\']
 \'{UNICODE_BYTE_CHAR}\'  {column+=yyleng; return BYTE_VAL;}
 \'\\{BACKSLASH_BYTE_CHAR}\'  {column+=yyleng; return BYTE_VAL;}
 
-{ALPHA}({LETTER}|{DD})* {column+=yyleng; return IDENTIFIER;}
+{LETTER}({LETTER}|{DD})* {column+=yyleng; return IDENTIFIER;}
 [ ] {column+=yyleng;}
 [\t] {column+=4;yyleng=4;}
 [\n] {column=1;return NEWLINE;}
