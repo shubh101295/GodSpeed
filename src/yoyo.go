@@ -10,7 +10,7 @@ var float_a float = -3.4e-2
 var string_a string = "%dsdijcvjfn\n\n"
 var string_b string = "\\"
 
-var v int = 700
+var v int = 700.2.2.2e-2
 if(v < 500) {
 fmt.Printf("v is less than 500\n")
 } else if (v<=600){
@@ -56,7 +56,7 @@ type st struct{
 a int
 next *st
 }
-// Dynamic struct
+
 s := new(st)
 
 j:=0
@@ -72,4 +72,5 @@ fmt.Println(j)
 }
 
 
-var byte_c byte = '\n'
+var byte_c byte = "\*\n*\"
+
