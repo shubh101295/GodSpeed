@@ -121,8 +121,8 @@ int main(int argc, char *argv[]) {
     if(token!=311) // Now a NewLine
     // string s(yytext);
       cout<<setw(15)<<num_to_lexeme[token]<<setw(10)<<yylineno<<setw(10)<<column-yyleng<<setw(10)<<yytext<<"\n";
-    else
-      cout<<setw(15)<<num_to_lexeme[token]<<setw(10)<<yylineno-1<<setw(10)<<column-yyleng<<setw(10)<<"\\n"<<"\n";
+    // else
+    //   cout<<setw(15)<<num_to_lexeme[token]<<setw(10)<<yylineno-1<<setw(10)<<column-yyleng<<setw(10)<<"\\n"<<"\n";
     
     token = yylex();
   }

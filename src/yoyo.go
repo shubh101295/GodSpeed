@@ -22,10 +22,7 @@ fmt.Printf(" yoyo")
 }
 
 var myarr[3] int
-// Elements are assigned using index
-myarr[0] = 561
-myarr[1] = 872
-myarr[2] = 1289
+
 // Accessing the elements of the array using index value
 fmt.Println("Elements of Array:")
 fmt.Println("Element 1: ", myarr[0])

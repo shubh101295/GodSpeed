@@ -15,11 +15,11 @@
 
 // OPERATORS
 // UNARY
-#define ADD 269
+#define ADD 269 
 #define SUB 308
 #define NOT 270
 #define XOR 271
-#define MUL 272
+#define MUL 272 // also used in pointers
 #define AND 273
 #define OR 274
 // BINARY
