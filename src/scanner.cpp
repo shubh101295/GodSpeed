@@ -59,8 +59,8 @@ void pre_process(){
   num_to_lexeme[295] = "COLON";
   num_to_lexeme[296] = "DOT";
   num_to_lexeme[297] = "COMMA";
-  num_to_lexeme[298] = "FLOAT";
-  num_to_lexeme[300] = "INTEGER";
+  num_to_lexeme[298] = "FLOAT_VAL";
+  num_to_lexeme[300] = "INTEGER_VAL";
   num_to_lexeme[301] = "IDENTIFIER";
   num_to_lexeme[302] = "COMMENT";
   num_to_lexeme[303] = "SPACE";
@@ -95,9 +95,16 @@ void pre_process(){
   num_to_lexeme[332]= "RIGHTSHIFTEQUAL";
   num_to_lexeme[333]= "ANDNOT";
 
-  num_to_lexeme[334] = "STRING";
+  num_to_lexeme[334] = "STRING_VAL";
   num_to_lexeme[335] = "BYTE_VAL";
+ 
+  num_to_lexeme[336] = "FLOAT";
+  num_to_lexeme[337] = "BYTE";
+  num_to_lexeme[338] = "INTEGER";
+  num_to_lexeme[339] = "STRING";
+  num_to_lexeme[340] = "BOOL";
   
+
 }
 
 
