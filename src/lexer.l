@@ -10,8 +10,8 @@ DD [0-9]
 NL [\n]
 ALPHA [a-zA-Z]
 LETTER [a-zA-Z_]
-UNICODE_CHAR            [^\n]
-
+UNICODE_BYTE_CHAR            [^']
+BACKSLASH_BYTE_CHAR          [nt\\']
 %x SINGLE_LINE_COMMENT
 %x MULTI_LINE_COMMENT
 
@@ -43,6 +43,12 @@ UNICODE_CHAR            [^\n]
 "make" {column+=yyleng; return MAKE;}
 "goto" {column+=yyleng; return GOTO;}
 "type" {column+=yyleng; return TYPE;}
+"bool" {column+=yyleng; return BOOL;}
+"byte" {column+=yyleng; return BYTE;}
+"string" {column+=yyleng; return STRING;}
+"int" {column+=yyleng; return INTEGER;}
+"float" {column+=yyleng; return FLOAT;}
+
 
 "++" {column+=yyleng; return PLUSPLUS;}
 "--" {column+=yyleng; return MINUSMINUS;}
@@ -106,12 +112,13 @@ UNICODE_CHAR            [^\n]
 
 
 
-[+-]?{DD}*\.({DD})* {column+=yyleng; return FLOAT;}
-[+-]?{DD}+\.?({DD})*[eE][+-]?{DD}+ {column+=yyleng; return FLOAT;}
-[+-]?{DD}*\.?({DD})+[eE][+-]?{DD}+ {column+=yyleng; return FLOAT;}
-[+-]?{DD}+ {column+=yyleng; return INTEGER;}
-\"([^\\\n\"]|(\\.))*\"  {column+=yyleng; return STRING;}
-\'{UNICODE_CHAR}\'  {column+=yyleng; return BYTE_VAL;}
+[+-]?{DD}*\.({DD})* {column+=yyleng; return FLOAT_VAL;}
+[+-]?{DD}+\.?({DD})*[eE][+-]?{DD}+ {column+=yyleng; return FLOAT_VAL;}
+[+-]?{DD}*\.?({DD})+[eE][+-]?{DD}+ {column+=yyleng; return FLOAT_VAL;}
+[+-]?{DD}+ {column+=yyleng; return INTEGER_VAL;}
+\"([^\\\n\"]|(\\.))*\"  {column+=yyleng; return STRING_VAL;}
+\'{UNICODE_BYTE_CHAR}\'  {column+=yyleng; return BYTE_VAL;}
+\'\\{BACKSLASH_BYTE_CHAR}\'  {column+=yyleng; return BYTE_VAL;}
 
 {ALPHA}({LETTER}|{DD})* {column+=yyleng; return IDENTIFIER;}
 [ ] {column+=yyleng;}

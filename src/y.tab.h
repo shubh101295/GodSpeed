@@ -52,8 +52,8 @@
 #define COMMA 297
 
 // DATATYPES
-#define FLOAT 298
-#define INTEGER 300
+#define FLOAT_VAL 298
+#define INTEGER_VAL 300
 #define IDENTIFIER 301
 
 //COMMENT
@@ -90,5 +90,11 @@
 #define GOTO 319
 #define TYPE 323
 #define RANGE 324
-#define STRING 334
+#define STRING_VAL 334
 #define BYTE_VAL 335
+
+#define FLOAT 336
+#define BYTE 337
+#define INTEGER 338
+#define STRING 339
+#define BOOL 340
