@@ -21,15 +21,15 @@
 
 %token <sval> INTEGER_VAL FLOAT_VAL TRUE FALSE NULLPOINTER BREAK CONTINUE RETURN
 %token <sval> SCOLON FUNC STRUCT ELSE PACKAGE IF FOR RANGE IMPORT VAR SWITCH CASE NEW CONST MAP DEFAULT
-%token <sval> MAKE GOTO TYPE PLUSPLUS MINUSMINUS PLUSEQUAL MINUSEQUAL ANDNOT ELIPSIS ADD SUB NOT XOR MUL AND OR 
+%token <sval> MAKE GOTO FALLTHROUGH TYPE PLUSPLUS MINUSMINUS ANDNOT ELIPSIS ADD SUB NOT XOR MUL AND OR 
 %token <sval> LOGOR LOGAND ISEQ NEQ LESSEQ GRTEQ GRT LESS MOD QUOT SHL SHR EQ INFER_EQ RIGHTPARAN RIGHTBRACE RIGHTSQUARE
 %token <sval> LEFTPARAN LEFTBRACE LEFTSQUARE COLON DOT COMMA RAW_STRING INTERPRETED_STRING BYTE_VAL IDENTIFIER
 %type <nt> SourceFile Expression Expression1 Expression2 Expression3 Expression4 EmptyExpr
 %type <nt> Block StatementList Statement SimpleStmt EmptyStmt ExpressionStmt IncDecStmt MapType
-%type <nt> Assignment ShortVarDecl Declaration VarSpec
+%type <nt> Assignment ShortVarDecl Declaration VarSpec PackageName
 %type <nt> Signature Result Parameters ParameterList ParameterDecl TypeList
-%type <nt> MethodDecl Receiver TopLevelDecl LabeledStmt Empty
-%type <nt> ReturnStmt BreakStmt ContinueStmt GotoStmt StructType
+%type <nt> MethodDecl Receiver TopLevelDecl LabeledStmt Empty Label
+%type <nt> ReturnStmt BreakStmt ContinueStmt GotoStmt FallthroughStmt StructType
 %type <nt> FunctionBody ForStmt RangeClause
 %type <nt> FunctionDecl
 %type <nt> Condition  UnaryExpr PrimaryExpr Assign_OP Rel_OP Add_OP Mul_OP Unary_OP
@@ -40,7 +40,8 @@
 %type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt
 %type <nt> PackageClause ImportDeclList ImportDecl ImportSpecList TopLevelDeclList
 %type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type
-%type <nt> QualifiedIdent PointerType IdentifierList
+%type <nt> QualifiedIdent PointerType IdentifierList AliasDecl TypeDef
+
 
 %%
 
@@ -50,8 +51,94 @@ SourceFile:
     PackageClause SCOLON ImportDeclList TopLevelDeclList
     ;
 
+Assign_OP :
+	EQ {;}
+	| Add_OP EQ {;} 
+	| Mul_OP EQ {;}
+	;
+
+Add_OP:
+	ADD {cout << "ISEQ\n";} 
+	| SUB {cout << "ISEQ\n";} 
+	| OR {cout << "ISEQ\n";} 
+	| XOR {cout << "ISEQ\n";}
+	;
+
+Rel_OP:
+	ISEQ {cout << "ISEQ\n";}
+	| NEQ {cout << "ISEQ\n";}
+	| LESSEQ {cout << "ISEQ\n";} 
+	| GRTEQ {cout << "ISEQ\n";}
+	| GRT {cout << "ISEQ\n";}
+	| LESS {cout << "ISEQ\n";}
+	;
+
+Mul_OP:
+	MUL {cout << "ISEQ\n";}
+	| QUOT{cout << "ISEQ\n";} 
+	| MOD {cout << "ISEQ\n";}
+	| SHL {cout << "ISEQ\n";}
+	| SHR {cout << "ISEQ\n";}
+	| AND {cout << "ISEQ\n";}
+	| ANDNOT {cout << "ISEQ\n";}
+	;
+
+Unary_OP:
+	ADD  {;}
+	| SUB {;}
+	| NOT {;}
+	| XOR {;}
+	| MUL {;}
+	| AND {;}
+	;
+
+
+PackageClause:
+	PACKAGE PackageName
+	;
+
+PackageName:
+	IDENTIFIER
+	;
+
+ImportDeclList :
+	| ImportDeclList ImportDecl SCOLON
+	| ImportDecl SCOLON
+	;
+
+ImportDecl:
+	IMPORT LEFTPARAN ImportSpecList RIGHTPARAN
+	| IMPORT ImportSpec
+	;
+
+ImportSpecList:
+	| ImportSpecList ImportSpec SCOLON
+	| ImportSpec SCOLON
+	;
+
+ImportSpec:
+	PackageName ImportPath
+	| DOT ImportPath
+	| ImportPath
+	;
+
+ImportPath:
+	String
+	;
+
+TopLevelDeclList:
+	TopLevelDeclList TopLevelDecl SCOLON
+	| TopLevelDecl SCOLON
+	;
+
+TopLevelDecl:
+	Declaration
+	| FunctionDecl
+	| MethodDecl
+	;
+
 Block:
-    LEFTBRACE  StatementList  RIGHTBRACE
+    LEFTBRACE StatementList RIGHTBRACE
     ;
 
 Condition:
@@ -60,7 +147,7 @@ Condition:
 
 StatementList:
 	StatementList Statement SCOLON
-	| Statement
+	| Statement SCOLON
 	;
 
 Statement:
@@ -71,11 +158,35 @@ Statement:
 	| BreakStmt
 	| ContinueStmt
 	| GotoStmt
+	| FallthroughStmt
 	| Block
 	| IfStmt
 	| ForStmt
 	;
 
+Declaration:
+	TypeDecl
+	| VarDecl
+	| ConstDecl
+	;
+
+FunctionDecl:
+	FUNC IDENTIFIER Signature FunctionBody 
+	| FUNC IDENTIFIER Signature 
+	;
+
+MethodDecl:
+	FUNC Receiver IDENTIFIER Signature
+	| FUNC Receiver IDENTIFIER Signature FunctionBody
+	;
+
+LabeledStmt:
+	Label COLON Statement
+	;
+
+Label:
+	IDENTIFIER
+	;
 
 SimpleStmt:
 	EmptyStmt
@@ -95,49 +206,6 @@ ExpressionStmt:
 IncDecStmt:
 	Expression PLUSPLUS
 	| Expression MINUSMINUS
-	| Expression PLUSEQUAL
-	| Expression MINUSEQUAL
-	;
-
-Rel_OP:
-	ISEQ {;}
-	| NEQ {;}
-	| LESSEQ {;} 
-	| GRTEQ {;}
-	| GRT {;}
-	| LESS {;}
-	;
-
-Add_OP:
-	ADD {;} 
-	| SUB {;} 
-	| OR {;} 
-	| XOR {;}
-	;
-
-Mul_OP:
-	MUL {;}
-	| QUOT{;} 
-	| MOD {;}
-	| SHL {;}
-	| SHR {;}
-	| AND {;}
-	| ANDNOT {;}
-	;
-
-Assign_OP :
-	Add_OP {;}
-	| Mul_OP {;}
-	| Add_OP EQ {;} 
-	| Mul_OP EQ {;}
-	;
-
-Unary_OP:
-	ADD  {;}
-	| SUB {;} 
-	| NOT {;} 
-	| XOR {;} 
-	| MUL {;}
 	;
 
 Assignment:
@@ -145,27 +213,37 @@ Assignment:
 	;
 
 ShortVarDecl:
-	ExpressionList INFER_EQ ExpressionList
+	IdentifierList INFER_EQ ExpressionList
 	;
 
 VarDecl:
 	VAR VarSpec
+	| VAR LEFTPARAN VarSpecList RIGHTPARAN
 	;
+
+VarSpecList:
+	VarSpecList VarSpec SCOLON
+	| VarSpec SCOLON
 
 VarSpec:
 	IdentifierList Type
-	| IdentifierList Type Assign_OP ExpressionList
-	| IdentifierList Assign_OP ExpressionList
+	| IdentifierList Type EQ ExpressionList
+	| IdentifierList EQ ExpressionList
 	;
 
-Declaration:
-	TypeDecl
-	| VarDecl
+ConstDecl:
+	CONST ConstSpec
+	| CONST LEFTPARAN ConstSpecList RIGHTPARAN
 	;
 
-FunctionDecl:
-	FUNC IDENTIFIER  Signature FunctionBody 
-	| FUNC IDENTIFIER  Signature 
+ConstSpecList:
+	ConstSpecList ConstSpec SCOLON
+	| ConstSpec SCOLON
+
+ConstSpec:
+	IdentifierList Type
+	| IdentifierList Type EQ ExpressionList
+	| IdentifierList EQ ExpressionList
 	;
 
 FunctionBody:
@@ -204,34 +282,17 @@ TypeList:
 	;
 
 IdentifierList:
-	IDENTIFIER
-	| IdentifierList COMMA IDENTIFIER
+	IdentifierList COMMA IDENTIFIER
+	| IDENTIFIER
 	;
 
 QualifiedIdent:
 	IDENTIFIER DOT IDENTIFIER
 	;
 
-MethodDecl:
-	FUNC Receiver IDENTIFIER Signature
-	| FUNC Receiver IDENTIFIER Signature FunctionBody
-	;
-
 Receiver:
 	Parameters
 	;
-
-TopLevelDeclList:
-	TopLevelDeclList  SCOLON TopLevelDecl
-	| TopLevelDecl
-	;
-
-TopLevelDecl:
-	Declaration
-	| FunctionDecl
-	| MethodDecl
-	;
-	
 
 CompositeLit:
 	LiteralType LiteralValue
@@ -291,11 +352,6 @@ Element:
 	| LiteralValue
 	;
 
-LabeledStmt:
-	IDENTIFIER COLON Statement
-	;
-
-
 ReturnStmt:
 	RETURN
 	| RETURN ExpressionList
@@ -304,27 +360,30 @@ ReturnStmt:
 
 BreakStmt:
 	BREAK
-	| BREAK IDENTIFIER
+	| BREAK Label
 	;
 
 
 ContinueStmt:
 	CONTINUE
-	| CONTINUE IDENTIFIER
+	| CONTINUE Label
 	;
 
 GotoStmt:
-	GOTO IDENTIFIER
+	GOTO Label
+	;
+
+FallthroughStmt:
+	FALLTHROUGH
 	;
 
 IfStmt:
-	IF  Expression Block 
-	|IF  SimpleStmt SCOLON Expression Block 
-	|IF  Expression Block ELSE Block 
-	|IF  Expression Block ELSE Block 
-	|IF  Expression Block ELSE IfStmt 
-	|IF  SimpleStmt SCOLON Expression Block ELSE IfStmt 
-	|IF  SimpleStmt SCOLON Expression Block ELSE Block 
+	IF Expression Block
+	|IF SimpleStmt SCOLON Expression Block
+	|IF Expression Block ELSE IfStmt
+	|IF Expression Block ELSE Block
+	|IF SimpleStmt SCOLON Expression Block ELSE IfStmt
+	|IF SimpleStmt SCOLON Expression Block ELSE Block
 	;
 
 EmptyExpr:
@@ -334,17 +393,35 @@ Empty:
 	;
 
 ForStmt:
-	FOR  SimpleStmt SCOLON ExpressionStmt SCOLON SimpleStmt Block  
-	| FOR  Expression Block  
-	| FOR Block 
-	| ForStmt  SimpleStmt SCOLON EmptyExpr SCOLON SimpleStmt Block  
-	| FOR  EmptyStmt Empty Expression Empty EmptyStmt Block  
+	FOR Block
+	| FOR ForClause Block
+	| FOR Condition Block
+	| FOR RangeClause Block
+	;
+
+ForClause:
+	SCOLON SCOLON
+	| InitStmt SCOLON SCOLON
+	| SCOLON Condition SCOLON
+	| SCOLON SCOLON PostStmt
+	| InitStmt SCOLON Condition SCOLON
+	| InitStmt SCOLON SCOLON PostStmt
+	| SCOLON Condition SCOLON PostStmt
+	| InitStmt SCOLON Condition SCOLON PostStmt
+	;
+
+InitStmt:
+	SimpleStmt
+	;
+
+PostStmt:
+	SimpleStmt
 	;
 
 
 RangeClause:
 	RANGE Expression
-	| ExpressionList INFER_EQ RANGE Expression
+	| IdentifierList INFER_EQ RANGE Expression
 	| ExpressionList EQ RANGE Expression
 	;
 
@@ -386,6 +463,7 @@ Expression1:
  	| PrimaryExpr Slice
  	| PrimaryExpr Arguments
  	| OperandName StructLiteral
+	| PrimaryExpr TypeAssertion
  	;
 
 StructLiteral:
@@ -432,13 +510,13 @@ Arguments:
 	;
 
 ExpressionList: 
-	Expression 
-	| ExpressionList COMMA Expression
+	ExpressionList COMMA Expression 
+	| Expression
 	;
 
 TypeDecl:
-	Type TypeSpec
-	| Type LEFTPARAN TypeSpecList RIGHTPARAN
+	TYPE LEFTPARAN TypeSpecList RIGHTPARAN
+	| TYPE TypeSpec
 	;
 
 TypeSpecList:
@@ -446,8 +524,16 @@ TypeSpecList:
 	| TypeSpec SCOLON
 	;
 
-
 TypeSpec:
+	AliasDecl
+	| TypeDef
+	;
+
+AliasDecl:
+	IDENTIFIER EQ Type
+	;
+
+TypeDef:
 	IDENTIFIER Type
 	;
 
@@ -497,36 +583,6 @@ String:
 	RAW_STRING
 	| INTERPRETED_STRING
 	;
-
-PackageClause:
-	PACKAGE IDENTIFIER
-	;
-
-ImportDeclList :
-	| ImportDeclList ImportDecl SCOLON
-	| ImportDecl SCOLON
-	;
-
-ImportDecl:
-	IMPORT LEFTPARAN ImportSpecList RIGHTPARAN
-	| IMPORT ImportSpec
-	;
-
-ImportSpecList:
-	| ImportSpecList ImportSpec SCOLON
-	| ImportSpec SCOLON
-	;
-
-ImportSpec:
-	IDENTIFIER ImportPath
-	| DOT ImportPath
-	| ImportPath
-	;
-
-ImportPath:
-	String
-	;
-
 %%
 
 

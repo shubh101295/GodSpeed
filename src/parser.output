@@ -1,0 +1,6527 @@
+Nonterminals useless in grammar
+
+   EmptyExpr
+   Empty
+
+
+Terminals unused in grammar
+
+   NULLPOINTER
+   SWITCH
+   CASE
+   DEFAULT
+
+
+Rules useless in grammar
+
+  240 EmptyExpr: %empty
+
+  241 Empty: %empty
+
+
+Rules useless in parser due to conflicts
+
+  159 ForClause: SCOLON SCOLON
+  160          | InitStmt SCOLON SCOLON
+  161          | SCOLON Condition SCOLON
+  163          | InitStmt SCOLON Condition SCOLON
+
+
+State 7 conflicts: 1 shift/reduce
+State 11 conflicts: 4 shift/reduce
+State 75 conflicts: 1 shift/reduce
+State 123 conflicts: 5 shift/reduce
+State 131 conflicts: 1 shift/reduce
+State 135 conflicts: 4 shift/reduce
+State 136 conflicts: 7 shift/reduce
+State 166 conflicts: 1 shift/reduce
+State 169 conflicts: 1 shift/reduce, 1 reduce/reduce
+State 252 conflicts: 1 shift/reduce, 1 reduce/reduce
+State 299 conflicts: 4 shift/reduce
+State 300 conflicts: 7 shift/reduce
+State 314 conflicts: 1 reduce/reduce
+State 352 conflicts: 1 reduce/reduce
+State 354 conflicts: 1 reduce/reduce
+State 376 conflicts: 1 reduce/reduce
+
+
+Grammar
+
+    0 $accept: SourceFile $end
+
+    1 SourceFile: PackageClause SCOLON ImportDeclList TopLevelDeclList
+
+    2 Assign_OP: EQ
+    3          | Add_OP EQ
+    4          | Mul_OP EQ
+
+    5 Add_OP: ADD
+    6       | SUB
+    7       | OR
+    8       | XOR
+
+    9 Rel_OP: ISEQ
+   10       | NEQ
+   11       | LESSEQ
+   12       | GRTEQ
+   13       | GRT
+   14       | LESS
+
+   15 Mul_OP: MUL
+   16       | QUOT
+   17       | MOD
+   18       | SHL
+   19       | SHR
+   20       | AND
+   21       | ANDNOT
+
+   22 Unary_OP: ADD
+   23         | SUB
+   24         | NOT
+   25         | XOR
+   26         | MUL
+   27         | AND
+
+   28 PackageClause: PACKAGE PackageName
+
+   29 PackageName: IDENTIFIER
+
+   30 ImportDeclList: %empty
+   31               | ImportDeclList ImportDecl SCOLON
+   32               | ImportDecl SCOLON
+
+   33 ImportDecl: IMPORT LEFTPARAN ImportSpecList RIGHTPARAN
+   34           | IMPORT ImportSpec
+
+   35 ImportSpecList: %empty
+   36               | ImportSpecList ImportSpec SCOLON
+   37               | ImportSpec SCOLON
+
+   38 ImportSpec: PackageName ImportPath
+   39           | DOT ImportPath
+   40           | ImportPath
+
+   41 ImportPath: String
+
+   42 TopLevelDeclList: TopLevelDeclList TopLevelDecl SCOLON
+   43                 | TopLevelDecl SCOLON
+
+   44 TopLevelDecl: Declaration
+   45             | FunctionDecl
+   46             | MethodDecl
+
+   47 Block: LEFTBRACE StatementList RIGHTBRACE
+
+   48 Condition: Expression
+
+   49 StatementList: StatementList Statement SCOLON
+   50              | Statement SCOLON
+
+   51 Statement: Declaration
+   52          | LabeledStmt
+   53          | SimpleStmt
+   54          | ReturnStmt
+   55          | BreakStmt
+   56          | ContinueStmt
+   57          | GotoStmt
+   58          | FallthroughStmt
+   59          | Block
+   60          | IfStmt
+   61          | ForStmt
+
+   62 Declaration: TypeDecl
+   63            | VarDecl
+   64            | ConstDecl
+
+   65 FunctionDecl: FUNC IDENTIFIER Signature FunctionBody
+   66             | FUNC IDENTIFIER Signature
+
+   67 MethodDecl: FUNC Receiver IDENTIFIER Signature
+   68           | FUNC Receiver IDENTIFIER Signature FunctionBody
+
+   69 LabeledStmt: Label COLON Statement
+
+   70 Label: IDENTIFIER
+
+   71 SimpleStmt: EmptyStmt
+   72           | ExpressionStmt
+   73           | IncDecStmt
+   74           | Assignment
+   75           | ShortVarDecl
+
+   76 EmptyStmt: %empty
+
+   77 ExpressionStmt: Expression
+
+   78 IncDecStmt: Expression PLUSPLUS
+   79           | Expression MINUSMINUS
+
+   80 Assignment: ExpressionList Assign_OP ExpressionList
+
+   81 ShortVarDecl: IdentifierList INFER_EQ ExpressionList
+
+   82 VarDecl: VAR VarSpec
+   83        | VAR LEFTPARAN VarSpecList RIGHTPARAN
+
+   84 VarSpecList: VarSpecList VarSpec SCOLON
+   85            | VarSpec SCOLON
+
+   86 VarSpec: IdentifierList Type
+   87        | IdentifierList Type EQ ExpressionList
+   88        | IdentifierList EQ ExpressionList
+
+   89 ConstDecl: CONST ConstSpec
+   90          | CONST LEFTPARAN ConstSpecList RIGHTPARAN
+
+   91 ConstSpecList: ConstSpecList ConstSpec SCOLON
+   92              | ConstSpec SCOLON
+
+   93 ConstSpec: IdentifierList Type
+   94          | IdentifierList Type EQ ExpressionList
+   95          | IdentifierList EQ ExpressionList
+
+   96 FunctionBody: Block
+
+   97 Signature: Parameters
+   98          | Parameters Result
+
+   99 Result: LEFTPARAN TypeList RIGHTPARAN
+  100       | Type
+
+  101 Parameters: LEFTPARAN RIGHTPARAN
+  102           | LEFTPARAN ParameterList RIGHTPARAN
+  103           | LEFTPARAN ParameterList COMMA RIGHTPARAN
+
+  104 ParameterList: ParameterDecl
+  105              | ParameterList COMMA ParameterDecl
+
+  106 ParameterDecl: IdentifierList Type
+  107              | IdentifierList ELIPSIS Type
+  108              | ELIPSIS Type
+
+  109 TypeList: TypeList COMMA Type
+  110         | Type
+
+  111 IdentifierList: IdentifierList COMMA IDENTIFIER
+  112               | IDENTIFIER
+
+  113 QualifiedIdent: IDENTIFIER DOT IDENTIFIER
+
+  114 Receiver: Parameters
+
+  115 CompositeLit: LiteralType LiteralValue
+
+  116 LiteralType: StructType
+  117            | ArrayType
+  118            | PointerType
+  119            | SliceType
+  120            | LEFTSQUARE ELIPSIS RIGHTSQUARE Operand
+  121            | MapType
+
+  122 Type: LiteralType
+  123     | OperandName
+
+  124 Operand: Literal
+  125        | OperandName
+  126        | LEFTPARAN Expression RIGHTPARAN
+
+  127 OperandName: IDENTIFIER
+  128            | QualifiedIdent
+
+  129 LiteralValue: LEFTBRACE RIGHTBRACE
+  130             | LEFTBRACE ElementList RIGHTBRACE
+  131             | LEFTBRACE ElementList COMMA RIGHTBRACE
+
+  132 SliceType: LEFTSQUARE RIGHTSQUARE Type
+
+  133 ElementList: KeyedElement
+  134            | ElementList COMMA KeyedElement
+
+  135 KeyedElement: Element
+  136             | Key COLON Element
+
+  137 Key: Expression
+  138    | LiteralValue
+
+  139 Element: Expression
+  140        | LiteralValue
+
+  141 ReturnStmt: RETURN
+  142           | RETURN ExpressionList
+
+  143 BreakStmt: BREAK
+  144          | BREAK Label
+
+  145 ContinueStmt: CONTINUE
+  146             | CONTINUE Label
+
+  147 GotoStmt: GOTO Label
+
+  148 FallthroughStmt: FALLTHROUGH
+
+  149 IfStmt: IF Expression Block
+  150       | IF SimpleStmt SCOLON Expression Block
+  151       | IF Expression Block ELSE IfStmt
+  152       | IF Expression Block ELSE Block
+  153       | IF SimpleStmt SCOLON Expression Block ELSE IfStmt
+  154       | IF SimpleStmt SCOLON Expression Block ELSE Block
+
+  155 ForStmt: FOR Block
+  156        | FOR ForClause Block
+  157        | FOR Condition Block
+  158        | FOR RangeClause Block
+
+  159 ForClause: SCOLON SCOLON
+  160          | InitStmt SCOLON SCOLON
+  161          | SCOLON Condition SCOLON
+  162          | SCOLON SCOLON PostStmt
+  163          | InitStmt SCOLON Condition SCOLON
+  164          | InitStmt SCOLON SCOLON PostStmt
+  165          | SCOLON Condition SCOLON PostStmt
+  166          | InitStmt SCOLON Condition SCOLON PostStmt
+
+  167 InitStmt: SimpleStmt
+
+  168 PostStmt: SimpleStmt
+
+  169 RangeClause: RANGE Expression
+  170            | IdentifierList INFER_EQ RANGE Expression
+  171            | ExpressionList EQ RANGE Expression
+
+  172 Expression: Expression LOGOR Expression1
+  173           | Expression1
+
+  174 Expression1: Expression1 LOGAND Expression2
+  175            | Expression2
+
+  176 Expression2: Expression2 Rel_OP Expression3
+  177            | Expression3
+
+  178 Expression3: Expression3 Add_OP Expression4
+  179            | Expression4
+
+  180 Expression4: Expression4 Mul_OP PrimaryExpr
+  181            | UnaryExpr
+
+  182 UnaryExpr: PrimaryExpr
+  183          | Unary_OP PrimaryExpr
+
+  184 PrimaryExpr: Operand
+  185            | MakeExpr
+  186            | PrimaryExpr Selector
+  187            | PrimaryExpr Index
+  188            | PrimaryExpr Slice
+  189            | PrimaryExpr Arguments
+  190            | OperandName StructLiteral
+  191            | PrimaryExpr TypeAssertion
+
+  192 StructLiteral: LEFTBRACE KeyValueList RIGHTBRACE
+
+  193 KeyValueList: %empty
+  194             | Expression COLON Expression
+  195             | Expression COLON Expression COMMA KeyValueList
+
+  196 Selector: DOT IDENTIFIER
+
+  197 Index: LEFTSQUARE Expression RIGHTSQUARE
+
+  198 Slice: LEFTSQUARE COLON Expression RIGHTSQUARE
+  199      | LEFTSQUARE COLON RIGHTSQUARE
+  200      | LEFTSQUARE Expression COLON RIGHTSQUARE
+  201      | LEFTSQUARE Expression COLON Expression RIGHTSQUARE
+  202      | LEFTSQUARE COLON Expression COLON Expression RIGHTSQUARE
+  203      | LEFTSQUARE Expression COLON Expression COLON Expression RIGHTSQUARE
+
+  204 MakeExpr: MAKE LEFTPARAN Type COMMA Expression COMMA Expression RIGHTPARAN
+  205         | MAKE LEFTPARAN Type COMMA Expression RIGHTPARAN
+  206         | MAKE LEFTPARAN Type RIGHTPARAN
+  207         | NEW LEFTPARAN Type RIGHTPARAN
+
+  208 TypeAssertion: DOT LEFTPARAN Type RIGHTPARAN
+
+  209 Arguments: LEFTPARAN RIGHTPARAN
+  210          | LEFTPARAN ExpressionList ELIPSIS RIGHTPARAN
+
+  211 ExpressionList: ExpressionList COMMA Expression
+  212               | Expression
+
+  213 TypeDecl: TYPE LEFTPARAN TypeSpecList RIGHTPARAN
+  214         | TYPE TypeSpec
+
+  215 TypeSpecList: TypeSpecList TypeSpec SCOLON
+  216             | TypeSpec SCOLON
+
+  217 TypeSpec: AliasDecl
+  218         | TypeDef
+
+  219 AliasDecl: IDENTIFIER EQ Type
+
+  220 TypeDef: IDENTIFIER Type
+
+  221 MapType: MAP LEFTSQUARE Type RIGHTSQUARE Type
+
+  222 StructType: STRUCT LEFTBRACE FieldDeclList RIGHTBRACE
+  223           | STRUCT LEFTBRACE RIGHTBRACE
+
+  224 FieldDeclList: FieldDecl SCOLON
+  225              | FieldDeclList FieldDecl SCOLON
+
+  226 FieldDecl: IdentifierList Type String
+  227          | IdentifierList Type
+
+  228 PointerType: MUL Type
+
+  229 ArrayType: LEFTSQUARE Expression RIGHTSQUARE Type
+
+  230 Literal: BasicLit
+  231        | CompositeLit
+
+  232 BasicLit: INTEGER_VAL
+  233         | FLOAT_VAL
+  234         | BYTE_VAL
+  235         | String
+  236         | TRUE
+  237         | FALSE
+
+  238 String: RAW_STRING
+  239       | INTERPRETED_STRING
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+INTEGER_VAL (258) 232
+FLOAT_VAL (259) 233
+TRUE (260) 236
+FALSE (261) 237
+NULLPOINTER (262)
+BREAK (263) 143 144
+CONTINUE (264) 145 146
+RETURN (265) 141 142
+SCOLON (266) 1 31 32 36 37 42 43 49 50 84 85 91 92 150 153 154 159
+    160 161 162 163 164 165 166 215 216 224 225
+FUNC (267) 65 66 67 68
+STRUCT (268) 222 223
+ELSE (269) 151 152 153 154
+PACKAGE (270) 28
+IF (271) 149 150 151 152 153 154
+FOR (272) 155 156 157 158
+RANGE (273) 169 170 171
+IMPORT (274) 33 34
+VAR (275) 82 83
+SWITCH (276)
+CASE (277)
+NEW (278) 207
+CONST (279) 89 90
+MAP (280) 221
+DEFAULT (281)
+MAKE (282) 204 205 206
+GOTO (283) 147
+FALLTHROUGH (284) 148
+TYPE (285) 213 214
+PLUSPLUS (286) 78
+MINUSMINUS (287) 79
+ANDNOT (288) 21
+ELIPSIS (289) 107 108 120 210
+ADD (290) 5 22
+SUB (291) 6 23
+NOT (292) 24
+XOR (293) 8 25
+MUL (294) 15 26 228
+AND (295) 20 27
+OR (296) 7
+LOGOR (297) 172
+LOGAND (298) 174
+ISEQ (299) 9
+NEQ (300) 10
+LESSEQ (301) 11
+GRTEQ (302) 12
+GRT (303) 13
+LESS (304) 14
+MOD (305) 17
+QUOT (306) 16
+SHL (307) 18
+SHR (308) 19
+EQ (309) 2 3 4 87 88 94 95 171 219
+INFER_EQ (310) 81 170
+RIGHTPARAN (311) 33 83 90 99 101 102 103 126 204 205 206 207 208 209
+    210 213
+RIGHTBRACE (312) 47 129 130 131 192 222 223
+RIGHTSQUARE (313) 120 132 197 198 199 200 201 202 203 221 229
+LEFTPARAN (314) 33 83 90 99 101 102 103 126 204 205 206 207 208 209
+    210 213
+LEFTBRACE (315) 47 129 130 131 192 222 223
+LEFTSQUARE (316) 120 132 197 198 199 200 201 202 203 221 229
+COLON (317) 69 136 194 195 198 199 200 201 202 203
+DOT (318) 39 113 196 208
+COMMA (319) 103 105 109 111 131 134 195 204 205 211
+RAW_STRING (320) 238
+INTERPRETED_STRING (321) 239
+BYTE_VAL (322) 234
+IDENTIFIER (323) 29 65 66 67 68 70 111 112 113 127 196 219 220
+
+
+Nonterminals, with rules where they appear
+
+$accept (69)
+    on left: 0
+SourceFile (70)
+    on left: 1, on right: 0
+Assign_OP (71)
+    on left: 2 3 4, on right: 80
+Add_OP (72)
+    on left: 5 6 7 8, on right: 3 178
+Rel_OP (73)
+    on left: 9 10 11 12 13 14, on right: 176
+Mul_OP (74)
+    on left: 15 16 17 18 19 20 21, on right: 4 180
+Unary_OP (75)
+    on left: 22 23 24 25 26 27, on right: 183
+PackageClause (76)
+    on left: 28, on right: 1
+PackageName (77)
+    on left: 29, on right: 28 38
+ImportDeclList (78)
+    on left: 30 31 32, on right: 1 31
+ImportDecl (79)
+    on left: 33 34, on right: 31 32
+ImportSpecList (80)
+    on left: 35 36 37, on right: 33 36
+ImportSpec (81)
+    on left: 38 39 40, on right: 34 36 37
+ImportPath (82)
+    on left: 41, on right: 38 39 40
+TopLevelDeclList (83)
+    on left: 42 43, on right: 1 42
+TopLevelDecl (84)
+    on left: 44 45 46, on right: 42 43
+Block (85)
+    on left: 47, on right: 59 96 149 150 151 152 153 154 155 156 157
+    158
+Condition (86)
+    on left: 48, on right: 157 161 163 165 166
+StatementList (87)
+    on left: 49 50, on right: 47 49
+Statement (88)
+    on left: 51 52 53 54 55 56 57 58 59 60 61, on right: 49 50 69
+Declaration (89)
+    on left: 62 63 64, on right: 44 51
+FunctionDecl (90)
+    on left: 65 66, on right: 45
+MethodDecl (91)
+    on left: 67 68, on right: 46
+LabeledStmt (92)
+    on left: 69, on right: 52
+Label (93)
+    on left: 70, on right: 69 144 146 147
+SimpleStmt (94)
+    on left: 71 72 73 74 75, on right: 53 150 153 154 167 168
+EmptyStmt (95)
+    on left: 76, on right: 71
+ExpressionStmt (96)
+    on left: 77, on right: 72
+IncDecStmt (97)
+    on left: 78 79, on right: 73
+Assignment (98)
+    on left: 80, on right: 74
+ShortVarDecl (99)
+    on left: 81, on right: 75
+VarDecl (100)
+    on left: 82 83, on right: 63
+VarSpecList (101)
+    on left: 84 85, on right: 83 84
+VarSpec (102)
+    on left: 86 87 88, on right: 82 84 85
+ConstDecl (103)
+    on left: 89 90, on right: 64
+ConstSpecList (104)
+    on left: 91 92, on right: 90 91
+ConstSpec (105)
+    on left: 93 94 95, on right: 89 91 92
+FunctionBody (106)
+    on left: 96, on right: 65 68
+Signature (107)
+    on left: 97 98, on right: 65 66 67 68
+Result (108)
+    on left: 99 100, on right: 98
+Parameters (109)
+    on left: 101 102 103, on right: 97 98 114
+ParameterList (110)
+    on left: 104 105, on right: 102 103 105
+ParameterDecl (111)
+    on left: 106 107 108, on right: 104 105
+TypeList (112)
+    on left: 109 110, on right: 99 109
+IdentifierList (113)
+    on left: 111 112, on right: 81 86 87 88 93 94 95 106 107 111 170
+    226 227
+QualifiedIdent (114)
+    on left: 113, on right: 128
+Receiver (115)
+    on left: 114, on right: 67 68
+CompositeLit (116)
+    on left: 115, on right: 231
+LiteralType (117)
+    on left: 116 117 118 119 120 121, on right: 115 122
+Type (118)
+    on left: 122 123, on right: 86 87 93 94 100 106 107 108 109 110
+    132 204 205 206 207 208 219 220 221 226 227 228 229
+Operand (119)
+    on left: 124 125 126, on right: 120 184
+OperandName (120)
+    on left: 127 128, on right: 123 125 190
+LiteralValue (121)
+    on left: 129 130 131, on right: 115 138 140
+SliceType (122)
+    on left: 132, on right: 119
+ElementList (123)
+    on left: 133 134, on right: 130 131 134
+KeyedElement (124)
+    on left: 135 136, on right: 133 134
+Key (125)
+    on left: 137 138, on right: 136
+Element (126)
+    on left: 139 140, on right: 135 136
+ReturnStmt (127)
+    on left: 141 142, on right: 54
+BreakStmt (128)
+    on left: 143 144, on right: 55
+ContinueStmt (129)
+    on left: 145 146, on right: 56
+GotoStmt (130)
+    on left: 147, on right: 57
+FallthroughStmt (131)
+    on left: 148, on right: 58
+IfStmt (132)
+    on left: 149 150 151 152 153 154, on right: 60 151 153
+ForStmt (133)
+    on left: 155 156 157 158, on right: 61
+ForClause (134)
+    on left: 159 160 161 162 163 164 165 166, on right: 156
+InitStmt (135)
+    on left: 167, on right: 160 163 164 166
+PostStmt (136)
+    on left: 168, on right: 162 164 165 166
+RangeClause (137)
+    on left: 169 170 171, on right: 158
+Expression (138)
+    on left: 172 173, on right: 48 77 78 79 126 137 139 149 150 151
+    152 153 154 169 170 171 172 194 195 197 198 200 201 202 203 204
+    205 211 212 229
+Expression1 (139)
+    on left: 174 175, on right: 172 173 174
+Expression2 (140)
+    on left: 176 177, on right: 174 175 176
+Expression3 (141)
+    on left: 178 179, on right: 176 177 178
+Expression4 (142)
+    on left: 180 181, on right: 178 179 180
+UnaryExpr (143)
+    on left: 182 183, on right: 181
+PrimaryExpr (144)
+    on left: 184 185 186 187 188 189 190 191, on right: 180 182 183
+    186 187 188 189 191
+StructLiteral (145)
+    on left: 192, on right: 190
+KeyValueList (146)
+    on left: 193 194 195, on right: 192 195
+Selector (147)
+    on left: 196, on right: 186
+Index (148)
+    on left: 197, on right: 187
+Slice (149)
+    on left: 198 199 200 201 202 203, on right: 188
+MakeExpr (150)
+    on left: 204 205 206 207, on right: 185
+TypeAssertion (151)
+    on left: 208, on right: 191
+Arguments (152)
+    on left: 209 210, on right: 189
+ExpressionList (153)
+    on left: 211 212, on right: 80 81 87 88 94 95 142 171 210 211
+TypeDecl (154)
+    on left: 213 214, on right: 62
+TypeSpecList (155)
+    on left: 215 216, on right: 213 215
+TypeSpec (156)
+    on left: 217 218, on right: 214 215 216
+AliasDecl (157)
+    on left: 219, on right: 217
+TypeDef (158)
+    on left: 220, on right: 218
+MapType (159)
+    on left: 221, on right: 121
+StructType (160)
+    on left: 222 223, on right: 116
+FieldDeclList (161)
+    on left: 224 225, on right: 222 225
+FieldDecl (162)
+    on left: 226 227, on right: 224 225
+PointerType (163)
+    on left: 228, on right: 118
+ArrayType (164)
+    on left: 229, on right: 117
+Literal (165)
+    on left: 230 231, on right: 124
+BasicLit (166)
+    on left: 232 233 234 235 236 237, on right: 230
+String (167)
+    on left: 238 239, on right: 41 226 235
+
+
+State 0
+
+    0 $accept: . SourceFile $end
+
+    PACKAGE  shift, and go to state 1
+
+    SourceFile     go to state 2
+    PackageClause  go to state 3
+
+
+State 1
+
+   28 PackageClause: PACKAGE . PackageName
+
+    IDENTIFIER  shift, and go to state 4
+
+    PackageName  go to state 5
+
+
+State 2
+
+    0 $accept: SourceFile . $end
+
+    $end  shift, and go to state 6
+
+
+State 3
+
+    1 SourceFile: PackageClause . SCOLON ImportDeclList TopLevelDeclList
+
+    SCOLON  shift, and go to state 7
+
+
+State 4
+
+   29 PackageName: IDENTIFIER .
+
+    $default  reduce using rule 29 (PackageName)
+
+
+State 5
+
+   28 PackageClause: PACKAGE PackageName .
+
+    $default  reduce using rule 28 (PackageClause)
+
+
+State 6
+
+    0 $accept: SourceFile $end .
+
+    $default  accept
+
+
+State 7
+
+    1 SourceFile: PackageClause SCOLON . ImportDeclList TopLevelDeclList
+
+    IMPORT  shift, and go to state 8
+
+    IMPORT    [reduce using rule 30 (ImportDeclList)]
+    $default  reduce using rule 30 (ImportDeclList)
+
+    ImportDeclList  go to state 9
+    ImportDecl      go to state 10
+
+
+State 8
+
+   33 ImportDecl: IMPORT . LEFTPARAN ImportSpecList RIGHTPARAN
+   34           | IMPORT . ImportSpec
+
+    LEFTPARAN           shift, and go to state 11
+    DOT                 shift, and go to state 12
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    IDENTIFIER          shift, and go to state 4
+
+    PackageName  go to state 15
+    ImportSpec   go to state 16
+    ImportPath   go to state 17
+    String       go to state 18
+
+
+State 9
+
+    1 SourceFile: PackageClause SCOLON ImportDeclList . TopLevelDeclList
+   31 ImportDeclList: ImportDeclList . ImportDecl SCOLON
+
+    FUNC    shift, and go to state 19
+    IMPORT  shift, and go to state 8
+    VAR     shift, and go to state 20
+    CONST   shift, and go to state 21
+    TYPE    shift, and go to state 22
+
+    ImportDecl        go to state 23
+    TopLevelDeclList  go to state 24
+    TopLevelDecl      go to state 25
+    Declaration       go to state 26
+    FunctionDecl      go to state 27
+    MethodDecl        go to state 28
+    VarDecl           go to state 29
+    ConstDecl         go to state 30
+    TypeDecl          go to state 31
+
+
+State 10
+
+   32 ImportDeclList: ImportDecl . SCOLON
+
+    SCOLON  shift, and go to state 32
+
+
+State 11
+
+   33 ImportDecl: IMPORT LEFTPARAN . ImportSpecList RIGHTPARAN
+
+    DOT                 shift, and go to state 12
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    IDENTIFIER          shift, and go to state 4
+
+    DOT                 [reduce using rule 35 (ImportSpecList)]
+    RAW_STRING          [reduce using rule 35 (ImportSpecList)]
+    INTERPRETED_STRING  [reduce using rule 35 (ImportSpecList)]
+    IDENTIFIER          [reduce using rule 35 (ImportSpecList)]
+    $default            reduce using rule 35 (ImportSpecList)
+
+    PackageName     go to state 15
+    ImportSpecList  go to state 33
+    ImportSpec      go to state 34
+    ImportPath      go to state 17
+    String          go to state 18
+
+
+State 12
+
+   39 ImportSpec: DOT . ImportPath
+
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+
+    ImportPath  go to state 35
+    String      go to state 18
+
+
+State 13
+
+  238 String: RAW_STRING .
+
+    $default  reduce using rule 238 (String)
+
+
+State 14
+
+  239 String: INTERPRETED_STRING .
+
+    $default  reduce using rule 239 (String)
+
+
+State 15
+
+   38 ImportSpec: PackageName . ImportPath
+
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+
+    ImportPath  go to state 36
+    String      go to state 18
+
+
+State 16
+
+   34 ImportDecl: IMPORT ImportSpec .
+
+    $default  reduce using rule 34 (ImportDecl)
+
+
+State 17
+
+   40 ImportSpec: ImportPath .
+
+    $default  reduce using rule 40 (ImportSpec)
+
+
+State 18
+
+   41 ImportPath: String .
+
+    $default  reduce using rule 41 (ImportPath)
+
+
+State 19
+
+   65 FunctionDecl: FUNC . IDENTIFIER Signature FunctionBody
+   66             | FUNC . IDENTIFIER Signature
+   67 MethodDecl: FUNC . Receiver IDENTIFIER Signature
+   68           | FUNC . Receiver IDENTIFIER Signature FunctionBody
+
+    LEFTPARAN   shift, and go to state 37
+    IDENTIFIER  shift, and go to state 38
+
+    Parameters  go to state 39
+    Receiver    go to state 40
+
+
+State 20
+
+   82 VarDecl: VAR . VarSpec
+   83        | VAR . LEFTPARAN VarSpecList RIGHTPARAN
+
+    LEFTPARAN   shift, and go to state 41
+    IDENTIFIER  shift, and go to state 42
+
+    VarSpec         go to state 43
+    IdentifierList  go to state 44
+
+
+State 21
+
+   89 ConstDecl: CONST . ConstSpec
+   90          | CONST . LEFTPARAN ConstSpecList RIGHTPARAN
+
+    LEFTPARAN   shift, and go to state 45
+    IDENTIFIER  shift, and go to state 42
+
+    ConstSpec       go to state 46
+    IdentifierList  go to state 47
+
+
+State 22
+
+  213 TypeDecl: TYPE . LEFTPARAN TypeSpecList RIGHTPARAN
+  214         | TYPE . TypeSpec
+
+    LEFTPARAN   shift, and go to state 48
+    IDENTIFIER  shift, and go to state 49
+
+    TypeSpec   go to state 50
+    AliasDecl  go to state 51
+    TypeDef    go to state 52
+
+
+State 23
+
+   31 ImportDeclList: ImportDeclList ImportDecl . SCOLON
+
+    SCOLON  shift, and go to state 53
+
+
+State 24
+
+    1 SourceFile: PackageClause SCOLON ImportDeclList TopLevelDeclList .
+   42 TopLevelDeclList: TopLevelDeclList . TopLevelDecl SCOLON
+
+    FUNC   shift, and go to state 19
+    VAR    shift, and go to state 20
+    CONST  shift, and go to state 21
+    TYPE   shift, and go to state 22
+
+    $default  reduce using rule 1 (SourceFile)
+
+    TopLevelDecl  go to state 54
+    Declaration   go to state 26
+    FunctionDecl  go to state 27
+    MethodDecl    go to state 28
+    VarDecl       go to state 29
+    ConstDecl     go to state 30
+    TypeDecl      go to state 31
+
+
+State 25
+
+   43 TopLevelDeclList: TopLevelDecl . SCOLON
+
+    SCOLON  shift, and go to state 55
+
+
+State 26
+
+   44 TopLevelDecl: Declaration .
+
+    $default  reduce using rule 44 (TopLevelDecl)
+
+
+State 27
+
+   45 TopLevelDecl: FunctionDecl .
+
+    $default  reduce using rule 45 (TopLevelDecl)
+
+
+State 28
+
+   46 TopLevelDecl: MethodDecl .
+
+    $default  reduce using rule 46 (TopLevelDecl)
+
+
+State 29
+
+   63 Declaration: VarDecl .
+
+    $default  reduce using rule 63 (Declaration)
+
+
+State 30
+
+   64 Declaration: ConstDecl .
+
+    $default  reduce using rule 64 (Declaration)
+
+
+State 31
+
+   62 Declaration: TypeDecl .
+
+    $default  reduce using rule 62 (Declaration)
+
+
+State 32
+
+   32 ImportDeclList: ImportDecl SCOLON .
+
+    $default  reduce using rule 32 (ImportDeclList)
+
+
+State 33
+
+   33 ImportDecl: IMPORT LEFTPARAN ImportSpecList . RIGHTPARAN
+   36 ImportSpecList: ImportSpecList . ImportSpec SCOLON
+
+    RIGHTPARAN          shift, and go to state 56
+    DOT                 shift, and go to state 12
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    IDENTIFIER          shift, and go to state 4
+
+    PackageName  go to state 15
+    ImportSpec   go to state 57
+    ImportPath   go to state 17
+    String       go to state 18
+
+
+State 34
+
+   37 ImportSpecList: ImportSpec . SCOLON
+
+    SCOLON  shift, and go to state 58
+
+
+State 35
+
+   39 ImportSpec: DOT ImportPath .
+
+    $default  reduce using rule 39 (ImportSpec)
+
+
+State 36
+
+   38 ImportSpec: PackageName ImportPath .
+
+    $default  reduce using rule 38 (ImportSpec)
+
+
+State 37
+
+  101 Parameters: LEFTPARAN . RIGHTPARAN
+  102           | LEFTPARAN . ParameterList RIGHTPARAN
+  103           | LEFTPARAN . ParameterList COMMA RIGHTPARAN
+
+    ELIPSIS     shift, and go to state 59
+    RIGHTPARAN  shift, and go to state 60
+    IDENTIFIER  shift, and go to state 42
+
+    ParameterList   go to state 61
+    ParameterDecl   go to state 62
+    IdentifierList  go to state 63
+
+
+State 38
+
+   65 FunctionDecl: FUNC IDENTIFIER . Signature FunctionBody
+   66             | FUNC IDENTIFIER . Signature
+
+    LEFTPARAN  shift, and go to state 37
+
+    Signature   go to state 64
+    Parameters  go to state 65
+
+
+State 39
+
+  114 Receiver: Parameters .
+
+    $default  reduce using rule 114 (Receiver)
+
+
+State 40
+
+   67 MethodDecl: FUNC Receiver . IDENTIFIER Signature
+   68           | FUNC Receiver . IDENTIFIER Signature FunctionBody
+
+    IDENTIFIER  shift, and go to state 66
+
+
+State 41
+
+   83 VarDecl: VAR LEFTPARAN . VarSpecList RIGHTPARAN
+
+    IDENTIFIER  shift, and go to state 42
+
+    VarSpecList     go to state 67
+    VarSpec         go to state 68
+    IdentifierList  go to state 44
+
+
+State 42
+
+  112 IdentifierList: IDENTIFIER .
+
+    $default  reduce using rule 112 (IdentifierList)
+
+
+State 43
+
+   82 VarDecl: VAR VarSpec .
+
+    $default  reduce using rule 82 (VarDecl)
+
+
+State 44
+
+   86 VarSpec: IdentifierList . Type
+   87        | IdentifierList . Type EQ ExpressionList
+   88        | IdentifierList . EQ ExpressionList
+  111 IdentifierList: IdentifierList . COMMA IDENTIFIER
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    EQ          shift, and go to state 72
+    LEFTSQUARE  shift, and go to state 73
+    COMMA       shift, and go to state 74
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 78
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 45
+
+   90 ConstDecl: CONST LEFTPARAN . ConstSpecList RIGHTPARAN
+
+    IDENTIFIER  shift, and go to state 42
+
+    ConstSpecList   go to state 85
+    ConstSpec       go to state 86
+    IdentifierList  go to state 47
+
+
+State 46
+
+   89 ConstDecl: CONST ConstSpec .
+
+    $default  reduce using rule 89 (ConstDecl)
+
+
+State 47
+
+   93 ConstSpec: IdentifierList . Type
+   94          | IdentifierList . Type EQ ExpressionList
+   95          | IdentifierList . EQ ExpressionList
+  111 IdentifierList: IdentifierList . COMMA IDENTIFIER
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    EQ          shift, and go to state 87
+    LEFTSQUARE  shift, and go to state 73
+    COMMA       shift, and go to state 74
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 88
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 48
+
+  213 TypeDecl: TYPE LEFTPARAN . TypeSpecList RIGHTPARAN
+
+    IDENTIFIER  shift, and go to state 49
+
+    TypeSpecList  go to state 89
+    TypeSpec      go to state 90
+    AliasDecl     go to state 51
+    TypeDef       go to state 52
+
+
+State 49
+
+  219 AliasDecl: IDENTIFIER . EQ Type
+  220 TypeDef: IDENTIFIER . Type
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    EQ          shift, and go to state 91
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 92
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 50
+
+  214 TypeDecl: TYPE TypeSpec .
+
+    $default  reduce using rule 214 (TypeDecl)
+
+
+State 51
+
+  217 TypeSpec: AliasDecl .
+
+    $default  reduce using rule 217 (TypeSpec)
+
+
+State 52
+
+  218 TypeSpec: TypeDef .
+
+    $default  reduce using rule 218 (TypeSpec)
+
+
+State 53
+
+   31 ImportDeclList: ImportDeclList ImportDecl SCOLON .
+
+    $default  reduce using rule 31 (ImportDeclList)
+
+
+State 54
+
+   42 TopLevelDeclList: TopLevelDeclList TopLevelDecl . SCOLON
+
+    SCOLON  shift, and go to state 93
+
+
+State 55
+
+   43 TopLevelDeclList: TopLevelDecl SCOLON .
+
+    $default  reduce using rule 43 (TopLevelDeclList)
+
+
+State 56
+
+   33 ImportDecl: IMPORT LEFTPARAN ImportSpecList RIGHTPARAN .
+
+    $default  reduce using rule 33 (ImportDecl)
+
+
+State 57
+
+   36 ImportSpecList: ImportSpecList ImportSpec . SCOLON
+
+    SCOLON  shift, and go to state 94
+
+
+State 58
+
+   37 ImportSpecList: ImportSpec SCOLON .
+
+    $default  reduce using rule 37 (ImportSpecList)
+
+
+State 59
+
+  108 ParameterDecl: ELIPSIS . Type
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 95
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 60
+
+  101 Parameters: LEFTPARAN RIGHTPARAN .
+
+    $default  reduce using rule 101 (Parameters)
+
+
+State 61
+
+  102 Parameters: LEFTPARAN ParameterList . RIGHTPARAN
+  103           | LEFTPARAN ParameterList . COMMA RIGHTPARAN
+  105 ParameterList: ParameterList . COMMA ParameterDecl
+
+    RIGHTPARAN  shift, and go to state 96
+    COMMA       shift, and go to state 97
+
+
+State 62
+
+  104 ParameterList: ParameterDecl .
+
+    $default  reduce using rule 104 (ParameterList)
+
+
+State 63
+
+  106 ParameterDecl: IdentifierList . Type
+  107              | IdentifierList . ELIPSIS Type
+  111 IdentifierList: IdentifierList . COMMA IDENTIFIER
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    ELIPSIS     shift, and go to state 98
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    COMMA       shift, and go to state 74
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 99
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 64
+
+   65 FunctionDecl: FUNC IDENTIFIER Signature . FunctionBody
+   66             | FUNC IDENTIFIER Signature .
+
+    LEFTBRACE  shift, and go to state 100
+
+    $default  reduce using rule 66 (FunctionDecl)
+
+    Block         go to state 101
+    FunctionBody  go to state 102
+
+
+State 65
+
+   97 Signature: Parameters .
+   98          | Parameters . Result
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTPARAN   shift, and go to state 103
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    $default  reduce using rule 97 (Signature)
+
+    Result          go to state 104
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 105
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 66
+
+   67 MethodDecl: FUNC Receiver IDENTIFIER . Signature
+   68           | FUNC Receiver IDENTIFIER . Signature FunctionBody
+
+    LEFTPARAN  shift, and go to state 37
+
+    Signature   go to state 106
+    Parameters  go to state 65
+
+
+State 67
+
+   83 VarDecl: VAR LEFTPARAN VarSpecList . RIGHTPARAN
+   84 VarSpecList: VarSpecList . VarSpec SCOLON
+
+    RIGHTPARAN  shift, and go to state 107
+    IDENTIFIER  shift, and go to state 42
+
+    VarSpec         go to state 108
+    IdentifierList  go to state 44
+
+
+State 68
+
+   85 VarSpecList: VarSpec . SCOLON
+
+    SCOLON  shift, and go to state 109
+
+
+State 69
+
+  222 StructType: STRUCT . LEFTBRACE FieldDeclList RIGHTBRACE
+  223           | STRUCT . LEFTBRACE RIGHTBRACE
+
+    LEFTBRACE  shift, and go to state 110
+
+
+State 70
+
+  221 MapType: MAP . LEFTSQUARE Type RIGHTSQUARE Type
+
+    LEFTSQUARE  shift, and go to state 111
+
+
+State 71
+
+  228 PointerType: MUL . Type
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 112
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 72
+
+   88 VarSpec: IdentifierList EQ . ExpressionList
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 132
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 140
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 73
+
+  120 LiteralType: LEFTSQUARE . ELIPSIS RIGHTSQUARE Operand
+  132 SliceType: LEFTSQUARE . RIGHTSQUARE Type
+  229 ArrayType: LEFTSQUARE . Expression RIGHTSQUARE Type
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ELIPSIS             shift, and go to state 144
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    RIGHTSQUARE         shift, and go to state 145
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 146
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 74
+
+  111 IdentifierList: IdentifierList COMMA . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 147
+
+
+State 75
+
+  113 QualifiedIdent: IDENTIFIER . DOT IDENTIFIER
+  127 OperandName: IDENTIFIER .
+
+    DOT  shift, and go to state 148
+
+    DOT       [reduce using rule 127 (OperandName)]
+    $default  reduce using rule 127 (OperandName)
+
+
+State 76
+
+  128 OperandName: QualifiedIdent .
+
+    $default  reduce using rule 128 (OperandName)
+
+
+State 77
+
+  122 Type: LiteralType .
+
+    $default  reduce using rule 122 (Type)
+
+
+State 78
+
+   86 VarSpec: IdentifierList Type .
+   87        | IdentifierList Type . EQ ExpressionList
+
+    EQ  shift, and go to state 149
+
+    $default  reduce using rule 86 (VarSpec)
+
+
+State 79
+
+  123 Type: OperandName .
+
+    $default  reduce using rule 123 (Type)
+
+
+State 80
+
+  119 LiteralType: SliceType .
+
+    $default  reduce using rule 119 (LiteralType)
+
+
+State 81
+
+  121 LiteralType: MapType .
+
+    $default  reduce using rule 121 (LiteralType)
+
+
+State 82
+
+  116 LiteralType: StructType .
+
+    $default  reduce using rule 116 (LiteralType)
+
+
+State 83
+
+  118 LiteralType: PointerType .
+
+    $default  reduce using rule 118 (LiteralType)
+
+
+State 84
+
+  117 LiteralType: ArrayType .
+
+    $default  reduce using rule 117 (LiteralType)
+
+
+State 85
+
+   90 ConstDecl: CONST LEFTPARAN ConstSpecList . RIGHTPARAN
+   91 ConstSpecList: ConstSpecList . ConstSpec SCOLON
+
+    RIGHTPARAN  shift, and go to state 150
+    IDENTIFIER  shift, and go to state 42
+
+    ConstSpec       go to state 151
+    IdentifierList  go to state 47
+
+
+State 86
+
+   92 ConstSpecList: ConstSpec . SCOLON
+
+    SCOLON  shift, and go to state 152
+
+
+State 87
+
+   95 ConstSpec: IdentifierList EQ . ExpressionList
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 132
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 153
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 88
+
+   93 ConstSpec: IdentifierList Type .
+   94          | IdentifierList Type . EQ ExpressionList
+
+    EQ  shift, and go to state 154
+
+    $default  reduce using rule 93 (ConstSpec)
+
+
+State 89
+
+  213 TypeDecl: TYPE LEFTPARAN TypeSpecList . RIGHTPARAN
+  215 TypeSpecList: TypeSpecList . TypeSpec SCOLON
+
+    RIGHTPARAN  shift, and go to state 155
+    IDENTIFIER  shift, and go to state 49
+
+    TypeSpec   go to state 156
+    AliasDecl  go to state 51
+    TypeDef    go to state 52
+
+
+State 90
+
+  216 TypeSpecList: TypeSpec . SCOLON
+
+    SCOLON  shift, and go to state 157
+
+
+State 91
+
+  219 AliasDecl: IDENTIFIER EQ . Type
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 158
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 92
+
+  220 TypeDef: IDENTIFIER Type .
+
+    $default  reduce using rule 220 (TypeDef)
+
+
+State 93
+
+   42 TopLevelDeclList: TopLevelDeclList TopLevelDecl SCOLON .
+
+    $default  reduce using rule 42 (TopLevelDeclList)
+
+
+State 94
+
+   36 ImportSpecList: ImportSpecList ImportSpec SCOLON .
+
+    $default  reduce using rule 36 (ImportSpecList)
+
+
+State 95
+
+  108 ParameterDecl: ELIPSIS Type .
+
+    $default  reduce using rule 108 (ParameterDecl)
+
+
+State 96
+
+  102 Parameters: LEFTPARAN ParameterList RIGHTPARAN .
+
+    $default  reduce using rule 102 (Parameters)
+
+
+State 97
+
+  103 Parameters: LEFTPARAN ParameterList COMMA . RIGHTPARAN
+  105 ParameterList: ParameterList COMMA . ParameterDecl
+
+    ELIPSIS     shift, and go to state 59
+    RIGHTPARAN  shift, and go to state 159
+    IDENTIFIER  shift, and go to state 42
+
+    ParameterDecl   go to state 160
+    IdentifierList  go to state 63
+
+
+State 98
+
+  107 ParameterDecl: IdentifierList ELIPSIS . Type
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 161
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 99
+
+  106 ParameterDecl: IdentifierList Type .
+
+    $default  reduce using rule 106 (ParameterDecl)
+
+
+State 100
+
+   47 Block: LEFTBRACE . StatementList RIGHTBRACE
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    BREAK               shift, and go to state 162
+    CONTINUE            shift, and go to state 163
+    RETURN              shift, and go to state 164
+    STRUCT              shift, and go to state 69
+    IF                  shift, and go to state 165
+    FOR                 shift, and go to state 166
+    VAR                 shift, and go to state 20
+    NEW                 shift, and go to state 117
+    CONST               shift, and go to state 21
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    GOTO                shift, and go to state 167
+    FALLTHROUGH         shift, and go to state 168
+    TYPE                shift, and go to state 22
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTBRACE           shift, and go to state 100
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 169
+
+    $default  reduce using rule 76 (EmptyStmt)
+
+    Unary_OP         go to state 127
+    Block            go to state 170
+    StatementList    go to state 171
+    Statement        go to state 172
+    Declaration      go to state 173
+    LabeledStmt      go to state 174
+    Label            go to state 175
+    SimpleStmt       go to state 176
+    EmptyStmt        go to state 177
+    ExpressionStmt   go to state 178
+    IncDecStmt       go to state 179
+    Assignment       go to state 180
+    ShortVarDecl     go to state 181
+    VarDecl          go to state 29
+    ConstDecl        go to state 30
+    IdentifierList   go to state 182
+    QualifiedIdent   go to state 76
+    CompositeLit     go to state 128
+    LiteralType      go to state 129
+    Operand          go to state 130
+    OperandName      go to state 131
+    SliceType        go to state 80
+    ReturnStmt       go to state 183
+    BreakStmt        go to state 184
+    ContinueStmt     go to state 185
+    GotoStmt         go to state 186
+    FallthroughStmt  go to state 187
+    IfStmt           go to state 188
+    ForStmt          go to state 189
+    Expression       go to state 190
+    Expression1      go to state 133
+    Expression2      go to state 134
+    Expression3      go to state 135
+    Expression4      go to state 136
+    UnaryExpr        go to state 137
+    PrimaryExpr      go to state 138
+    MakeExpr         go to state 139
+    ExpressionList   go to state 191
+    TypeDecl         go to state 31
+    MapType          go to state 81
+    StructType       go to state 82
+    PointerType      go to state 83
+    ArrayType        go to state 84
+    Literal          go to state 141
+    BasicLit         go to state 142
+    String           go to state 143
+
+
+State 101
+
+   96 FunctionBody: Block .
+
+    $default  reduce using rule 96 (FunctionBody)
+
+
+State 102
+
+   65 FunctionDecl: FUNC IDENTIFIER Signature FunctionBody .
+
+    $default  reduce using rule 65 (FunctionDecl)
+
+
+State 103
+
+   99 Result: LEFTPARAN . TypeList RIGHTPARAN
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    TypeList        go to state 192
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 193
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 104
+
+   98 Signature: Parameters Result .
+
+    $default  reduce using rule 98 (Signature)
+
+
+State 105
+
+  100 Result: Type .
+
+    $default  reduce using rule 100 (Result)
+
+
+State 106
+
+   67 MethodDecl: FUNC Receiver IDENTIFIER Signature .
+   68           | FUNC Receiver IDENTIFIER Signature . FunctionBody
+
+    LEFTBRACE  shift, and go to state 100
+
+    $default  reduce using rule 67 (MethodDecl)
+
+    Block         go to state 101
+    FunctionBody  go to state 194
+
+
+State 107
+
+   83 VarDecl: VAR LEFTPARAN VarSpecList RIGHTPARAN .
+
+    $default  reduce using rule 83 (VarDecl)
+
+
+State 108
+
+   84 VarSpecList: VarSpecList VarSpec . SCOLON
+
+    SCOLON  shift, and go to state 195
+
+
+State 109
+
+   85 VarSpecList: VarSpec SCOLON .
+
+    $default  reduce using rule 85 (VarSpecList)
+
+
+State 110
+
+  222 StructType: STRUCT LEFTBRACE . FieldDeclList RIGHTBRACE
+  223           | STRUCT LEFTBRACE . RIGHTBRACE
+
+    RIGHTBRACE  shift, and go to state 196
+    IDENTIFIER  shift, and go to state 42
+
+    IdentifierList  go to state 197
+    FieldDeclList   go to state 198
+    FieldDecl       go to state 199
+
+
+State 111
+
+  221 MapType: MAP LEFTSQUARE . Type RIGHTSQUARE Type
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 200
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 112
+
+  228 PointerType: MUL Type .
+
+    $default  reduce using rule 228 (PointerType)
+
+
+State 113
+
+  232 BasicLit: INTEGER_VAL .
+
+    $default  reduce using rule 232 (BasicLit)
+
+
+State 114
+
+  233 BasicLit: FLOAT_VAL .
+
+    $default  reduce using rule 233 (BasicLit)
+
+
+State 115
+
+  236 BasicLit: TRUE .
+
+    $default  reduce using rule 236 (BasicLit)
+
+
+State 116
+
+  237 BasicLit: FALSE .
+
+    $default  reduce using rule 237 (BasicLit)
+
+
+State 117
+
+  207 MakeExpr: NEW . LEFTPARAN Type RIGHTPARAN
+
+    LEFTPARAN  shift, and go to state 201
+
+
+State 118
+
+  204 MakeExpr: MAKE . LEFTPARAN Type COMMA Expression COMMA Expression RIGHTPARAN
+  205         | MAKE . LEFTPARAN Type COMMA Expression RIGHTPARAN
+  206         | MAKE . LEFTPARAN Type RIGHTPARAN
+
+    LEFTPARAN  shift, and go to state 202
+
+
+State 119
+
+   22 Unary_OP: ADD .
+
+    $default  reduce using rule 22 (Unary_OP)
+
+
+State 120
+
+   23 Unary_OP: SUB .
+
+    $default  reduce using rule 23 (Unary_OP)
+
+
+State 121
+
+   24 Unary_OP: NOT .
+
+    $default  reduce using rule 24 (Unary_OP)
+
+
+State 122
+
+   25 Unary_OP: XOR .
+
+    $default  reduce using rule 25 (Unary_OP)
+
+
+State 123
+
+   26 Unary_OP: MUL .
+  228 PointerType: MUL . Type
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    STRUCT      [reduce using rule 26 (Unary_OP)]
+    MAP         [reduce using rule 26 (Unary_OP)]
+    MUL         [reduce using rule 26 (Unary_OP)]
+    LEFTSQUARE  [reduce using rule 26 (Unary_OP)]
+    IDENTIFIER  [reduce using rule 26 (Unary_OP)]
+    $default    reduce using rule 26 (Unary_OP)
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 112
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 124
+
+   27 Unary_OP: AND .
+
+    $default  reduce using rule 27 (Unary_OP)
+
+
+State 125
+
+  126 Operand: LEFTPARAN . Expression RIGHTPARAN
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 203
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 126
+
+  234 BasicLit: BYTE_VAL .
+
+    $default  reduce using rule 234 (BasicLit)
+
+
+State 127
+
+  183 UnaryExpr: Unary_OP . PrimaryExpr
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    MUL                 shift, and go to state 71
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    PrimaryExpr     go to state 204
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 128
+
+  231 Literal: CompositeLit .
+
+    $default  reduce using rule 231 (Literal)
+
+
+State 129
+
+  115 CompositeLit: LiteralType . LiteralValue
+
+    LEFTBRACE  shift, and go to state 205
+
+    LiteralValue  go to state 206
+
+
+State 130
+
+  184 PrimaryExpr: Operand .
+
+    $default  reduce using rule 184 (PrimaryExpr)
+
+
+State 131
+
+  125 Operand: OperandName .
+  190 PrimaryExpr: OperandName . StructLiteral
+
+    LEFTBRACE  shift, and go to state 207
+
+    LEFTBRACE  [reduce using rule 125 (Operand)]
+    $default   reduce using rule 125 (Operand)
+
+    StructLiteral  go to state 208
+
+
+State 132
+
+  172 Expression: Expression . LOGOR Expression1
+  212 ExpressionList: Expression .
+
+    LOGOR  shift, and go to state 209
+
+    $default  reduce using rule 212 (ExpressionList)
+
+
+State 133
+
+  173 Expression: Expression1 .
+  174 Expression1: Expression1 . LOGAND Expression2
+
+    LOGAND  shift, and go to state 210
+
+    $default  reduce using rule 173 (Expression)
+
+
+State 134
+
+  175 Expression1: Expression2 .
+  176 Expression2: Expression2 . Rel_OP Expression3
+
+    ISEQ    shift, and go to state 211
+    NEQ     shift, and go to state 212
+    LESSEQ  shift, and go to state 213
+    GRTEQ   shift, and go to state 214
+    GRT     shift, and go to state 215
+    LESS    shift, and go to state 216
+
+    $default  reduce using rule 175 (Expression1)
+
+    Rel_OP  go to state 217
+
+
+State 135
+
+  177 Expression2: Expression3 .
+  178 Expression3: Expression3 . Add_OP Expression4
+
+    ADD  shift, and go to state 218
+    SUB  shift, and go to state 219
+    XOR  shift, and go to state 220
+    OR   shift, and go to state 221
+
+    ADD       [reduce using rule 177 (Expression2)]
+    SUB       [reduce using rule 177 (Expression2)]
+    XOR       [reduce using rule 177 (Expression2)]
+    OR        [reduce using rule 177 (Expression2)]
+    $default  reduce using rule 177 (Expression2)
+
+    Add_OP  go to state 222
+
+
+State 136
+
+  179 Expression3: Expression4 .
+  180 Expression4: Expression4 . Mul_OP PrimaryExpr
+
+    ANDNOT  shift, and go to state 223
+    MUL     shift, and go to state 224
+    AND     shift, and go to state 225
+    MOD     shift, and go to state 226
+    QUOT    shift, and go to state 227
+    SHL     shift, and go to state 228
+    SHR     shift, and go to state 229
+
+    ANDNOT    [reduce using rule 179 (Expression3)]
+    MUL       [reduce using rule 179 (Expression3)]
+    AND       [reduce using rule 179 (Expression3)]
+    MOD       [reduce using rule 179 (Expression3)]
+    QUOT      [reduce using rule 179 (Expression3)]
+    SHL       [reduce using rule 179 (Expression3)]
+    SHR       [reduce using rule 179 (Expression3)]
+    $default  reduce using rule 179 (Expression3)
+
+    Mul_OP  go to state 230
+
+
+State 137
+
+  181 Expression4: UnaryExpr .
+
+    $default  reduce using rule 181 (Expression4)
+
+
+State 138
+
+  182 UnaryExpr: PrimaryExpr .
+  186 PrimaryExpr: PrimaryExpr . Selector
+  187            | PrimaryExpr . Index
+  188            | PrimaryExpr . Slice
+  189            | PrimaryExpr . Arguments
+  191            | PrimaryExpr . TypeAssertion
+
+    LEFTPARAN   shift, and go to state 231
+    LEFTSQUARE  shift, and go to state 232
+    DOT         shift, and go to state 233
+
+    $default  reduce using rule 182 (UnaryExpr)
+
+    Selector       go to state 234
+    Index          go to state 235
+    Slice          go to state 236
+    TypeAssertion  go to state 237
+    Arguments      go to state 238
+
+
+State 139
+
+  185 PrimaryExpr: MakeExpr .
+
+    $default  reduce using rule 185 (PrimaryExpr)
+
+
+State 140
+
+   88 VarSpec: IdentifierList EQ ExpressionList .
+  211 ExpressionList: ExpressionList . COMMA Expression
+
+    COMMA  shift, and go to state 239
+
+    $default  reduce using rule 88 (VarSpec)
+
+
+State 141
+
+  124 Operand: Literal .
+
+    $default  reduce using rule 124 (Operand)
+
+
+State 142
+
+  230 Literal: BasicLit .
+
+    $default  reduce using rule 230 (Literal)
+
+
+State 143
+
+  235 BasicLit: String .
+
+    $default  reduce using rule 235 (BasicLit)
+
+
+State 144
+
+  120 LiteralType: LEFTSQUARE ELIPSIS . RIGHTSQUARE Operand
+
+    RIGHTSQUARE  shift, and go to state 240
+
+
+State 145
+
+  132 SliceType: LEFTSQUARE RIGHTSQUARE . Type
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 241
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 146
+
+  172 Expression: Expression . LOGOR Expression1
+  229 ArrayType: LEFTSQUARE Expression . RIGHTSQUARE Type
+
+    LOGOR        shift, and go to state 209
+    RIGHTSQUARE  shift, and go to state 242
+
+
+State 147
+
+  111 IdentifierList: IdentifierList COMMA IDENTIFIER .
+
+    $default  reduce using rule 111 (IdentifierList)
+
+
+State 148
+
+  113 QualifiedIdent: IDENTIFIER DOT . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 243
+
+
+State 149
+
+   87 VarSpec: IdentifierList Type EQ . ExpressionList
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 132
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 244
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 150
+
+   90 ConstDecl: CONST LEFTPARAN ConstSpecList RIGHTPARAN .
+
+    $default  reduce using rule 90 (ConstDecl)
+
+
+State 151
+
+   91 ConstSpecList: ConstSpecList ConstSpec . SCOLON
+
+    SCOLON  shift, and go to state 245
+
+
+State 152
+
+   92 ConstSpecList: ConstSpec SCOLON .
+
+    $default  reduce using rule 92 (ConstSpecList)
+
+
+State 153
+
+   95 ConstSpec: IdentifierList EQ ExpressionList .
+  211 ExpressionList: ExpressionList . COMMA Expression
+
+    COMMA  shift, and go to state 239
+
+    $default  reduce using rule 95 (ConstSpec)
+
+
+State 154
+
+   94 ConstSpec: IdentifierList Type EQ . ExpressionList
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 132
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 246
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 155
+
+  213 TypeDecl: TYPE LEFTPARAN TypeSpecList RIGHTPARAN .
+
+    $default  reduce using rule 213 (TypeDecl)
+
+
+State 156
+
+  215 TypeSpecList: TypeSpecList TypeSpec . SCOLON
+
+    SCOLON  shift, and go to state 247
+
+
+State 157
+
+  216 TypeSpecList: TypeSpec SCOLON .
+
+    $default  reduce using rule 216 (TypeSpecList)
+
+
+State 158
+
+  219 AliasDecl: IDENTIFIER EQ Type .
+
+    $default  reduce using rule 219 (AliasDecl)
+
+
+State 159
+
+  103 Parameters: LEFTPARAN ParameterList COMMA RIGHTPARAN .
+
+    $default  reduce using rule 103 (Parameters)
+
+
+State 160
+
+  105 ParameterList: ParameterList COMMA ParameterDecl .
+
+    $default  reduce using rule 105 (ParameterList)
+
+
+State 161
+
+  107 ParameterDecl: IdentifierList ELIPSIS Type .
+
+    $default  reduce using rule 107 (ParameterDecl)
+
+
+State 162
+
+  143 BreakStmt: BREAK .
+  144          | BREAK . Label
+
+    IDENTIFIER  shift, and go to state 248
+
+    $default  reduce using rule 143 (BreakStmt)
+
+    Label  go to state 249
+
+
+State 163
+
+  145 ContinueStmt: CONTINUE .
+  146             | CONTINUE . Label
+
+    IDENTIFIER  shift, and go to state 248
+
+    $default  reduce using rule 145 (ContinueStmt)
+
+    Label  go to state 250
+
+
+State 164
+
+  141 ReturnStmt: RETURN .
+  142           | RETURN . ExpressionList
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    $default  reduce using rule 141 (ReturnStmt)
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 132
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 251
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 165
+
+  149 IfStmt: IF . Expression Block
+  150       | IF . SimpleStmt SCOLON Expression Block
+  151       | IF . Expression Block ELSE IfStmt
+  152       | IF . Expression Block ELSE Block
+  153       | IF . SimpleStmt SCOLON Expression Block ELSE IfStmt
+  154       | IF . SimpleStmt SCOLON Expression Block ELSE Block
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 252
+
+    $default  reduce using rule 76 (EmptyStmt)
+
+    Unary_OP        go to state 127
+    SimpleStmt      go to state 253
+    EmptyStmt       go to state 177
+    ExpressionStmt  go to state 178
+    IncDecStmt      go to state 179
+    Assignment      go to state 180
+    ShortVarDecl    go to state 181
+    IdentifierList  go to state 182
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 254
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 191
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 166
+
+  155 ForStmt: FOR . Block
+  156        | FOR . ForClause Block
+  157        | FOR . Condition Block
+  158        | FOR . RangeClause Block
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    SCOLON              shift, and go to state 255
+    STRUCT              shift, and go to state 69
+    RANGE               shift, and go to state 256
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTBRACE           shift, and go to state 100
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 252
+
+    SCOLON  [reduce using rule 76 (EmptyStmt)]
+
+    Unary_OP        go to state 127
+    Block           go to state 257
+    Condition       go to state 258
+    SimpleStmt      go to state 259
+    EmptyStmt       go to state 177
+    ExpressionStmt  go to state 178
+    IncDecStmt      go to state 179
+    Assignment      go to state 180
+    ShortVarDecl    go to state 181
+    IdentifierList  go to state 260
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    ForClause       go to state 261
+    InitStmt        go to state 262
+    RangeClause     go to state 263
+    Expression      go to state 264
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 265
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 167
+
+  147 GotoStmt: GOTO . Label
+
+    IDENTIFIER  shift, and go to state 248
+
+    Label  go to state 266
+
+
+State 168
+
+  148 FallthroughStmt: FALLTHROUGH .
+
+    $default  reduce using rule 148 (FallthroughStmt)
+
+
+State 169
+
+   70 Label: IDENTIFIER .
+  112 IdentifierList: IDENTIFIER .
+  113 QualifiedIdent: IDENTIFIER . DOT IDENTIFIER
+  127 OperandName: IDENTIFIER .
+
+    DOT  shift, and go to state 148
+
+    INFER_EQ  reduce using rule 112 (IdentifierList)
+    COLON     reduce using rule 70 (Label)
+    DOT       [reduce using rule 127 (OperandName)]
+    COMMA     reduce using rule 112 (IdentifierList)
+    COMMA     [reduce using rule 127 (OperandName)]
+    $default  reduce using rule 127 (OperandName)
+
+
+State 170
+
+   59 Statement: Block .
+
+    $default  reduce using rule 59 (Statement)
+
+
+State 171
+
+   47 Block: LEFTBRACE StatementList . RIGHTBRACE
+   49 StatementList: StatementList . Statement SCOLON
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    BREAK               shift, and go to state 162
+    CONTINUE            shift, and go to state 163
+    RETURN              shift, and go to state 164
+    STRUCT              shift, and go to state 69
+    IF                  shift, and go to state 165
+    FOR                 shift, and go to state 166
+    VAR                 shift, and go to state 20
+    NEW                 shift, and go to state 117
+    CONST               shift, and go to state 21
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    GOTO                shift, and go to state 167
+    FALLTHROUGH         shift, and go to state 168
+    TYPE                shift, and go to state 22
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    RIGHTBRACE          shift, and go to state 267
+    LEFTPARAN           shift, and go to state 125
+    LEFTBRACE           shift, and go to state 100
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 169
+
+    $default  reduce using rule 76 (EmptyStmt)
+
+    Unary_OP         go to state 127
+    Block            go to state 170
+    Statement        go to state 268
+    Declaration      go to state 173
+    LabeledStmt      go to state 174
+    Label            go to state 175
+    SimpleStmt       go to state 176
+    EmptyStmt        go to state 177
+    ExpressionStmt   go to state 178
+    IncDecStmt       go to state 179
+    Assignment       go to state 180
+    ShortVarDecl     go to state 181
+    VarDecl          go to state 29
+    ConstDecl        go to state 30
+    IdentifierList   go to state 182
+    QualifiedIdent   go to state 76
+    CompositeLit     go to state 128
+    LiteralType      go to state 129
+    Operand          go to state 130
+    OperandName      go to state 131
+    SliceType        go to state 80
+    ReturnStmt       go to state 183
+    BreakStmt        go to state 184
+    ContinueStmt     go to state 185
+    GotoStmt         go to state 186
+    FallthroughStmt  go to state 187
+    IfStmt           go to state 188
+    ForStmt          go to state 189
+    Expression       go to state 190
+    Expression1      go to state 133
+    Expression2      go to state 134
+    Expression3      go to state 135
+    Expression4      go to state 136
+    UnaryExpr        go to state 137
+    PrimaryExpr      go to state 138
+    MakeExpr         go to state 139
+    ExpressionList   go to state 191
+    TypeDecl         go to state 31
+    MapType          go to state 81
+    StructType       go to state 82
+    PointerType      go to state 83
+    ArrayType        go to state 84
+    Literal          go to state 141
+    BasicLit         go to state 142
+    String           go to state 143
+
+
+State 172
+
+   50 StatementList: Statement . SCOLON
+
+    SCOLON  shift, and go to state 269
+
+
+State 173
+
+   51 Statement: Declaration .
+
+    $default  reduce using rule 51 (Statement)
+
+
+State 174
+
+   52 Statement: LabeledStmt .
+
+    $default  reduce using rule 52 (Statement)
+
+
+State 175
+
+   69 LabeledStmt: Label . COLON Statement
+
+    COLON  shift, and go to state 270
+
+
+State 176
+
+   53 Statement: SimpleStmt .
+
+    $default  reduce using rule 53 (Statement)
+
+
+State 177
+
+   71 SimpleStmt: EmptyStmt .
+
+    $default  reduce using rule 71 (SimpleStmt)
+
+
+State 178
+
+   72 SimpleStmt: ExpressionStmt .
+
+    $default  reduce using rule 72 (SimpleStmt)
+
+
+State 179
+
+   73 SimpleStmt: IncDecStmt .
+
+    $default  reduce using rule 73 (SimpleStmt)
+
+
+State 180
+
+   74 SimpleStmt: Assignment .
+
+    $default  reduce using rule 74 (SimpleStmt)
+
+
+State 181
+
+   75 SimpleStmt: ShortVarDecl .
+
+    $default  reduce using rule 75 (SimpleStmt)
+
+
+State 182
+
+   81 ShortVarDecl: IdentifierList . INFER_EQ ExpressionList
+  111 IdentifierList: IdentifierList . COMMA IDENTIFIER
+
+    INFER_EQ  shift, and go to state 271
+    COMMA     shift, and go to state 74
+
+
+State 183
+
+   54 Statement: ReturnStmt .
+
+    $default  reduce using rule 54 (Statement)
+
+
+State 184
+
+   55 Statement: BreakStmt .
+
+    $default  reduce using rule 55 (Statement)
+
+
+State 185
+
+   56 Statement: ContinueStmt .
+
+    $default  reduce using rule 56 (Statement)
+
+
+State 186
+
+   57 Statement: GotoStmt .
+
+    $default  reduce using rule 57 (Statement)
+
+
+State 187
+
+   58 Statement: FallthroughStmt .
+
+    $default  reduce using rule 58 (Statement)
+
+
+State 188
+
+   60 Statement: IfStmt .
+
+    $default  reduce using rule 60 (Statement)
+
+
+State 189
+
+   61 Statement: ForStmt .
+
+    $default  reduce using rule 61 (Statement)
+
+
+State 190
+
+   77 ExpressionStmt: Expression .
+   78 IncDecStmt: Expression . PLUSPLUS
+   79           | Expression . MINUSMINUS
+  172 Expression: Expression . LOGOR Expression1
+  212 ExpressionList: Expression .
+
+    PLUSPLUS    shift, and go to state 272
+    MINUSMINUS  shift, and go to state 273
+    LOGOR       shift, and go to state 209
+
+    SCOLON     reduce using rule 77 (ExpressionStmt)
+    LEFTBRACE  reduce using rule 77 (ExpressionStmt)
+    $default   reduce using rule 212 (ExpressionList)
+
+
+State 191
+
+   80 Assignment: ExpressionList . Assign_OP ExpressionList
+  211 ExpressionList: ExpressionList . COMMA Expression
+
+    ANDNOT  shift, and go to state 223
+    ADD     shift, and go to state 218
+    SUB     shift, and go to state 219
+    XOR     shift, and go to state 220
+    MUL     shift, and go to state 224
+    AND     shift, and go to state 225
+    OR      shift, and go to state 221
+    MOD     shift, and go to state 226
+    QUOT    shift, and go to state 227
+    SHL     shift, and go to state 228
+    SHR     shift, and go to state 229
+    EQ      shift, and go to state 274
+    COMMA   shift, and go to state 239
+
+    Assign_OP  go to state 275
+    Add_OP     go to state 276
+    Mul_OP     go to state 277
+
+
+State 192
+
+   99 Result: LEFTPARAN TypeList . RIGHTPARAN
+  109 TypeList: TypeList . COMMA Type
+
+    RIGHTPARAN  shift, and go to state 278
+    COMMA       shift, and go to state 279
+
+
+State 193
+
+  110 TypeList: Type .
+
+    $default  reduce using rule 110 (TypeList)
+
+
+State 194
+
+   68 MethodDecl: FUNC Receiver IDENTIFIER Signature FunctionBody .
+
+    $default  reduce using rule 68 (MethodDecl)
+
+
+State 195
+
+   84 VarSpecList: VarSpecList VarSpec SCOLON .
+
+    $default  reduce using rule 84 (VarSpecList)
+
+
+State 196
+
+  223 StructType: STRUCT LEFTBRACE RIGHTBRACE .
+
+    $default  reduce using rule 223 (StructType)
+
+
+State 197
+
+  111 IdentifierList: IdentifierList . COMMA IDENTIFIER
+  226 FieldDecl: IdentifierList . Type String
+  227          | IdentifierList . Type
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    COMMA       shift, and go to state 74
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 280
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 198
+
+  222 StructType: STRUCT LEFTBRACE FieldDeclList . RIGHTBRACE
+  225 FieldDeclList: FieldDeclList . FieldDecl SCOLON
+
+    RIGHTBRACE  shift, and go to state 281
+    IDENTIFIER  shift, and go to state 42
+
+    IdentifierList  go to state 197
+    FieldDecl       go to state 282
+
+
+State 199
+
+  224 FieldDeclList: FieldDecl . SCOLON
+
+    SCOLON  shift, and go to state 283
+
+
+State 200
+
+  221 MapType: MAP LEFTSQUARE Type . RIGHTSQUARE Type
+
+    RIGHTSQUARE  shift, and go to state 284
+
+
+State 201
+
+  207 MakeExpr: NEW LEFTPARAN . Type RIGHTPARAN
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 285
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 202
+
+  204 MakeExpr: MAKE LEFTPARAN . Type COMMA Expression COMMA Expression RIGHTPARAN
+  205         | MAKE LEFTPARAN . Type COMMA Expression RIGHTPARAN
+  206         | MAKE LEFTPARAN . Type RIGHTPARAN
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 286
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 203
+
+  126 Operand: LEFTPARAN Expression . RIGHTPARAN
+  172 Expression: Expression . LOGOR Expression1
+
+    LOGOR       shift, and go to state 209
+    RIGHTPARAN  shift, and go to state 287
+
+
+State 204
+
+  183 UnaryExpr: Unary_OP PrimaryExpr .
+  186 PrimaryExpr: PrimaryExpr . Selector
+  187            | PrimaryExpr . Index
+  188            | PrimaryExpr . Slice
+  189            | PrimaryExpr . Arguments
+  191            | PrimaryExpr . TypeAssertion
+
+    LEFTPARAN   shift, and go to state 231
+    LEFTSQUARE  shift, and go to state 232
+    DOT         shift, and go to state 233
+
+    $default  reduce using rule 183 (UnaryExpr)
+
+    Selector       go to state 234
+    Index          go to state 235
+    Slice          go to state 236
+    TypeAssertion  go to state 237
+    Arguments      go to state 238
+
+
+State 205
+
+  129 LiteralValue: LEFTBRACE . RIGHTBRACE
+  130             | LEFTBRACE . ElementList RIGHTBRACE
+  131             | LEFTBRACE . ElementList COMMA RIGHTBRACE
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    RIGHTBRACE          shift, and go to state 288
+    LEFTPARAN           shift, and go to state 125
+    LEFTBRACE           shift, and go to state 205
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    LiteralValue    go to state 289
+    SliceType       go to state 80
+    ElementList     go to state 290
+    KeyedElement    go to state 291
+    Key             go to state 292
+    Element         go to state 293
+    Expression      go to state 294
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 206
+
+  115 CompositeLit: LiteralType LiteralValue .
+
+    $default  reduce using rule 115 (CompositeLit)
+
+
+State 207
+
+  192 StructLiteral: LEFTBRACE . KeyValueList RIGHTBRACE
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    $default  reduce using rule 193 (KeyValueList)
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 295
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    KeyValueList    go to state 296
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 208
+
+  190 PrimaryExpr: OperandName StructLiteral .
+
+    $default  reduce using rule 190 (PrimaryExpr)
+
+
+State 209
+
+  172 Expression: Expression LOGOR . Expression1
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression1     go to state 297
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 210
+
+  174 Expression1: Expression1 LOGAND . Expression2
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression2     go to state 298
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 211
+
+    9 Rel_OP: ISEQ .
+
+    $default  reduce using rule 9 (Rel_OP)
+
+
+State 212
+
+   10 Rel_OP: NEQ .
+
+    $default  reduce using rule 10 (Rel_OP)
+
+
+State 213
+
+   11 Rel_OP: LESSEQ .
+
+    $default  reduce using rule 11 (Rel_OP)
+
+
+State 214
+
+   12 Rel_OP: GRTEQ .
+
+    $default  reduce using rule 12 (Rel_OP)
+
+
+State 215
+
+   13 Rel_OP: GRT .
+
+    $default  reduce using rule 13 (Rel_OP)
+
+
+State 216
+
+   14 Rel_OP: LESS .
+
+    $default  reduce using rule 14 (Rel_OP)
+
+
+State 217
+
+  176 Expression2: Expression2 Rel_OP . Expression3
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression3     go to state 299
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 218
+
+    5 Add_OP: ADD .
+
+    $default  reduce using rule 5 (Add_OP)
+
+
+State 219
+
+    6 Add_OP: SUB .
+
+    $default  reduce using rule 6 (Add_OP)
+
+
+State 220
+
+    8 Add_OP: XOR .
+
+    $default  reduce using rule 8 (Add_OP)
+
+
+State 221
+
+    7 Add_OP: OR .
+
+    $default  reduce using rule 7 (Add_OP)
+
+
+State 222
+
+  178 Expression3: Expression3 Add_OP . Expression4
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression4     go to state 300
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 223
+
+   21 Mul_OP: ANDNOT .
+
+    $default  reduce using rule 21 (Mul_OP)
+
+
+State 224
+
+   15 Mul_OP: MUL .
+
+    $default  reduce using rule 15 (Mul_OP)
+
+
+State 225
+
+   20 Mul_OP: AND .
+
+    $default  reduce using rule 20 (Mul_OP)
+
+
+State 226
+
+   17 Mul_OP: MOD .
+
+    $default  reduce using rule 17 (Mul_OP)
+
+
+State 227
+
+   16 Mul_OP: QUOT .
+
+    $default  reduce using rule 16 (Mul_OP)
+
+
+State 228
+
+   18 Mul_OP: SHL .
+
+    $default  reduce using rule 18 (Mul_OP)
+
+
+State 229
+
+   19 Mul_OP: SHR .
+
+    $default  reduce using rule 19 (Mul_OP)
+
+
+State 230
+
+  180 Expression4: Expression4 Mul_OP . PrimaryExpr
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    MUL                 shift, and go to state 71
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    PrimaryExpr     go to state 301
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 231
+
+  209 Arguments: LEFTPARAN . RIGHTPARAN
+  210          | LEFTPARAN . ExpressionList ELIPSIS RIGHTPARAN
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    RIGHTPARAN          shift, and go to state 302
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 132
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 303
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 232
+
+  197 Index: LEFTSQUARE . Expression RIGHTSQUARE
+  198 Slice: LEFTSQUARE . COLON Expression RIGHTSQUARE
+  199      | LEFTSQUARE . COLON RIGHTSQUARE
+  200      | LEFTSQUARE . Expression COLON RIGHTSQUARE
+  201      | LEFTSQUARE . Expression COLON Expression RIGHTSQUARE
+  202      | LEFTSQUARE . COLON Expression COLON Expression RIGHTSQUARE
+  203      | LEFTSQUARE . Expression COLON Expression COLON Expression RIGHTSQUARE
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    COLON               shift, and go to state 304
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 305
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 233
+
+  196 Selector: DOT . IDENTIFIER
+  208 TypeAssertion: DOT . LEFTPARAN Type RIGHTPARAN
+
+    LEFTPARAN   shift, and go to state 306
+    IDENTIFIER  shift, and go to state 307
+
+
+State 234
+
+  186 PrimaryExpr: PrimaryExpr Selector .
+
+    $default  reduce using rule 186 (PrimaryExpr)
+
+
+State 235
+
+  187 PrimaryExpr: PrimaryExpr Index .
+
+    $default  reduce using rule 187 (PrimaryExpr)
+
+
+State 236
+
+  188 PrimaryExpr: PrimaryExpr Slice .
+
+    $default  reduce using rule 188 (PrimaryExpr)
+
+
+State 237
+
+  191 PrimaryExpr: PrimaryExpr TypeAssertion .
+
+    $default  reduce using rule 191 (PrimaryExpr)
+
+
+State 238
+
+  189 PrimaryExpr: PrimaryExpr Arguments .
+
+    $default  reduce using rule 189 (PrimaryExpr)
+
+
+State 239
+
+  211 ExpressionList: ExpressionList COMMA . Expression
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 308
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 240
+
+  120 LiteralType: LEFTSQUARE ELIPSIS RIGHTSQUARE . Operand
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    MAP                 shift, and go to state 70
+    MUL                 shift, and go to state 71
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 309
+    OperandName     go to state 310
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 241
+
+  132 SliceType: LEFTSQUARE RIGHTSQUARE Type .
+
+    $default  reduce using rule 132 (SliceType)
+
+
+State 242
+
+  229 ArrayType: LEFTSQUARE Expression RIGHTSQUARE . Type
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 311
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 243
+
+  113 QualifiedIdent: IDENTIFIER DOT IDENTIFIER .
+
+    $default  reduce using rule 113 (QualifiedIdent)
+
+
+State 244
+
+   87 VarSpec: IdentifierList Type EQ ExpressionList .
+  211 ExpressionList: ExpressionList . COMMA Expression
+
+    COMMA  shift, and go to state 239
+
+    $default  reduce using rule 87 (VarSpec)
+
+
+State 245
+
+   91 ConstSpecList: ConstSpecList ConstSpec SCOLON .
+
+    $default  reduce using rule 91 (ConstSpecList)
+
+
+State 246
+
+   94 ConstSpec: IdentifierList Type EQ ExpressionList .
+  211 ExpressionList: ExpressionList . COMMA Expression
+
+    COMMA  shift, and go to state 239
+
+    $default  reduce using rule 94 (ConstSpec)
+
+
+State 247
+
+  215 TypeSpecList: TypeSpecList TypeSpec SCOLON .
+
+    $default  reduce using rule 215 (TypeSpecList)
+
+
+State 248
+
+   70 Label: IDENTIFIER .
+
+    $default  reduce using rule 70 (Label)
+
+
+State 249
+
+  144 BreakStmt: BREAK Label .
+
+    $default  reduce using rule 144 (BreakStmt)
+
+
+State 250
+
+  146 ContinueStmt: CONTINUE Label .
+
+    $default  reduce using rule 146 (ContinueStmt)
+
+
+State 251
+
+  142 ReturnStmt: RETURN ExpressionList .
+  211 ExpressionList: ExpressionList . COMMA Expression
+
+    COMMA  shift, and go to state 239
+
+    $default  reduce using rule 142 (ReturnStmt)
+
+
+State 252
+
+  112 IdentifierList: IDENTIFIER .
+  113 QualifiedIdent: IDENTIFIER . DOT IDENTIFIER
+  127 OperandName: IDENTIFIER .
+
+    DOT  shift, and go to state 148
+
+    INFER_EQ  reduce using rule 112 (IdentifierList)
+    DOT       [reduce using rule 127 (OperandName)]
+    COMMA     reduce using rule 112 (IdentifierList)
+    COMMA     [reduce using rule 127 (OperandName)]
+    $default  reduce using rule 127 (OperandName)
+
+
+State 253
+
+  150 IfStmt: IF SimpleStmt . SCOLON Expression Block
+  153       | IF SimpleStmt . SCOLON Expression Block ELSE IfStmt
+  154       | IF SimpleStmt . SCOLON Expression Block ELSE Block
+
+    SCOLON  shift, and go to state 312
+
+
+State 254
+
+   77 ExpressionStmt: Expression .
+   78 IncDecStmt: Expression . PLUSPLUS
+   79           | Expression . MINUSMINUS
+  149 IfStmt: IF Expression . Block
+  151       | IF Expression . Block ELSE IfStmt
+  152       | IF Expression . Block ELSE Block
+  172 Expression: Expression . LOGOR Expression1
+  212 ExpressionList: Expression .
+
+    PLUSPLUS    shift, and go to state 272
+    MINUSMINUS  shift, and go to state 273
+    LOGOR       shift, and go to state 209
+    LEFTBRACE   shift, and go to state 100
+
+    SCOLON    reduce using rule 77 (ExpressionStmt)
+    $default  reduce using rule 212 (ExpressionList)
+
+    Block  go to state 313
+
+
+State 255
+
+  159 ForClause: SCOLON . SCOLON
+  161          | SCOLON . Condition SCOLON
+  162          | SCOLON . SCOLON PostStmt
+  165          | SCOLON . Condition SCOLON PostStmt
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    SCOLON              shift, and go to state 314
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    Condition       go to state 315
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 316
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 256
+
+  169 RangeClause: RANGE . Expression
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 317
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 257
+
+  155 ForStmt: FOR Block .
+
+    $default  reduce using rule 155 (ForStmt)
+
+
+State 258
+
+  157 ForStmt: FOR Condition . Block
+
+    LEFTBRACE  shift, and go to state 100
+
+    Block  go to state 318
+
+
+State 259
+
+  167 InitStmt: SimpleStmt .
+
+    $default  reduce using rule 167 (InitStmt)
+
+
+State 260
+
+   81 ShortVarDecl: IdentifierList . INFER_EQ ExpressionList
+  111 IdentifierList: IdentifierList . COMMA IDENTIFIER
+  170 RangeClause: IdentifierList . INFER_EQ RANGE Expression
+
+    INFER_EQ  shift, and go to state 319
+    COMMA     shift, and go to state 74
+
+
+State 261
+
+  156 ForStmt: FOR ForClause . Block
+
+    LEFTBRACE  shift, and go to state 100
+
+    Block  go to state 320
+
+
+State 262
+
+  160 ForClause: InitStmt . SCOLON SCOLON
+  163          | InitStmt . SCOLON Condition SCOLON
+  164          | InitStmt . SCOLON SCOLON PostStmt
+  166          | InitStmt . SCOLON Condition SCOLON PostStmt
+
+    SCOLON  shift, and go to state 321
+
+
+State 263
+
+  158 ForStmt: FOR RangeClause . Block
+
+    LEFTBRACE  shift, and go to state 100
+
+    Block  go to state 322
+
+
+State 264
+
+   48 Condition: Expression .
+   77 ExpressionStmt: Expression .
+   78 IncDecStmt: Expression . PLUSPLUS
+   79           | Expression . MINUSMINUS
+  172 Expression: Expression . LOGOR Expression1
+  212 ExpressionList: Expression .
+
+    PLUSPLUS    shift, and go to state 272
+    MINUSMINUS  shift, and go to state 273
+    LOGOR       shift, and go to state 209
+
+    SCOLON     reduce using rule 77 (ExpressionStmt)
+    LEFTBRACE  reduce using rule 48 (Condition)
+    $default   reduce using rule 212 (ExpressionList)
+
+
+State 265
+
+   80 Assignment: ExpressionList . Assign_OP ExpressionList
+  171 RangeClause: ExpressionList . EQ RANGE Expression
+  211 ExpressionList: ExpressionList . COMMA Expression
+
+    ANDNOT  shift, and go to state 223
+    ADD     shift, and go to state 218
+    SUB     shift, and go to state 219
+    XOR     shift, and go to state 220
+    MUL     shift, and go to state 224
+    AND     shift, and go to state 225
+    OR      shift, and go to state 221
+    MOD     shift, and go to state 226
+    QUOT    shift, and go to state 227
+    SHL     shift, and go to state 228
+    SHR     shift, and go to state 229
+    EQ      shift, and go to state 323
+    COMMA   shift, and go to state 239
+
+    Assign_OP  go to state 275
+    Add_OP     go to state 276
+    Mul_OP     go to state 277
+
+
+State 266
+
+  147 GotoStmt: GOTO Label .
+
+    $default  reduce using rule 147 (GotoStmt)
+
+
+State 267
+
+   47 Block: LEFTBRACE StatementList RIGHTBRACE .
+
+    $default  reduce using rule 47 (Block)
+
+
+State 268
+
+   49 StatementList: StatementList Statement . SCOLON
+
+    SCOLON  shift, and go to state 324
+
+
+State 269
+
+   50 StatementList: Statement SCOLON .
+
+    $default  reduce using rule 50 (StatementList)
+
+
+State 270
+
+   69 LabeledStmt: Label COLON . Statement
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    BREAK               shift, and go to state 162
+    CONTINUE            shift, and go to state 163
+    RETURN              shift, and go to state 164
+    STRUCT              shift, and go to state 69
+    IF                  shift, and go to state 165
+    FOR                 shift, and go to state 166
+    VAR                 shift, and go to state 20
+    NEW                 shift, and go to state 117
+    CONST               shift, and go to state 21
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    GOTO                shift, and go to state 167
+    FALLTHROUGH         shift, and go to state 168
+    TYPE                shift, and go to state 22
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTBRACE           shift, and go to state 100
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 169
+
+    $default  reduce using rule 76 (EmptyStmt)
+
+    Unary_OP         go to state 127
+    Block            go to state 170
+    Statement        go to state 325
+    Declaration      go to state 173
+    LabeledStmt      go to state 174
+    Label            go to state 175
+    SimpleStmt       go to state 176
+    EmptyStmt        go to state 177
+    ExpressionStmt   go to state 178
+    IncDecStmt       go to state 179
+    Assignment       go to state 180
+    ShortVarDecl     go to state 181
+    VarDecl          go to state 29
+    ConstDecl        go to state 30
+    IdentifierList   go to state 182
+    QualifiedIdent   go to state 76
+    CompositeLit     go to state 128
+    LiteralType      go to state 129
+    Operand          go to state 130
+    OperandName      go to state 131
+    SliceType        go to state 80
+    ReturnStmt       go to state 183
+    BreakStmt        go to state 184
+    ContinueStmt     go to state 185
+    GotoStmt         go to state 186
+    FallthroughStmt  go to state 187
+    IfStmt           go to state 188
+    ForStmt          go to state 189
+    Expression       go to state 190
+    Expression1      go to state 133
+    Expression2      go to state 134
+    Expression3      go to state 135
+    Expression4      go to state 136
+    UnaryExpr        go to state 137
+    PrimaryExpr      go to state 138
+    MakeExpr         go to state 139
+    ExpressionList   go to state 191
+    TypeDecl         go to state 31
+    MapType          go to state 81
+    StructType       go to state 82
+    PointerType      go to state 83
+    ArrayType        go to state 84
+    Literal          go to state 141
+    BasicLit         go to state 142
+    String           go to state 143
+
+
+State 271
+
+   81 ShortVarDecl: IdentifierList INFER_EQ . ExpressionList
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 132
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 326
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 272
+
+   78 IncDecStmt: Expression PLUSPLUS .
+
+    $default  reduce using rule 78 (IncDecStmt)
+
+
+State 273
+
+   79 IncDecStmt: Expression MINUSMINUS .
+
+    $default  reduce using rule 79 (IncDecStmt)
+
+
+State 274
+
+    2 Assign_OP: EQ .
+
+    $default  reduce using rule 2 (Assign_OP)
+
+
+State 275
+
+   80 Assignment: ExpressionList Assign_OP . ExpressionList
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 132
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 327
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 276
+
+    3 Assign_OP: Add_OP . EQ
+
+    EQ  shift, and go to state 328
+
+
+State 277
+
+    4 Assign_OP: Mul_OP . EQ
+
+    EQ  shift, and go to state 329
+
+
+State 278
+
+   99 Result: LEFTPARAN TypeList RIGHTPARAN .
+
+    $default  reduce using rule 99 (Result)
+
+
+State 279
+
+  109 TypeList: TypeList COMMA . Type
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 330
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 280
+
+  226 FieldDecl: IdentifierList Type . String
+  227          | IdentifierList Type .
+
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+
+    $default  reduce using rule 227 (FieldDecl)
+
+    String  go to state 331
+
+
+State 281
+
+  222 StructType: STRUCT LEFTBRACE FieldDeclList RIGHTBRACE .
+
+    $default  reduce using rule 222 (StructType)
+
+
+State 282
+
+  225 FieldDeclList: FieldDeclList FieldDecl . SCOLON
+
+    SCOLON  shift, and go to state 332
+
+
+State 283
+
+  224 FieldDeclList: FieldDecl SCOLON .
+
+    $default  reduce using rule 224 (FieldDeclList)
+
+
+State 284
+
+  221 MapType: MAP LEFTSQUARE Type RIGHTSQUARE . Type
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 333
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 285
+
+  207 MakeExpr: NEW LEFTPARAN Type . RIGHTPARAN
+
+    RIGHTPARAN  shift, and go to state 334
+
+
+State 286
+
+  204 MakeExpr: MAKE LEFTPARAN Type . COMMA Expression COMMA Expression RIGHTPARAN
+  205         | MAKE LEFTPARAN Type . COMMA Expression RIGHTPARAN
+  206         | MAKE LEFTPARAN Type . RIGHTPARAN
+
+    RIGHTPARAN  shift, and go to state 335
+    COMMA       shift, and go to state 336
+
+
+State 287
+
+  126 Operand: LEFTPARAN Expression RIGHTPARAN .
+
+    $default  reduce using rule 126 (Operand)
+
+
+State 288
+
+  129 LiteralValue: LEFTBRACE RIGHTBRACE .
+
+    $default  reduce using rule 129 (LiteralValue)
+
+
+State 289
+
+  138 Key: LiteralValue .
+  140 Element: LiteralValue .
+
+    COLON     reduce using rule 138 (Key)
+    $default  reduce using rule 140 (Element)
+
+
+State 290
+
+  130 LiteralValue: LEFTBRACE ElementList . RIGHTBRACE
+  131             | LEFTBRACE ElementList . COMMA RIGHTBRACE
+  134 ElementList: ElementList . COMMA KeyedElement
+
+    RIGHTBRACE  shift, and go to state 337
+    COMMA       shift, and go to state 338
+
+
+State 291
+
+  133 ElementList: KeyedElement .
+
+    $default  reduce using rule 133 (ElementList)
+
+
+State 292
+
+  136 KeyedElement: Key . COLON Element
+
+    COLON  shift, and go to state 339
+
+
+State 293
+
+  135 KeyedElement: Element .
+
+    $default  reduce using rule 135 (KeyedElement)
+
+
+State 294
+
+  137 Key: Expression .
+  139 Element: Expression .
+  172 Expression: Expression . LOGOR Expression1
+
+    LOGOR  shift, and go to state 209
+
+    COLON     reduce using rule 137 (Key)
+    $default  reduce using rule 139 (Element)
+
+
+State 295
+
+  172 Expression: Expression . LOGOR Expression1
+  194 KeyValueList: Expression . COLON Expression
+  195             | Expression . COLON Expression COMMA KeyValueList
+
+    LOGOR  shift, and go to state 209
+    COLON  shift, and go to state 340
+
+
+State 296
+
+  192 StructLiteral: LEFTBRACE KeyValueList . RIGHTBRACE
+
+    RIGHTBRACE  shift, and go to state 341
+
+
+State 297
+
+  172 Expression: Expression LOGOR Expression1 .
+  174 Expression1: Expression1 . LOGAND Expression2
+
+    LOGAND  shift, and go to state 210
+
+    $default  reduce using rule 172 (Expression)
+
+
+State 298
+
+  174 Expression1: Expression1 LOGAND Expression2 .
+  176 Expression2: Expression2 . Rel_OP Expression3
+
+    ISEQ    shift, and go to state 211
+    NEQ     shift, and go to state 212
+    LESSEQ  shift, and go to state 213
+    GRTEQ   shift, and go to state 214
+    GRT     shift, and go to state 215
+    LESS    shift, and go to state 216
+
+    $default  reduce using rule 174 (Expression1)
+
+    Rel_OP  go to state 217
+
+
+State 299
+
+  176 Expression2: Expression2 Rel_OP Expression3 .
+  178 Expression3: Expression3 . Add_OP Expression4
+
+    ADD  shift, and go to state 218
+    SUB  shift, and go to state 219
+    XOR  shift, and go to state 220
+    OR   shift, and go to state 221
+
+    ADD       [reduce using rule 176 (Expression2)]
+    SUB       [reduce using rule 176 (Expression2)]
+    XOR       [reduce using rule 176 (Expression2)]
+    OR        [reduce using rule 176 (Expression2)]
+    $default  reduce using rule 176 (Expression2)
+
+    Add_OP  go to state 222
+
+
+State 300
+
+  178 Expression3: Expression3 Add_OP Expression4 .
+  180 Expression4: Expression4 . Mul_OP PrimaryExpr
+
+    ANDNOT  shift, and go to state 223
+    MUL     shift, and go to state 224
+    AND     shift, and go to state 225
+    MOD     shift, and go to state 226
+    QUOT    shift, and go to state 227
+    SHL     shift, and go to state 228
+    SHR     shift, and go to state 229
+
+    ANDNOT    [reduce using rule 178 (Expression3)]
+    MUL       [reduce using rule 178 (Expression3)]
+    AND       [reduce using rule 178 (Expression3)]
+    MOD       [reduce using rule 178 (Expression3)]
+    QUOT      [reduce using rule 178 (Expression3)]
+    SHL       [reduce using rule 178 (Expression3)]
+    SHR       [reduce using rule 178 (Expression3)]
+    $default  reduce using rule 178 (Expression3)
+
+    Mul_OP  go to state 230
+
+
+State 301
+
+  180 Expression4: Expression4 Mul_OP PrimaryExpr .
+  186 PrimaryExpr: PrimaryExpr . Selector
+  187            | PrimaryExpr . Index
+  188            | PrimaryExpr . Slice
+  189            | PrimaryExpr . Arguments
+  191            | PrimaryExpr . TypeAssertion
+
+    LEFTPARAN   shift, and go to state 231
+    LEFTSQUARE  shift, and go to state 232
+    DOT         shift, and go to state 233
+
+    $default  reduce using rule 180 (Expression4)
+
+    Selector       go to state 234
+    Index          go to state 235
+    Slice          go to state 236
+    TypeAssertion  go to state 237
+    Arguments      go to state 238
+
+
+State 302
+
+  209 Arguments: LEFTPARAN RIGHTPARAN .
+
+    $default  reduce using rule 209 (Arguments)
+
+
+State 303
+
+  210 Arguments: LEFTPARAN ExpressionList . ELIPSIS RIGHTPARAN
+  211 ExpressionList: ExpressionList . COMMA Expression
+
+    ELIPSIS  shift, and go to state 342
+    COMMA    shift, and go to state 239
+
+
+State 304
+
+  198 Slice: LEFTSQUARE COLON . Expression RIGHTSQUARE
+  199      | LEFTSQUARE COLON . RIGHTSQUARE
+  202      | LEFTSQUARE COLON . Expression COLON Expression RIGHTSQUARE
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    RIGHTSQUARE         shift, and go to state 343
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 344
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 305
+
+  172 Expression: Expression . LOGOR Expression1
+  197 Index: LEFTSQUARE Expression . RIGHTSQUARE
+  200 Slice: LEFTSQUARE Expression . COLON RIGHTSQUARE
+  201      | LEFTSQUARE Expression . COLON Expression RIGHTSQUARE
+  203      | LEFTSQUARE Expression . COLON Expression COLON Expression RIGHTSQUARE
+
+    LOGOR        shift, and go to state 209
+    RIGHTSQUARE  shift, and go to state 345
+    COLON        shift, and go to state 346
+
+
+State 306
+
+  208 TypeAssertion: DOT LEFTPARAN . Type RIGHTPARAN
+
+    STRUCT      shift, and go to state 69
+    MAP         shift, and go to state 70
+    MUL         shift, and go to state 71
+    LEFTSQUARE  shift, and go to state 73
+    IDENTIFIER  shift, and go to state 75
+
+    QualifiedIdent  go to state 76
+    LiteralType     go to state 77
+    Type            go to state 347
+    OperandName     go to state 79
+    SliceType       go to state 80
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+
+
+State 307
+
+  196 Selector: DOT IDENTIFIER .
+
+    $default  reduce using rule 196 (Selector)
+
+
+State 308
+
+  172 Expression: Expression . LOGOR Expression1
+  211 ExpressionList: ExpressionList COMMA Expression .
+
+    LOGOR  shift, and go to state 209
+
+    $default  reduce using rule 211 (ExpressionList)
+
+
+State 309
+
+  120 LiteralType: LEFTSQUARE ELIPSIS RIGHTSQUARE Operand .
+
+    $default  reduce using rule 120 (LiteralType)
+
+
+State 310
+
+  125 Operand: OperandName .
+
+    $default  reduce using rule 125 (Operand)
+
+
+State 311
+
+  229 ArrayType: LEFTSQUARE Expression RIGHTSQUARE Type .
+
+    $default  reduce using rule 229 (ArrayType)
+
+
+State 312
+
+  150 IfStmt: IF SimpleStmt SCOLON . Expression Block
+  153       | IF SimpleStmt SCOLON . Expression Block ELSE IfStmt
+  154       | IF SimpleStmt SCOLON . Expression Block ELSE Block
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 348
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 313
+
+  149 IfStmt: IF Expression Block .
+  151       | IF Expression Block . ELSE IfStmt
+  152       | IF Expression Block . ELSE Block
+
+    ELSE  shift, and go to state 349
+
+    $default  reduce using rule 149 (IfStmt)
+
+
+State 314
+
+  159 ForClause: SCOLON SCOLON .
+  162          | SCOLON SCOLON . PostStmt
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 252
+
+    LEFTBRACE  reduce using rule 76 (EmptyStmt)
+    LEFTBRACE  [reduce using rule 159 (ForClause)]
+    $default   reduce using rule 76 (EmptyStmt)
+
+    Unary_OP        go to state 127
+    SimpleStmt      go to state 350
+    EmptyStmt       go to state 177
+    ExpressionStmt  go to state 178
+    IncDecStmt      go to state 179
+    Assignment      go to state 180
+    ShortVarDecl    go to state 181
+    IdentifierList  go to state 182
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    PostStmt        go to state 351
+    Expression      go to state 190
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 191
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 315
+
+  161 ForClause: SCOLON Condition . SCOLON
+  165          | SCOLON Condition . SCOLON PostStmt
+
+    SCOLON  shift, and go to state 352
+
+
+State 316
+
+   48 Condition: Expression .
+  172 Expression: Expression . LOGOR Expression1
+
+    LOGOR  shift, and go to state 209
+
+    $default  reduce using rule 48 (Condition)
+
+
+State 317
+
+  169 RangeClause: RANGE Expression .
+  172 Expression: Expression . LOGOR Expression1
+
+    LOGOR  shift, and go to state 209
+
+    $default  reduce using rule 169 (RangeClause)
+
+
+State 318
+
+  157 ForStmt: FOR Condition Block .
+
+    $default  reduce using rule 157 (ForStmt)
+
+
+State 319
+
+   81 ShortVarDecl: IdentifierList INFER_EQ . ExpressionList
+  170 RangeClause: IdentifierList INFER_EQ . RANGE Expression
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    RANGE               shift, and go to state 353
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 132
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 326
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 320
+
+  156 ForStmt: FOR ForClause Block .
+
+    $default  reduce using rule 156 (ForStmt)
+
+
+State 321
+
+  160 ForClause: InitStmt SCOLON . SCOLON
+  163          | InitStmt SCOLON . Condition SCOLON
+  164          | InitStmt SCOLON . SCOLON PostStmt
+  166          | InitStmt SCOLON . Condition SCOLON PostStmt
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    SCOLON              shift, and go to state 354
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    Condition       go to state 355
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 316
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 322
+
+  158 ForStmt: FOR RangeClause Block .
+
+    $default  reduce using rule 158 (ForStmt)
+
+
+State 323
+
+    2 Assign_OP: EQ .
+  171 RangeClause: ExpressionList EQ . RANGE Expression
+
+    RANGE  shift, and go to state 356
+
+    $default  reduce using rule 2 (Assign_OP)
+
+
+State 324
+
+   49 StatementList: StatementList Statement SCOLON .
+
+    $default  reduce using rule 49 (StatementList)
+
+
+State 325
+
+   69 LabeledStmt: Label COLON Statement .
+
+    $default  reduce using rule 69 (LabeledStmt)
+
+
+State 326
+
+   81 ShortVarDecl: IdentifierList INFER_EQ ExpressionList .
+  211 ExpressionList: ExpressionList . COMMA Expression
+
+    COMMA  shift, and go to state 239
+
+    $default  reduce using rule 81 (ShortVarDecl)
+
+
+State 327
+
+   80 Assignment: ExpressionList Assign_OP ExpressionList .
+  211 ExpressionList: ExpressionList . COMMA Expression
+
+    COMMA  shift, and go to state 239
+
+    $default  reduce using rule 80 (Assignment)
+
+
+State 328
+
+    3 Assign_OP: Add_OP EQ .
+
+    $default  reduce using rule 3 (Assign_OP)
+
+
+State 329
+
+    4 Assign_OP: Mul_OP EQ .
+
+    $default  reduce using rule 4 (Assign_OP)
+
+
+State 330
+
+  109 TypeList: TypeList COMMA Type .
+
+    $default  reduce using rule 109 (TypeList)
+
+
+State 331
+
+  226 FieldDecl: IdentifierList Type String .
+
+    $default  reduce using rule 226 (FieldDecl)
+
+
+State 332
+
+  225 FieldDeclList: FieldDeclList FieldDecl SCOLON .
+
+    $default  reduce using rule 225 (FieldDeclList)
+
+
+State 333
+
+  221 MapType: MAP LEFTSQUARE Type RIGHTSQUARE Type .
+
+    $default  reduce using rule 221 (MapType)
+
+
+State 334
+
+  207 MakeExpr: NEW LEFTPARAN Type RIGHTPARAN .
+
+    $default  reduce using rule 207 (MakeExpr)
+
+
+State 335
+
+  206 MakeExpr: MAKE LEFTPARAN Type RIGHTPARAN .
+
+    $default  reduce using rule 206 (MakeExpr)
+
+
+State 336
+
+  204 MakeExpr: MAKE LEFTPARAN Type COMMA . Expression COMMA Expression RIGHTPARAN
+  205         | MAKE LEFTPARAN Type COMMA . Expression RIGHTPARAN
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 357
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 337
+
+  130 LiteralValue: LEFTBRACE ElementList RIGHTBRACE .
+
+    $default  reduce using rule 130 (LiteralValue)
+
+
+State 338
+
+  131 LiteralValue: LEFTBRACE ElementList COMMA . RIGHTBRACE
+  134 ElementList: ElementList COMMA . KeyedElement
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    RIGHTBRACE          shift, and go to state 358
+    LEFTPARAN           shift, and go to state 125
+    LEFTBRACE           shift, and go to state 205
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    LiteralValue    go to state 289
+    SliceType       go to state 80
+    KeyedElement    go to state 359
+    Key             go to state 292
+    Element         go to state 293
+    Expression      go to state 294
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 339
+
+  136 KeyedElement: Key COLON . Element
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTBRACE           shift, and go to state 205
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    LiteralValue    go to state 360
+    SliceType       go to state 80
+    Element         go to state 361
+    Expression      go to state 362
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 340
+
+  194 KeyValueList: Expression COLON . Expression
+  195             | Expression COLON . Expression COMMA KeyValueList
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 363
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 341
+
+  192 StructLiteral: LEFTBRACE KeyValueList RIGHTBRACE .
+
+    $default  reduce using rule 192 (StructLiteral)
+
+
+State 342
+
+  210 Arguments: LEFTPARAN ExpressionList ELIPSIS . RIGHTPARAN
+
+    RIGHTPARAN  shift, and go to state 364
+
+
+State 343
+
+  199 Slice: LEFTSQUARE COLON RIGHTSQUARE .
+
+    $default  reduce using rule 199 (Slice)
+
+
+State 344
+
+  172 Expression: Expression . LOGOR Expression1
+  198 Slice: LEFTSQUARE COLON Expression . RIGHTSQUARE
+  202      | LEFTSQUARE COLON Expression . COLON Expression RIGHTSQUARE
+
+    LOGOR        shift, and go to state 209
+    RIGHTSQUARE  shift, and go to state 365
+    COLON        shift, and go to state 366
+
+
+State 345
+
+  197 Index: LEFTSQUARE Expression RIGHTSQUARE .
+
+    $default  reduce using rule 197 (Index)
+
+
+State 346
+
+  200 Slice: LEFTSQUARE Expression COLON . RIGHTSQUARE
+  201      | LEFTSQUARE Expression COLON . Expression RIGHTSQUARE
+  203      | LEFTSQUARE Expression COLON . Expression COLON Expression RIGHTSQUARE
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    RIGHTSQUARE         shift, and go to state 367
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 368
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 347
+
+  208 TypeAssertion: DOT LEFTPARAN Type . RIGHTPARAN
+
+    RIGHTPARAN  shift, and go to state 369
+
+
+State 348
+
+  150 IfStmt: IF SimpleStmt SCOLON Expression . Block
+  153       | IF SimpleStmt SCOLON Expression . Block ELSE IfStmt
+  154       | IF SimpleStmt SCOLON Expression . Block ELSE Block
+  172 Expression: Expression . LOGOR Expression1
+
+    LOGOR      shift, and go to state 209
+    LEFTBRACE  shift, and go to state 100
+
+    Block  go to state 370
+
+
+State 349
+
+  151 IfStmt: IF Expression Block ELSE . IfStmt
+  152       | IF Expression Block ELSE . Block
+
+    IF         shift, and go to state 165
+    LEFTBRACE  shift, and go to state 100
+
+    Block   go to state 371
+    IfStmt  go to state 372
+
+
+State 350
+
+  168 PostStmt: SimpleStmt .
+
+    $default  reduce using rule 168 (PostStmt)
+
+
+State 351
+
+  162 ForClause: SCOLON SCOLON PostStmt .
+
+    $default  reduce using rule 162 (ForClause)
+
+
+State 352
+
+  161 ForClause: SCOLON Condition SCOLON .
+  165          | SCOLON Condition SCOLON . PostStmt
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 252
+
+    LEFTBRACE  reduce using rule 76 (EmptyStmt)
+    LEFTBRACE  [reduce using rule 161 (ForClause)]
+    $default   reduce using rule 76 (EmptyStmt)
+
+    Unary_OP        go to state 127
+    SimpleStmt      go to state 350
+    EmptyStmt       go to state 177
+    ExpressionStmt  go to state 178
+    IncDecStmt      go to state 179
+    Assignment      go to state 180
+    ShortVarDecl    go to state 181
+    IdentifierList  go to state 182
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    PostStmt        go to state 373
+    Expression      go to state 190
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 191
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 353
+
+  170 RangeClause: IdentifierList INFER_EQ RANGE . Expression
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 374
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 354
+
+  160 ForClause: InitStmt SCOLON SCOLON .
+  164          | InitStmt SCOLON SCOLON . PostStmt
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 252
+
+    LEFTBRACE  reduce using rule 76 (EmptyStmt)
+    LEFTBRACE  [reduce using rule 160 (ForClause)]
+    $default   reduce using rule 76 (EmptyStmt)
+
+    Unary_OP        go to state 127
+    SimpleStmt      go to state 350
+    EmptyStmt       go to state 177
+    ExpressionStmt  go to state 178
+    IncDecStmt      go to state 179
+    Assignment      go to state 180
+    ShortVarDecl    go to state 181
+    IdentifierList  go to state 182
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    PostStmt        go to state 375
+    Expression      go to state 190
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 191
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 355
+
+  163 ForClause: InitStmt SCOLON Condition . SCOLON
+  166          | InitStmt SCOLON Condition . SCOLON PostStmt
+
+    SCOLON  shift, and go to state 376
+
+
+State 356
+
+  171 RangeClause: ExpressionList EQ RANGE . Expression
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 377
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 357
+
+  172 Expression: Expression . LOGOR Expression1
+  204 MakeExpr: MAKE LEFTPARAN Type COMMA Expression . COMMA Expression RIGHTPARAN
+  205         | MAKE LEFTPARAN Type COMMA Expression . RIGHTPARAN
+
+    LOGOR       shift, and go to state 209
+    RIGHTPARAN  shift, and go to state 378
+    COMMA       shift, and go to state 379
+
+
+State 358
+
+  131 LiteralValue: LEFTBRACE ElementList COMMA RIGHTBRACE .
+
+    $default  reduce using rule 131 (LiteralValue)
+
+
+State 359
+
+  134 ElementList: ElementList COMMA KeyedElement .
+
+    $default  reduce using rule 134 (ElementList)
+
+
+State 360
+
+  140 Element: LiteralValue .
+
+    $default  reduce using rule 140 (Element)
+
+
+State 361
+
+  136 KeyedElement: Key COLON Element .
+
+    $default  reduce using rule 136 (KeyedElement)
+
+
+State 362
+
+  139 Element: Expression .
+  172 Expression: Expression . LOGOR Expression1
+
+    LOGOR  shift, and go to state 209
+
+    $default  reduce using rule 139 (Element)
+
+
+State 363
+
+  172 Expression: Expression . LOGOR Expression1
+  194 KeyValueList: Expression COLON Expression .
+  195             | Expression COLON Expression . COMMA KeyValueList
+
+    LOGOR  shift, and go to state 209
+    COMMA  shift, and go to state 380
+
+    $default  reduce using rule 194 (KeyValueList)
+
+
+State 364
+
+  210 Arguments: LEFTPARAN ExpressionList ELIPSIS RIGHTPARAN .
+
+    $default  reduce using rule 210 (Arguments)
+
+
+State 365
+
+  198 Slice: LEFTSQUARE COLON Expression RIGHTSQUARE .
+
+    $default  reduce using rule 198 (Slice)
+
+
+State 366
+
+  202 Slice: LEFTSQUARE COLON Expression COLON . Expression RIGHTSQUARE
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 381
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 367
+
+  200 Slice: LEFTSQUARE Expression COLON RIGHTSQUARE .
+
+    $default  reduce using rule 200 (Slice)
+
+
+State 368
+
+  172 Expression: Expression . LOGOR Expression1
+  201 Slice: LEFTSQUARE Expression COLON Expression . RIGHTSQUARE
+  203      | LEFTSQUARE Expression COLON Expression . COLON Expression RIGHTSQUARE
+
+    LOGOR        shift, and go to state 209
+    RIGHTSQUARE  shift, and go to state 382
+    COLON        shift, and go to state 383
+
+
+State 369
+
+  208 TypeAssertion: DOT LEFTPARAN Type RIGHTPARAN .
+
+    $default  reduce using rule 208 (TypeAssertion)
+
+
+State 370
+
+  150 IfStmt: IF SimpleStmt SCOLON Expression Block .
+  153       | IF SimpleStmt SCOLON Expression Block . ELSE IfStmt
+  154       | IF SimpleStmt SCOLON Expression Block . ELSE Block
+
+    ELSE  shift, and go to state 384
+
+    $default  reduce using rule 150 (IfStmt)
+
+
+State 371
+
+  152 IfStmt: IF Expression Block ELSE Block .
+
+    $default  reduce using rule 152 (IfStmt)
+
+
+State 372
+
+  151 IfStmt: IF Expression Block ELSE IfStmt .
+
+    $default  reduce using rule 151 (IfStmt)
+
+
+State 373
+
+  165 ForClause: SCOLON Condition SCOLON PostStmt .
+
+    $default  reduce using rule 165 (ForClause)
+
+
+State 374
+
+  170 RangeClause: IdentifierList INFER_EQ RANGE Expression .
+  172 Expression: Expression . LOGOR Expression1
+
+    LOGOR  shift, and go to state 209
+
+    $default  reduce using rule 170 (RangeClause)
+
+
+State 375
+
+  164 ForClause: InitStmt SCOLON SCOLON PostStmt .
+
+    $default  reduce using rule 164 (ForClause)
+
+
+State 376
+
+  163 ForClause: InitStmt SCOLON Condition SCOLON .
+  166          | InitStmt SCOLON Condition SCOLON . PostStmt
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 252
+
+    LEFTBRACE  reduce using rule 76 (EmptyStmt)
+    LEFTBRACE  [reduce using rule 163 (ForClause)]
+    $default   reduce using rule 76 (EmptyStmt)
+
+    Unary_OP        go to state 127
+    SimpleStmt      go to state 350
+    EmptyStmt       go to state 177
+    ExpressionStmt  go to state 178
+    IncDecStmt      go to state 179
+    Assignment      go to state 180
+    ShortVarDecl    go to state 181
+    IdentifierList  go to state 182
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    PostStmt        go to state 385
+    Expression      go to state 190
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    ExpressionList  go to state 191
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 377
+
+  171 RangeClause: ExpressionList EQ RANGE Expression .
+  172 Expression: Expression . LOGOR Expression1
+
+    LOGOR  shift, and go to state 209
+
+    $default  reduce using rule 171 (RangeClause)
+
+
+State 378
+
+  205 MakeExpr: MAKE LEFTPARAN Type COMMA Expression RIGHTPARAN .
+
+    $default  reduce using rule 205 (MakeExpr)
+
+
+State 379
+
+  204 MakeExpr: MAKE LEFTPARAN Type COMMA Expression COMMA . Expression RIGHTPARAN
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 386
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 380
+
+  195 KeyValueList: Expression COLON Expression COMMA . KeyValueList
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    $default  reduce using rule 193 (KeyValueList)
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 295
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    KeyValueList    go to state 387
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 381
+
+  172 Expression: Expression . LOGOR Expression1
+  202 Slice: LEFTSQUARE COLON Expression COLON Expression . RIGHTSQUARE
+
+    LOGOR        shift, and go to state 209
+    RIGHTSQUARE  shift, and go to state 388
+
+
+State 382
+
+  201 Slice: LEFTSQUARE Expression COLON Expression RIGHTSQUARE .
+
+    $default  reduce using rule 201 (Slice)
+
+
+State 383
+
+  203 Slice: LEFTSQUARE Expression COLON Expression COLON . Expression RIGHTSQUARE
+
+    INTEGER_VAL         shift, and go to state 113
+    FLOAT_VAL           shift, and go to state 114
+    TRUE                shift, and go to state 115
+    FALSE               shift, and go to state 116
+    STRUCT              shift, and go to state 69
+    NEW                 shift, and go to state 117
+    MAP                 shift, and go to state 70
+    MAKE                shift, and go to state 118
+    ADD                 shift, and go to state 119
+    SUB                 shift, and go to state 120
+    NOT                 shift, and go to state 121
+    XOR                 shift, and go to state 122
+    MUL                 shift, and go to state 123
+    AND                 shift, and go to state 124
+    LEFTPARAN           shift, and go to state 125
+    LEFTSQUARE          shift, and go to state 73
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 126
+    IDENTIFIER          shift, and go to state 75
+
+    Unary_OP        go to state 127
+    QualifiedIdent  go to state 76
+    CompositeLit    go to state 128
+    LiteralType     go to state 129
+    Operand         go to state 130
+    OperandName     go to state 131
+    SliceType       go to state 80
+    Expression      go to state 389
+    Expression1     go to state 133
+    Expression2     go to state 134
+    Expression3     go to state 135
+    Expression4     go to state 136
+    UnaryExpr       go to state 137
+    PrimaryExpr     go to state 138
+    MakeExpr        go to state 139
+    MapType         go to state 81
+    StructType      go to state 82
+    PointerType     go to state 83
+    ArrayType       go to state 84
+    Literal         go to state 141
+    BasicLit        go to state 142
+    String          go to state 143
+
+
+State 384
+
+  153 IfStmt: IF SimpleStmt SCOLON Expression Block ELSE . IfStmt
+  154       | IF SimpleStmt SCOLON Expression Block ELSE . Block
+
+    IF         shift, and go to state 165
+    LEFTBRACE  shift, and go to state 100
+
+    Block   go to state 390
+    IfStmt  go to state 391
+
+
+State 385
+
+  166 ForClause: InitStmt SCOLON Condition SCOLON PostStmt .
+
+    $default  reduce using rule 166 (ForClause)
+
+
+State 386
+
+  172 Expression: Expression . LOGOR Expression1
+  204 MakeExpr: MAKE LEFTPARAN Type COMMA Expression COMMA Expression . RIGHTPARAN
+
+    LOGOR       shift, and go to state 209
+    RIGHTPARAN  shift, and go to state 392
+
+
+State 387
+
+  195 KeyValueList: Expression COLON Expression COMMA KeyValueList .
+
+    $default  reduce using rule 195 (KeyValueList)
+
+
+State 388
+
+  202 Slice: LEFTSQUARE COLON Expression COLON Expression RIGHTSQUARE .
+
+    $default  reduce using rule 202 (Slice)
+
+
+State 389
+
+  172 Expression: Expression . LOGOR Expression1
+  203 Slice: LEFTSQUARE Expression COLON Expression COLON Expression . RIGHTSQUARE
+
+    LOGOR        shift, and go to state 209
+    RIGHTSQUARE  shift, and go to state 393
+
+
+State 390
+
+  154 IfStmt: IF SimpleStmt SCOLON Expression Block ELSE Block .
+
+    $default  reduce using rule 154 (IfStmt)
+
+
+State 391
+
+  153 IfStmt: IF SimpleStmt SCOLON Expression Block ELSE IfStmt .
+
+    $default  reduce using rule 153 (IfStmt)
+
+
+State 392
+
+  204 MakeExpr: MAKE LEFTPARAN Type COMMA Expression COMMA Expression RIGHTPARAN .
+
+    $default  reduce using rule 204 (MakeExpr)
+
+
+State 393
+
+  203 Slice: LEFTSQUARE Expression COLON Expression COLON Expression RIGHTSQUARE .
+
+    $default  reduce using rule 203 (Slice)
