@@ -24,18 +24,18 @@
 %token <sval> MAKE GOTO FALLTHROUGH TYPE PLUSPLUS MINUSMINUS ANDNOT ELIPSIS ADD SUB NOT XOR MUL AND OR 
 %token <sval> LOGOR LOGAND ISEQ NEQ LESSEQ GRTEQ GRT LESS MOD QUOT SHL SHR EQ INFER_EQ RIGHTPARAN RIGHTBRACE RIGHTSQUARE
 %token <sval> LEFTPARAN LEFTBRACE LEFTSQUARE COLON DOT COMMA RAW_STRING INTERPRETED_STRING BYTE_VAL IDENTIFIER
-%type <nt> SourceFile Expression Expression1 Expression2 Expression3 Expression4 EmptyExpr
+%type <nt> SourceFile Expression
 %type <nt> Block StatementList Statement SimpleStmt EmptyStmt ExpressionStmt IncDecStmt MapType
 %type <nt> Assignment ShortVarDecl Declaration VarSpec PackageName
-%type <nt> Signature Result Parameters ParameterList ParameterDecl TypeList
-%type <nt> MethodDecl Receiver TopLevelDecl LabeledStmt Empty Label
+%type <nt> Signature Result Parameters ParameterList ParameterDecl 
+%type <nt> MethodDecl Receiver TopLevelDecl LabeledStmt Label
 %type <nt> ReturnStmt BreakStmt ContinueStmt GotoStmt FallthroughStmt StructType
 %type <nt> FunctionBody ForStmt RangeClause
-%type <nt> FunctionDecl
-%type <nt> Condition  UnaryExpr PrimaryExpr Assign_OP Rel_OP Add_OP Mul_OP Unary_OP
+%type <nt> FunctionDecl ConstDecl SwitchStmt ExprSwitchCase ExprSwitchStmt
+%type <nt> Condition  UnaryExpr PrimaryExpr Assign_OP Rel_OP Add_OP Mul_OP Unary_OP Binary_OP
 %type <nt> Selector Index Slice TypeDecl TypeSpecList TypeSpec VarDecl
 %type <nt> TypeAssertion Arguments ExpressionList ArrayType CompositeLit
-%type <nt> String ImportPath SliceType LiteralType
+%type <nt> String ImportPath SliceType LiteralType FunctionName
 %type <nt> LiteralValue ElementList KeyedElement Key Element
 %type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt
 %type <nt> PackageClause ImportDeclList ImportDecl ImportSpecList TopLevelDeclList
@@ -48,78 +48,40 @@
 // TODO: Fix  warning: type clash on default action: <nt> != <sval> errors by defining {;} action
 
 SourceFile:
-    PackageClause SCOLON ImportDeclList TopLevelDeclList
+	PackageClause SCOLON
+    | PackageClause SCOLON ImportDeclList
+	| PackageClause SCOLON TopLevelDeclList
+	| PackageClause SCOLON ImportDeclList TopLevelDeclList
     ;
 
-Assign_OP :
-	EQ {;}
-	| Add_OP EQ {;} 
-	| Mul_OP EQ {;}
-	;
-
-Add_OP:
-	ADD {cout << "ISEQ\n";} 
-	| SUB {cout << "ISEQ\n";} 
-	| OR {cout << "ISEQ\n";} 
-	| XOR {cout << "ISEQ\n";}
-	;
-
-Rel_OP:
-	ISEQ {cout << "ISEQ\n";}
-	| NEQ {cout << "ISEQ\n";}
-	| LESSEQ {cout << "ISEQ\n";} 
-	| GRTEQ {cout << "ISEQ\n";}
-	| GRT {cout << "ISEQ\n";}
-	| LESS {cout << "ISEQ\n";}
-	;
-
-Mul_OP:
-	MUL {cout << "ISEQ\n";}
-	| QUOT{cout << "ISEQ\n";} 
-	| MOD {cout << "ISEQ\n";}
-	| SHL {cout << "ISEQ\n";}
-	| SHR {cout << "ISEQ\n";}
-	| AND {cout << "ISEQ\n";}
-	| ANDNOT {cout << "ISEQ\n";}
-	;
-
-Unary_OP:
-	ADD  {;}
-	| SUB {;}
-	| NOT {;}
-	| XOR {;}
-	| MUL {;}
-	| AND {;}
-	;
-
-
 PackageClause:
-	PACKAGE PackageName
+	PACKAGE PackageName {;}
 	;
 
 PackageName:
-	IDENTIFIER
+	IDENTIFIER {;}
 	;
 
-ImportDeclList :
-	| ImportDeclList ImportDecl SCOLON
-	| ImportDecl SCOLON
+ImportDeclList:
+	ImportDeclList ImportDecl SCOLON {;}
+	| ImportDecl SCOLON {;}
 	;
 
 ImportDecl:
-	IMPORT LEFTPARAN ImportSpecList RIGHTPARAN
-	| IMPORT ImportSpec
+	IMPORT LEFTPARAN ImportSpecList RIGHTPARAN {;}
+	| IMPORT LEFTPARAN RIGHTPARAN {;}
+	| IMPORT ImportSpec {;}
 	;
 
 ImportSpecList:
-	| ImportSpecList ImportSpec SCOLON
-	| ImportSpec SCOLON
+	ImportSpecList ImportSpec SCOLON {;}
+	| ImportSpec SCOLON {;}
 	;
 
 ImportSpec:
-	PackageName ImportPath
-	| DOT ImportPath
-	| ImportPath
+	PackageName ImportPath {;}
+	| DOT ImportPath {;}
+	| ImportPath {;}
 	;
 
 ImportPath:
@@ -138,7 +100,7 @@ TopLevelDecl:
 	;
 
 Block:
-    LEFTBRACE StatementList RIGHTBRACE
+    LEFTBRACE StatementList RIGHTBRACE {;}
     ;
 
 Condition:
@@ -158,6 +120,7 @@ Statement:
 	| BreakStmt
 	| ContinueStmt
 	| GotoStmt
+	| SwitchStmt
 	| FallthroughStmt
 	| Block
 	| IfStmt
@@ -167,17 +130,20 @@ Statement:
 Declaration:
 	TypeDecl
 	| VarDecl
-	| ConstDecl
+	| ConstDecl 
 	;
 
 FunctionDecl:
-	FUNC IDENTIFIER Signature FunctionBody 
-	| FUNC IDENTIFIER Signature 
+	FUNC FunctionName Signature FunctionBody {;}
+	| FUNC FunctionName Signature  {;}
 	;
 
+FunctionName:
+	IDENTIFIER {;}
+
 MethodDecl:
-	FUNC Receiver IDENTIFIER Signature
-	| FUNC Receiver IDENTIFIER Signature FunctionBody
+	FUNC Receiver IDENTIFIER Signature {;}
+	| FUNC Receiver IDENTIFIER Signature FunctionBody {;}
 	;
 
 LabeledStmt:
@@ -185,7 +151,7 @@ LabeledStmt:
 	;
 
 Label:
-	IDENTIFIER
+	IDENTIFIER{;}
 	;
 
 SimpleStmt:
@@ -196,7 +162,7 @@ SimpleStmt:
 	| ShortVarDecl
 	;
 
-EmptyStmt:
+EmptyStmt:{;}
 	;
 
 ExpressionStmt:
@@ -217,13 +183,15 @@ ShortVarDecl:
 	;
 
 VarDecl:
-	VAR VarSpec
-	| VAR LEFTPARAN VarSpecList RIGHTPARAN
+	VAR VarSpec {;}
+	| VAR LEFTPARAN VarSpecList RIGHTPARAN {;}
+	| VAR LEFTPARAN RIGHTPARAN {;}
 	;
 
 VarSpecList:
 	VarSpecList VarSpec SCOLON
 	| VarSpec SCOLON
+	;
 
 VarSpec:
 	IdentifierList Type
@@ -232,13 +200,15 @@ VarSpec:
 	;
 
 ConstDecl:
-	CONST ConstSpec
-	| CONST LEFTPARAN ConstSpecList RIGHTPARAN
+	CONST ConstSpec {;}
+	| CONST LEFTPARAN ConstSpecList RIGHTPARAN {;}
+	| CONST LEFTPARAN RIGHTPARAN {;}
 	;
 
 ConstSpecList:
 	ConstSpecList ConstSpec SCOLON
 	| ConstSpec SCOLON
+	;
 
 ConstSpec:
 	IdentifierList Type
@@ -255,14 +225,14 @@ Signature:
 	| Parameters Result;
 
 Result:
-	LEFTPARAN TypeList RIGHTPARAN
-	| Type
+	Parameters {;}
+	| Type {;}
 	;
 
 Parameters:
-	LEFTPARAN RIGHTPARAN
-	| LEFTPARAN ParameterList RIGHTPARAN
-	| LEFTPARAN ParameterList COMMA RIGHTPARAN
+	LEFTPARAN RIGHTPARAN {;}
+	| LEFTPARAN ParameterList RIGHTPARAN {;}
+	| LEFTPARAN ParameterList COMMA RIGHTPARAN {;}
 	;
 
 ParameterList:
@@ -271,23 +241,18 @@ ParameterList:
 	;
 
 ParameterDecl:
-	IdentifierList Type
-	| IdentifierList ELIPSIS Type
-	| ELIPSIS Type
-	;
-
-TypeList:
-	TypeList COMMA Type
-	| Type
+	IdentifierList Type {;}
+	| IdentifierList ELIPSIS Type {;}
+	| ELIPSIS Type {;}
 	;
 
 IdentifierList:
-	IdentifierList COMMA IDENTIFIER
-	| IDENTIFIER
+	IdentifierList COMMA IDENTIFIER {;}
+	| IDENTIFIER {;}
 	;
 
 QualifiedIdent:
-	IDENTIFIER DOT IDENTIFIER
+	PackageName DOT IDENTIFIER {;}
 	;
 
 Receiver:
@@ -303,7 +268,7 @@ LiteralType:
 	| ArrayType
 	| PointerType
 	| SliceType
-	| LEFTSQUARE ELIPSIS RIGHTSQUARE Operand  
+	| LEFTSQUARE ELIPSIS RIGHTSQUARE Operand {;}
 	| MapType
 	;
 
@@ -315,21 +280,21 @@ Type:
 Operand:	
 	Literal
 	| OperandName
-	| LEFTPARAN Expression RIGHTPARAN
+	| LEFTPARAN Expression RIGHTPARAN {;}
 	;
 
 OperandName:
-	IDENTIFIER
-	| QualifiedIdent
-	;;
+	QualifiedIdent
+	;
+
 LiteralValue:
-	LEFTBRACE RIGHTBRACE
-	| LEFTBRACE ElementList RIGHTBRACE
-	| LEFTBRACE ElementList COMMA RIGHTBRACE
+	LEFTBRACE RIGHTBRACE {;}
+	| LEFTBRACE ElementList RIGHTBRACE {;}
+	| LEFTBRACE ElementList COMMA RIGHTBRACE {;}
 	;
 
 SliceType:
-	LEFTSQUARE RIGHTSQUARE Type
+	LEFTSQUARE RIGHTSQUARE Type {;}
 	;
 
 ElementList:
@@ -353,60 +318,72 @@ Element:
 	;
 
 ReturnStmt:
-	RETURN
-	| RETURN ExpressionList
+	RETURN {;}
+	| RETURN ExpressionList {;}
 	;
 
 
 BreakStmt:
-	BREAK
-	| BREAK Label
+	BREAK {;}
+	| BREAK Label {;}
 	;
 
 
 ContinueStmt:
-	CONTINUE
-	| CONTINUE Label
+	CONTINUE {;}
+	| CONTINUE Label {;}
 	;
 
 GotoStmt:
-	GOTO Label
+	GOTO Label {;}
+	;
+
+SwitchStmt:
+	ExprSwitchStmt
+	;
+
+ExprSwitchStmt:
+	SWITCH LEFTBRACE RIGHTBRACE {;}
+	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE {;}
+	| SWITCH LEFTBRACE RIGHTBRACE Expression {;}
+	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE Expression {;}
+	| SWITCH LEFTBRACE RIGHTBRACE ExprCaseClause {;}
+	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE ExprCaseClause {;}
+	| SWITCH LEFTBRACE RIGHTBRACE Expression ExprCaseClause {;}
+	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE Expression ExprCaseClause {;}
+	;
+
+ExprCaseClause:
+	ExprSwitchCase COLON StatementList {;}
+	;
+
+ExprSwitchCase:
+	CASE ExpressionList {;}
+	| DEFAULT {;}
 	;
 
 FallthroughStmt:
-	FALLTHROUGH
+	FALLTHROUGH {;}
 	;
 
 IfStmt:
-	IF Expression Block
-	|IF SimpleStmt SCOLON Expression Block
-	|IF Expression Block ELSE IfStmt
-	|IF Expression Block ELSE Block
-	|IF SimpleStmt SCOLON Expression Block ELSE IfStmt
-	|IF SimpleStmt SCOLON Expression Block ELSE Block
-	;
-
-EmptyExpr:
-	;
-
-Empty:
+	IF Expression Block {;}
+	|IF SimpleStmt SCOLON Expression Block {;}
+	|IF Expression Block ELSE IfStmt {;}
+	|IF Expression Block ELSE Block {;}
+	|IF SimpleStmt SCOLON Expression Block ELSE IfStmt {;}
+	|IF SimpleStmt SCOLON Expression Block ELSE Block {;}
 	;
 
 ForStmt:
-	FOR Block
-	| FOR ForClause Block
-	| FOR Condition Block
-	| FOR RangeClause Block
+	FOR Block {;}
+	| FOR ForClause Block {;}
+	| FOR Condition Block {;}
+	| FOR RangeClause Block {;}
 	;
 
 ForClause:
-	SCOLON SCOLON
-	| InitStmt SCOLON SCOLON
-	| SCOLON Condition SCOLON
-	| SCOLON SCOLON PostStmt
-	| InitStmt SCOLON Condition SCOLON
-	| InitStmt SCOLON SCOLON PostStmt
-	| SCOLON Condition SCOLON PostStmt
+	InitStmt SCOLON SCOLON PostStmt
 	| InitStmt SCOLON Condition SCOLON PostStmt
 	;
 
@@ -420,35 +397,15 @@ PostStmt:
 
 
 RangeClause:
-	RANGE Expression
+	RANGE Expression {;}
 	| IdentifierList INFER_EQ RANGE Expression
 	| ExpressionList EQ RANGE Expression
 	;
 
 Expression:
-	Expression LOGOR Expression1
-	| Expression1
+	UnaryExpr
+	| Expression Binary_OP Expression
 	;
-
-Expression1:
- 	Expression1 LOGAND Expression2
- 	| Expression2
- 	;
-
- Expression2:
- 	Expression2 Rel_OP Expression3
- 	| Expression3
- 	;
-
- Expression3:
- 	Expression3 Add_OP Expression4
- 	| Expression4
- 	;
-
- Expression4:
- 	Expression4 Mul_OP PrimaryExpr
- 	| UnaryExpr
- 	;
 
  UnaryExpr:
  	PrimaryExpr
@@ -467,56 +424,56 @@ Expression1:
  	;
 
 StructLiteral:
-	LEFTBRACE KeyValueList RIGHTBRACE
+	LEFTBRACE KeyValueList RIGHTBRACE {;}
 	;
 
 KeyValueList :
- 	| Expression COLON Expression 
+ 	Expression COLON Expression 
  	| Expression COLON Expression COMMA KeyValueList
  	;
 
 
 Selector : 
-	DOT IDENTIFIER
+	DOT IDENTIFIER {;}
 	;
 
 Index:
-	LEFTSQUARE Expression RIGHTSQUARE
+	LEFTSQUARE Expression RIGHTSQUARE {;}
 	;
 
 Slice:
-	 LEFTSQUARE COLON Expression RIGHTSQUARE 
-	 | LEFTSQUARE COLON RIGHTSQUARE 
-	 | LEFTSQUARE Expression COLON RIGHTSQUARE 
-	 | LEFTSQUARE Expression COLON Expression RIGHTSQUARE 
-	 | LEFTSQUARE COLON Expression COLON Expression RIGHTSQUARE 
-	 | LEFTSQUARE Expression COLON Expression COLON Expression RIGHTSQUARE
+	 LEFTSQUARE COLON Expression RIGHTSQUARE {;}
+	 | LEFTSQUARE COLON RIGHTSQUARE {;}
+	 | LEFTSQUARE Expression COLON RIGHTSQUARE  {;}
+	 | LEFTSQUARE Expression COLON Expression RIGHTSQUARE {;}
+	 | LEFTSQUARE COLON Expression COLON Expression RIGHTSQUARE {;} 
+	 | LEFTSQUARE Expression COLON Expression COLON Expression RIGHTSQUARE {;}
 	 ;
 
 MakeExpr:
-	MAKE LEFTPARAN Type COMMA Expression COMMA Expression RIGHTPARAN
-	| MAKE LEFTPARAN Type COMMA Expression RIGHTPARAN
-	| MAKE LEFTPARAN Type RIGHTPARAN
-	| NEW LEFTPARAN Type RIGHTPARAN
+	MAKE LEFTPARAN Type COMMA Expression COMMA Expression RIGHTPARAN {;}
+	| MAKE LEFTPARAN Type COMMA Expression RIGHTPARAN {;}
+	| MAKE LEFTPARAN Type RIGHTPARAN {;}
+	| NEW LEFTPARAN Type RIGHTPARAN {;}
 	;
 
 TypeAssertion:
-	DOT LEFTPARAN Type RIGHTPARAN
+	DOT LEFTPARAN Type RIGHTPARAN {;}
 	;
 
 Arguments:
-	LEFTPARAN RIGHTPARAN 
-	| LEFTPARAN ExpressionList ELIPSIS RIGHTPARAN
+	LEFTPARAN RIGHTPARAN {;}
+	| LEFTPARAN ExpressionList ELIPSIS RIGHTPARAN {;}
 	;
 
 ExpressionList: 
-	ExpressionList COMMA Expression 
-	| Expression
+	Expression
+	| Expression COMMA ExpressionList
 	;
 
 TypeDecl:
-	TYPE LEFTPARAN TypeSpecList RIGHTPARAN
-	| TYPE TypeSpec
+	TYPE LEFTPARAN TypeSpecList RIGHTPARAN {;}
+	| TYPE TypeSpec {;}
 	;
 
 TypeSpecList:
@@ -530,25 +487,25 @@ TypeSpec:
 	;
 
 AliasDecl:
-	IDENTIFIER EQ Type
+	IDENTIFIER EQ Type {;}
 	;
 
 TypeDef:
-	IDENTIFIER Type
+	IDENTIFIER Type {;}
 	;
 
 MapType:
-	MAP LEFTSQUARE Type RIGHTSQUARE Type
+	MAP LEFTSQUARE Type RIGHTSQUARE Type {;}
 	;
 
 StructType:
-	STRUCT LEFTBRACE FieldDeclList RIGHTBRACE
-	| STRUCT LEFTBRACE RIGHTBRACE
+	STRUCT LEFTBRACE FieldDeclList RIGHTBRACE {;}
+	| STRUCT LEFTBRACE RIGHTBRACE {;}
 	;
 
 FieldDeclList:
-	FieldDecl SCOLON
-	| FieldDeclList FieldDecl SCOLON
+	FieldDecl SCOLON {;}
+	| FieldDeclList FieldDecl SCOLON {;}
 	;
 
 FieldDecl:
@@ -558,11 +515,11 @@ FieldDecl:
 
 
 PointerType:
-	MUL Type
+	MUL Type {;}
 	;
 
 ArrayType:
-	LEFTSQUARE Expression RIGHTSQUARE Type
+	LEFTSQUARE Expression RIGHTSQUARE Type {;}
 	;
 
 Literal:
@@ -571,17 +528,66 @@ Literal:
 	;
 
 BasicLit:
-	INTEGER_VAL
-	| FLOAT_VAL
-	| BYTE_VAL
+	INTEGER_VAL {;}
+	| FLOAT_VAL {;}
+	| BYTE_VAL  {;}
 	| String
-	| TRUE
-	| FALSE
+	| TRUE      {;}
+	| FALSE     {;}
 	;
 
 String:
-	RAW_STRING
-	| INTERPRETED_STRING
+	RAW_STRING {;}
+	| INTERPRETED_STRING {;}
+	;
+
+Assign_OP :
+	EQ {;}
+	| Add_OP EQ {;} 
+	| Mul_OP EQ {;}
+	;
+
+Add_OP:
+	ADD {;} 
+	| SUB {;} 
+	| OR {;} 
+	| XOR {;}
+	;
+
+Rel_OP:
+	ISEQ {;}
+	| NEQ {;}
+	| LESSEQ {;} 
+	| GRTEQ {;}
+	| GRT {;}
+	| LESS {;}
+	;
+
+Mul_OP:
+	MUL {;}
+	| QUOT{;} 
+	| MOD {;}
+	| SHL {;}
+	| SHR {;}
+	| AND {;}
+	| ANDNOT {;}
+	;
+
+Unary_OP:
+	ADD  {;}
+	| SUB {;}
+	| NOT {;}
+	| XOR {;}
+	| MUL {;}
+	| AND {;}
+	;
+
+Binary_OP:
+	LOGAND {;}
+	| LOGOR {;}
+	| Rel_OP
+	| Add_OP
+	| Mul_OP
 	;
 %%
 
