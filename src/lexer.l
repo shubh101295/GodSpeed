@@ -1,5 +1,5 @@
 %{
-    #include "y.tab.h"
+    #include "parser.tab.h"
     #include<iostream>
     using namespace std;
     long long int column = 1;
@@ -10,8 +10,19 @@ DD [0-9]
 NL [\n]
 ALPHA [a-zA-Z]
 LETTER [a-zA-Z_]
-UNICODE_BYTE_CHAR            [^']
+UNICODE_BYTE_CHAR            [^'\\"]
 BACKSLASH_BYTE_CHAR          [nt\\']
+UNICODE_VALUE ([^"]|{LITTLE_U_VALUE}|{BIG_U_VALUE}|{ESCAPE_CHAR})
+BYTE_VALUE ({OCTAL_BYTE_VALUE}|{HEX_BYTE_VALUE})
+LITTLE_U_VALUE (\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])
+BIG_U_VALUE (\\U[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])
+ESCAPE_CHAR (\\(a|b|f|n|r|t|v|\\|\'|\"))
+OCTAL_BYTE_VALUE (\\[0-7][0-7][0-7])
+HEX_BYTE_VALUE (\\x[0-9a-fA-F][0-9a-fA-F])
+
+RAW_STRING (`([^`]|{NL})*`)
+INTERPRETED_STRING (\"({UNICODE_VALUE}|{BYTE_VALUE})*\")
+
 %x SINGLE_LINE_COMMENT
 %x MULTI_LINE_COMMENT
 %x EXTRA_SEMICOLON_MODE
@@ -25,7 +36,7 @@ BACKSLASH_BYTE_CHAR          [nt\\']
 "nil"/[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return NULLPOINTER;}
 "break"/[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return BREAK;}
 "continue"/[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return CONTINUE;}
-"fallthrough"/[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return FALLTHORUGH;}
+"fallthrough"/[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return FALLTHROUGH;}
 "return"/[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return RETURN;}
 
 "true" { yylval.sval = strdup(yytext); column+=yyleng; return TRUE;}
@@ -33,7 +44,7 @@ BACKSLASH_BYTE_CHAR          [nt\\']
 "nil" { yylval.sval = strdup(yytext); column+=yyleng; return NULLPOINTER;}
 "break" { yylval.sval = strdup(yytext); column+=yyleng; return BREAK;}
 "continue" { yylval.sval = strdup(yytext); column+=yyleng; return CONTINUE;}
-"fallthrough" { yylval.sval = strdup(yytext); column+=yyleng; return FALLTHORUGH;}
+"fallthrough" { yylval.sval = strdup(yytext); column+=yyleng; return FALLTHROUGH;}
 "return" { yylval.sval = strdup(yytext); column+=yyleng; return RETURN;}
 
 "func" { yylval.sval = strdup(yytext); column+=yyleng; return FUNC;}
@@ -59,8 +70,6 @@ BACKSLASH_BYTE_CHAR          [nt\\']
 "--"/[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return MINUSMINUS;}
 "++" { yylval.sval = strdup(yytext); column+=yyleng; return PLUSPLUS;}
 "--" { yylval.sval = strdup(yytext); column+=yyleng; return MINUSMINUS;}
-"+=" { yylval.sval = strdup(yytext); column+=yyleng; return PLUSEQUAL;}
-"-=" { yylval.sval = strdup(yytext); column+=yyleng; return MINUSEQUAL;}
 "&^" { yylval.sval = strdup(yytext); column+=yyleng; return ANDNOT;}
 
 "..." { yylval.sval = strdup(yytext); column+=yyleng; return ELIPSIS;}
@@ -132,20 +141,23 @@ BACKSLASH_BYTE_CHAR          [nt\\']
 0(b|B)[0-1]+ { yylval.sval = strdup(yytext); column+=yyleng; return INTEGER_VAL;}
 
 
-\"([^\\\n\"]|(\\.))*\"/[\n]  { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return STRING_VAL;}
 \'{UNICODE_BYTE_CHAR}\'/[\n]  { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return BYTE_VAL;}
-\'\\{BACKSLASH_BYTE_CHAR}\'/[\n]  { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return BYTE_VAL;}
+\'\\{ESCAPE_CHAR}\'/[\n]  { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return BYTE_VAL;}
+{RAW_STRING}/[\n]                          { yylval.sval = strdup(yytext); BEGIN(EXTRA_SEMICOLON_MODE); return RAW_STRING; }
+{INTERPRETED_STRING}/[\n]                  { yylval.sval = strdup(yytext); BEGIN(EXTRA_SEMICOLON_MODE); return INTERPRETED_STRING; }
 
-\"([^\\\n\"]|(\\.))*\"  { yylval.sval = strdup(yytext); column+=yyleng; return STRING_VAL;}
+
 \'{UNICODE_BYTE_CHAR}\'  { yylval.sval = strdup(yytext); column+=yyleng; return BYTE_VAL;}
-\'\\{BACKSLASH_BYTE_CHAR}\'  { yylval.sval = strdup(yytext); column+=yyleng; return BYTE_VAL;}
+\'\\{ESCAPE_CHAR}\'  { yylval.sval = strdup(yytext); column+=yyleng; return BYTE_VAL;}
+{RAW_STRING}                               { yylval.sval = strdup(yytext); return RAW_STRING; }
+{INTERPRETED_STRING}                       { yylval.sval = strdup(yytext); return INTERPRETED_STRING; }
 
 {LETTER}({LETTER}|{DD})*/[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return IDENTIFIER;}
 {LETTER}({LETTER}|{DD})* { yylval.sval = strdup(yytext); column+=yyleng; return IDENTIFIER;}
 
 [ ] { yylval.sval = strdup(yytext); column+=yyleng;}
 [\t] {column+=4;yyleng=4;}
-[\n] {column=1;return NEWLINE;}
+[\n] {;}
 
 
 "//" { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(SINGLE_LINE_COMMENT);}

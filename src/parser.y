@@ -3,12 +3,12 @@
 	#include "parser.tab.h"
 	using namespace std;
 
-	extern "C" int yylex();
-	extern "C" int yyparse();
-	extern "C" FILE* yyin;
-	void yyerror(const char* s);
-
-	#define YYDEBUG 1
+	extern int yylex();
+	extern int yyparse();
+	extern FILE* yyin;
+	void yyerror(const char* s) {
+		fprintf(stderr,"%s\n",s);
+	};
 %}
 
 %define parse.error verbose
