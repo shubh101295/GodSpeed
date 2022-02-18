@@ -46,9 +46,6 @@
 %left LOGOR
 %left LOGAND
 %left ISEQ NEQ LESSEQ GRTEQ GRT LESS
-%left ADD SUB OR XOR
-%left MUL QUOT MOD SHL SHR AND ANDNOT
-%left NOT
 %left LEFTBRACE LEFTPARAN LEFTSQUARE RIGHTSQUARE RIGHTPARAN RIGHTBRACE COMMA DOT COLON SCOLON
 %%
 
@@ -56,10 +53,10 @@
 // TODO: Fix  warning: type clash on default action: <nt> != <sval> errors by defining {;} action
 
 SourceFile:
-	PackageClause SCOLON {cout<<"PackageClause SCOLON\n";}
-    | PackageClause SCOLON ImportDeclList {cout<<"PackageClause SCOLON ImportDeclList\n";}
-	| PackageClause SCOLON TopLevelDeclList {cout<<"PackageClause SCOLON TopLevelDeclList\n";}
-	| PackageClause SCOLON ImportDeclList TopLevelDeclList {cout<<"PackageClause SCOLON ImportDeclList TopLevelDeclList\n";}
+	PackageClause SCOLON {;}
+    | PackageClause SCOLON ImportDeclList {;}
+	| PackageClause SCOLON TopLevelDeclList {;}
+	| PackageClause SCOLON ImportDeclList TopLevelDeclList {;}
     ;
 
 Rel_OP:
@@ -91,7 +88,7 @@ Unary_OP:
 	;
 
 PackageClause:
-	PACKAGE PackageName {cout<<"PackageClause\n";}
+	PACKAGE PackageName {;}
 	;
 
 PackageName:
@@ -99,8 +96,8 @@ PackageName:
 	;
 
 ImportDeclList:
-	ImportDeclList ImportDecl SCOLON {cout<<"ImportDeclList ImportDecl SCOLON\n";}
-	| ImportDecl SCOLON {cout<<"ImportDecl SCOLON\n";}
+	ImportDeclList ImportDecl SCOLON {;}
+	| ImportDecl SCOLON {;}
 	;
 
 ImportDecl:
@@ -125,8 +122,8 @@ ImportPath:
 	;
 
 TopLevelDeclList:
-	TopLevelDeclList TopLevelDecl SCOLON  { cout<<"TopLevelDeclList TopLevelDecl SCOLON\n";}
-	| TopLevelDecl SCOLON { cout<<"TopLevelDecl SCOLON\n";}
+	TopLevelDeclList TopLevelDecl SCOLON  { ;}
+	| TopLevelDecl SCOLON { ;}
 	;
 
 TopLevelDecl:
@@ -140,12 +137,12 @@ Block:
     ;
 
 Condition:
-	Expression
+	Expression {;}
 	;
 
 StatementList:
-	StatementList Statement SCOLON {cout<<"StatementList Statement SCOLON\n";}
-	| Statement SCOLON {cout<<"Statement SCOLON\n";}
+	StatementList Statement SCOLON {;}
+	| Statement SCOLON {;}
 	;
 
 Statement:
@@ -258,7 +255,7 @@ FunctionBody:
 	;
 
 Signature:
-	Parameters {cout<<"Parameters\n";}
+	Parameters {;}
 	| Parameters Result;
 
 Result:
@@ -267,7 +264,7 @@ Result:
 	;
 
 Parameters:
-	LEFTPARAN RIGHTPARAN {cout<<"LEFTPARAN RIGHTPARAN\n";}
+	LEFTPARAN RIGHTPARAN {;}
 	| LEFTPARAN ParameterList RIGHTPARAN {;}
 	| LEFTPARAN ParameterList COMMA RIGHTPARAN {;}
 	;
@@ -289,7 +286,7 @@ IdentifierList:
 	;
 
 QualifiedIdent:
-	PackageName DOT IDENTIFIER {cout<<"QualifiedIdent "<<$1<<" "<<$2<<" "<<$3<<"\n";}
+	PackageName DOT IDENTIFIER {;}
 	;
 
 Receiver:
@@ -299,7 +296,7 @@ Receiver:
 CompositeLit:
 	LiteralType LiteralValue
 	;
-// Something diff in both versions in type, literaltype-> check with others 
+
 LiteralType:
 	StructType
 	| ArrayType
@@ -322,7 +319,7 @@ Operand:
 
 OperandName:
 	IDENTIFIER {;}	 
-	| QualifiedIdent {cout<<"OperandName:QualifiedIdent "<<$1<<"\n";}
+	| QualifiedIdent {;}
 	;
 
 LiteralValue:
@@ -383,7 +380,7 @@ SwitchStmt:
 ExprSwitchStmt:
 	SWITCH LEFTBRACE RIGHTBRACE {;}
 	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE {;}
-	| SWITCH Expression LEFTBRACE RIGHTBRACE { cout<<"SWITCH Expression LEFTBRACE RIGHTBRACE\n";}
+	| SWITCH Expression LEFTBRACE RIGHTBRACE { ;}
 	| SWITCH SimpleStmt SCOLON Expression LEFTBRACE RIGHTBRACE {;}
 	| SWITCH LEFTBRACE ExprCaseClauseList RIGHTBRACE{;}
 	| SWITCH SimpleStmt SCOLON LEFTBRACE ExprCaseClauseList RIGHTBRACE{;}
@@ -449,47 +446,37 @@ Expression:
 	;
 
 ExpressionOR:
-	ExpressionOR LOGOR ExpressionAND %prec LOGOR {cout<<"ExpressionOR LOGOR ExpressionAND %prec LOGOR "<<"\n";} 
-	| ExpressionAND %prec LOGAND
+	ExpressionOR LOGOR ExpressionAND 
+	| ExpressionAND 
 	;
 
 ExpressionAND:
-	ExpressionAND LOGAND ExpressionREL %prec LOGAND {;}
-	| ExpressionREL %prec ISEQ {cout<<"ExpressionREL\n";}
+	ExpressionAND LOGAND ExpressionREL  {;}
+	| ExpressionREL 
 	;
 
 ExpressionREL:
-		ExpressionREL ISEQ ExpressionADD %prec ISEQ
-	|	ExpressionREL NEQ ExpressionADD %prec ISEQ
-	|	ExpressionREL LESSEQ ExpressionADD %prec ISEQ
-	|	ExpressionREL GRTEQ ExpressionADD %prec ISEQ
-	|	ExpressionREL GRT ExpressionADD %prec ISEQ
-	|	ExpressionREL LESS ExpressionADD %prec ISEQ
-	
-	| ExpressionADD %prec ADD {cout<<"ExpressionADD\n";}
+		ExpressionREL Rel_OP ExpressionADD 
+	| ExpressionADD 
 	;
 
 ExpressionADD:
-	ExpressionADD ADD ExpressionMUL %prec MUL {cout<<"ExpressionADD ADD ExpressionMUL\n";}
-	| ExpressionADD SUB ExpressionMUL %prec MUL {cout<<"ExpressionADD ADD ExpressionMUL\n";}
-	| ExpressionADD OR ExpressionMUL %prec MUL {cout<<"ExpressionADD ADD ExpressionMUL\n";}
-	| ExpressionADD XOR ExpressionMUL %prec MUL {cout<<"ExpressionADD ADD ExpressionMUL\n";}
-	
-	| ExpressionMUL %prec MUL {cout<<"ExpressionMUL\n";}
+	ExpressionADD Add_OP ExpressionMUL 
+	| ExpressionMUL 
 	;
 
 ExpressionMUL:
-	ExpressionMUL Mul_OP PrimaryExpr %prec MUL
-	| UnaryExpr %prec NOT {cout<<"UnaryExpr\n";}
+	ExpressionMUL Mul_OP PrimaryExpr 
+	| UnaryExpr 
 	;
 
 UnaryExpr:
- 	PrimaryExpr {cout<<"PrimaryExpr\n";}
+ 	PrimaryExpr
  	| Unary_OP PrimaryExpr
  	;
 
  PrimaryExpr:
- 	Operand {cout<<"Operand\n";}
+ 	Operand 
  	| MakeExpr
  	| PrimaryExpr Selector
  	| PrimaryExpr Index
@@ -539,13 +526,13 @@ TypeAssertion:
 
 Arguments:
 	LEFTPARAN RIGHTPARAN {;}
-	| LEFTPARAN ExpressionList RIGHTPARAN {cout<<"LEFTPARAN ExpressionList RIGHTPARAN\n";}
-	| LEFTPARAN ExpressionList ELIPSIS RIGHTPARAN {cout<<"LEFTPARAN ExpressionList ELIPSIS RIGHTPARAN\n";}
+	| LEFTPARAN ExpressionList RIGHTPARAN {;}
+	| LEFTPARAN ExpressionList ELIPSIS RIGHTPARAN {;}
 	;
 
 ExpressionList: 
-	Expression {cout<<"Expression "<<$1<<"\n";}
-	| ExpressionList COMMA Expression {cout<<"ExpressionList COMMA Expression "<<$1<<" "<<$2<<" "<<$3<<"\n";}
+	Expression {;}
+	| ExpressionList COMMA Expression {;}
 	;
 
 TypeDecl:
@@ -592,7 +579,7 @@ FieldDecl:
 
 
 PointerType:
-	MUL BaseType {;} %prec LEFTPARAN
+	MUL BaseType {;} 
 	;
 
 BaseType:
@@ -619,19 +606,19 @@ BasicLit:
 
 String:
 	RAW_STRING {;}
-	| INTERPRETED_STRING {cout<<"INTERPRETED_STRING "<<$1<<"\n";}
+	| INTERPRETED_STRING {;}
 	;
 
 Assign_OP :
 	EQ {;}
-	| Add_OP EQ {;} %prec ADD
-	| Mul_OP EQ {;} %prec MUL
+	| Add_OP EQ {;} 
+	| Mul_OP EQ {;} 
 	;
 
 Add_OP:
-	ADD {cout<<"ADD\n";} 
-	| SUB {cout<<"SUB\n";} 
-	| OR {cout<<"OR\n";} 
+	ADD {;} 
+	| SUB {;} 
+	| OR {;} 
 	| XOR {;}
 	;
 %%
