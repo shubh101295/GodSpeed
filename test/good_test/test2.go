@@ -29,10 +29,10 @@ func main(){
 		case 6:
 			b = b >> 2
 		case 7:
-			a += b
+			a = b+a
 			fallthrough
 		case 10:
-			b -= a
+			b = a-a+2*7/3
 		default:
 			c = a+b
 	}

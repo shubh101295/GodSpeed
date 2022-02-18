@@ -26,7 +26,7 @@ func merge(arr [1000]int, l int , r int ) [1000]int{
 	i = 0
 	j = 0
 
-	for (i < x && j < y){
+	for (i < x  j < y){
 		if (A[i] <= B[j]) {
             arr[k] = A[i]
             i++
@@ -37,13 +37,13 @@ func merge(arr [1000]int, l int , r int ) [1000]int{
         k++
 	}
 
-	for i < x {
+	for (i < x) {
 		arr[k] = A[i]
 		i++
         k++
 	}
 
-	for j < y {
+	for (j < y) {
 		arr[k] = B[j]
 		j++
         k++
@@ -76,4 +76,3 @@ func main(){
 	}
 	// return arr
 }
-
