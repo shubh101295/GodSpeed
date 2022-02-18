@@ -61,10 +61,10 @@
 // TODO: Fix  warning: type clash on default action: <nt> != <sval> errors by defining {;} action
 
 SourceFile:
-	PackageClause SCOLON {cout<<"PackageClause SCOLON";}
-    | PackageClause SCOLON ImportDeclList {cout<<"PackageClause SCOLON2";}
-	| PackageClause SCOLON TopLevelDeclList {cout<<"PackageClause SCOLON3";}
-	| PackageClause SCOLON ImportDeclList TopLevelDeclList {cout<<"PackageClause SCOLON4";}
+	PackageClause SCOLON {cout<<"PackageClause SCOLON\n";}
+    | PackageClause SCOLON ImportDeclList {cout<<"PackageClause SCOLON ImportDeclList\n";}
+	| PackageClause SCOLON TopLevelDeclList {cout<<"PackageClause SCOLON TopLevelDeclList\n";}
+	| PackageClause SCOLON ImportDeclList TopLevelDeclList {cout<<"PackageClause SCOLON ImportDeclList TopLevelDeclList\n";}
     ;
 
 Rel_OP:
@@ -294,7 +294,7 @@ IdentifierList:
 	;
 
 QualifiedIdent:
-	PackageName DOT IDENTIFIER {;}
+	PackageName DOT IDENTIFIER {cout<<"QualifiedIdent "<<$1<<" "<<$2<<" "<<$3<<"\n";}
 	;
 
 Receiver:
@@ -327,7 +327,7 @@ Operand:
 
 OperandName:
 	IDENTIFIER {;}	 
-	| QualifiedIdent 
+	| QualifiedIdent {cout<<"OperandName:QualifiedIdent "<<$1<<"\n";}
 	;
 
 LiteralValue:
@@ -388,7 +388,7 @@ SwitchStmt:
 ExprSwitchStmt:
 	SWITCH LEFTBRACE RIGHTBRACE {;}
 	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE {;}
-	| SWITCH Expression LEFTBRACE RIGHTBRACE {;}
+	| SWITCH Expression LEFTBRACE RIGHTBRACE { cout<<"SWITCH Expression LEFTBRACE RIGHTBRACE\n";}
 	| SWITCH SimpleStmt SCOLON Expression LEFTBRACE RIGHTBRACE {;}
 	| SWITCH LEFTBRACE ExprCaseClauseList RIGHTBRACE{;}
 	| SWITCH SimpleStmt SCOLON LEFTBRACE ExprCaseClauseList RIGHTBRACE{;}
@@ -469,7 +469,7 @@ ExpressionREL:
 	;
 
 ExpressionADD:
-	ExpressionADD Add_OP ExpressionMUL %prec ADD
+	ExpressionADD Add_OP ExpressionMUL %prec ADD {cout<<"ExpressionADD Add_OP ExpressionMUL %prec ADD";}
 	| ExpressionMUL %prec MUL
 	;
 
@@ -534,12 +534,13 @@ TypeAssertion:
 
 Arguments:
 	LEFTPARAN RIGHTPARAN {;}
-	| LEFTPARAN ExpressionList ELIPSIS RIGHTPARAN {;}
+	| LEFTPARAN ExpressionList RIGHTPARAN {cout<<"LEFTPARAN ExpressionList RIGHTPARAN\n";}
+	| LEFTPARAN ExpressionList ELIPSIS RIGHTPARAN {cout<<"LEFTPARAN ExpressionList ELIPSIS RIGHTPARAN\n";}
 	;
 
 ExpressionList: 
-	Expression
-	| Expression COMMA Expression %prec COMMA
+	Expression {cout<<"Expression "<<$1<<"\n";}
+	| ExpressionList COMMA Expression {cout<<"ExpressionList COMMA Expression "<<$1<<" "<<$2<<" "<<$3<<"\n";}
 	;
 
 TypeDecl:
@@ -613,7 +614,7 @@ BasicLit:
 
 String:
 	RAW_STRING {;}
-	| INTERPRETED_STRING {;}
+	| INTERPRETED_STRING {cout<<"INTERPRETED_STRING "<<$1<<"\n";}
 	;
 
 Assign_OP :
@@ -623,9 +624,9 @@ Assign_OP :
 	;
 
 Add_OP:
-	ADD {;} 
-	| SUB {;} 
-	| OR {;} 
+	ADD {cout<<"ADD\n";} 
+	| SUB {cout<<"SUB\n";} 
+	| OR {cout<<"OR\n";} 
 	| XOR {;}
 	;
 %%

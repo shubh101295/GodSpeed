@@ -2,18 +2,18 @@ package main
 
 import (
 	"fmt"
-)
+)          
 
 type Input struct {
 	TransactionId string
 	Index         int
 	Signature     string
-}
+}           
 
 type Output struct {
 	Recipient string
 	Amount    int
-}
+}           
 
 type Transaction struct {
 	Id      string
