@@ -32,7 +32,7 @@
 %type <nt> ReturnStmt BreakStmt ContinueStmt GotoStmt FallthroughStmt StructType
 %type <nt> FunctionBody ForStmt RangeClause
 %type <nt> FunctionDecl ConstDecl SwitchStmt ExprSwitchCase ExprSwitchStmt
-%type <nt> Condition  UnaryExpr PrimaryExpr Assign_OP Rel_OP Add_OP Mul_OP Unary_OP Binary_OP
+%type <nt> Condition  UnaryExpr PrimaryExpr Assign_OP Rel_OP Add_OP Mul_OP Unary_OP _OP
 %type <nt> Selector Index Slice TypeDecl TypeSpecList TypeSpec VarDecl
 %type <nt> TypeAssertion Arguments ExpressionList ArrayType CompositeLit
 %type <nt> String ImportPath SliceType LiteralType FunctionName
@@ -421,8 +421,32 @@ RangeClause:
 	;
 
 Expression:
-	UnaryExpr %prec NOT
-	| Expression Binary_OP Expression %prec MUL
+	ExpressionOR
+	;
+
+ExpressionOR:
+	ExpressionOR LOGOR ExpressionAND {;}
+	| ExpressionAND
+	;
+
+ExpressionAND:
+	ExpressionAND LOGAND ExpressionREL {;}
+	| ExpressionREL
+	;
+
+ExpressionREL:
+	ExpressionREL Rel_OP ExpressionADD
+	| ExpressionADD
+	;
+
+ExpressionADD:
+	ExpressionADD Add_OP ExpressionMUL
+	| ExpressionMUL
+	;
+
+ExpressionMUL:
+	ExpressionMUL Mul_OP PrimaryExpr
+	| UnaryExpr
 	;
 
  UnaryExpr:
@@ -602,14 +626,6 @@ Unary_OP:
 	| XOR {;} %prec NOT
 	| MUL {;} %prec NOT
 	| AND {;} %prec NOT
-	;
-
-Binary_OP:
-	LOGAND {;} %prec LOGAND
-	| LOGOR {;} %prec LOGOR
-	| Rel_OP %prec ISEQ
-	| Add_OP %prec ADD
-	| Mul_OP %prec MUL
 	;
 %%
 
