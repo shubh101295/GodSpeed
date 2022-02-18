@@ -2,23 +2,23 @@ package main
 
 import (
 	"fmt"
-)
+)          
 
 type Input struct {
 	TransactionId string
 	Index         int
 	Signature     string
-}
+}           
 
 type Output struct {
 	Recipient string
 	Amount    int
-}
+}           
 
 type Transaction struct {
 	Id      string
 	Inputs  [1]Input
-	Outputs [1]Output
+	Outputs [1 Output
 }
 
 

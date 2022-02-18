@@ -4,11 +4,11 @@
 	using namespace std;
 
 	extern "C" int yylex();
-	extern "C" int yyparse();
-	extern "C" FILE* yyin;
-	void yyerror(const char* s);
-
-	#define YYDEBUG 1
+	extern int yyparse();
+	extern FILE* yyin;
+	void yyerror(const char* s) {
+		fprintf(stderr,"%s\n",s);
+	};
 %}
 
 %define parse.error verbose
@@ -32,27 +32,60 @@
 %type <nt> ReturnStmt BreakStmt ContinueStmt GotoStmt FallthroughStmt StructType
 %type <nt> FunctionBody ForStmt RangeClause
 %type <nt> FunctionDecl ConstDecl SwitchStmt ExprSwitchCase ExprSwitchStmt
-%type <nt> Condition  UnaryExpr PrimaryExpr Assign_OP Rel_OP Add_OP Mul_OP Unary_OP Binary_OP
+%type <nt> Condition  UnaryExpr PrimaryExpr Assign_OP Rel_OP Add_OP Mul_OP Unary_OP
 %type <nt> Selector Index Slice TypeDecl TypeSpecList TypeSpec VarDecl
 %type <nt> TypeAssertion Arguments ExpressionList ArrayType CompositeLit
 %type <nt> String ImportPath SliceType LiteralType FunctionName
 %type <nt> LiteralValue ElementList KeyedElement Key Element
-%type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt
+%type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt ExprCaseClauseList
 %type <nt> PackageClause ImportDeclList ImportDecl ImportSpecList TopLevelDeclList
-%type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type
+%type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type BaseType
 %type <nt> QualifiedIdent PointerType IdentifierList AliasDecl TypeDef
 
-
+%left EQ INFER_EQ
+%left LOGOR
+%left LOGAND
+%left ISEQ NEQ LESSEQ GRTEQ GRT LESS
+%left LEFTBRACE LEFTPARAN LEFTSQUARE RIGHTSQUARE RIGHTPARAN RIGHTBRACE COMMA DOT COLON SCOLON
 %%
+
 
 // TODO: Fix  warning: type clash on default action: <nt> != <sval> errors by defining {;} action
 
 SourceFile:
-	PackageClause SCOLON
-    | PackageClause SCOLON ImportDeclList
-	| PackageClause SCOLON TopLevelDeclList
-	| PackageClause SCOLON ImportDeclList TopLevelDeclList
+	PackageClause SCOLON {;}
+    | PackageClause SCOLON ImportDeclList {;}
+	| PackageClause SCOLON TopLevelDeclList {;}
+	| PackageClause SCOLON ImportDeclList TopLevelDeclList {;}
     ;
+
+Rel_OP:
+	ISEQ {;}
+	| NEQ {;}
+	| LESSEQ {;} 
+	| GRTEQ {;}
+	| GRT {;}
+	| LESS {;}
+	;
+
+Mul_OP:
+	MUL {;}
+	| QUOT{;} 
+	| MOD {;}
+	| SHL {;}
+	| SHR {;}
+	| AND {;}
+	| ANDNOT {;}
+	;
+
+Unary_OP:
+	ADD  {;}
+	| SUB {;}
+	| NOT {;}
+	| XOR {;}
+	| MUL {;}
+	| AND {;}
+	;
 
 PackageClause:
 	PACKAGE PackageName {;}
@@ -89,8 +122,8 @@ ImportPath:
 	;
 
 TopLevelDeclList:
-	TopLevelDeclList TopLevelDecl SCOLON
-	| TopLevelDecl SCOLON
+	TopLevelDeclList TopLevelDecl SCOLON  { ;}
+	| TopLevelDecl SCOLON { ;}
 	;
 
 TopLevelDecl:
@@ -104,12 +137,12 @@ Block:
     ;
 
 Condition:
-	Expression
+	Expression {;}
 	;
 
 StatementList:
-	StatementList Statement SCOLON
-	| Statement SCOLON
+	StatementList Statement SCOLON {;}
+	| Statement SCOLON {;}
 	;
 
 Statement:
@@ -140,6 +173,7 @@ FunctionDecl:
 
 FunctionName:
 	IDENTIFIER {;}
+	;
 
 MethodDecl:
 	FUNC Receiver IDENTIFIER Signature {;}
@@ -221,7 +255,7 @@ FunctionBody:
 	;
 
 Signature:
-	Parameters
+	Parameters {;}
 	| Parameters Result;
 
 Result:
@@ -262,7 +296,7 @@ Receiver:
 CompositeLit:
 	LiteralType LiteralValue
 	;
-// Something diff in both versions in type, literaltype-> check with others 
+
 LiteralType:
 	StructType
 	| ArrayType
@@ -284,7 +318,8 @@ Operand:
 	;
 
 OperandName:
-	QualifiedIdent
+	IDENTIFIER {;}	 
+	| QualifiedIdent {;}
 	;
 
 LiteralValue:
@@ -345,13 +380,17 @@ SwitchStmt:
 ExprSwitchStmt:
 	SWITCH LEFTBRACE RIGHTBRACE {;}
 	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE {;}
-	| SWITCH LEFTBRACE RIGHTBRACE Expression {;}
-	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE Expression {;}
-	| SWITCH LEFTBRACE RIGHTBRACE ExprCaseClause {;}
-	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE ExprCaseClause {;}
-	| SWITCH LEFTBRACE RIGHTBRACE Expression ExprCaseClause {;}
-	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE Expression ExprCaseClause {;}
+	| SWITCH Expression LEFTBRACE RIGHTBRACE { ;}
+	| SWITCH SimpleStmt SCOLON Expression LEFTBRACE RIGHTBRACE {;}
+	| SWITCH LEFTBRACE ExprCaseClauseList RIGHTBRACE{;}
+	| SWITCH SimpleStmt SCOLON LEFTBRACE ExprCaseClauseList RIGHTBRACE{;}
+	| SWITCH Expression LEFTBRACE ExprCaseClauseList RIGHTBRACE {;}
+	| SWITCH SimpleStmt SCOLON Expression LEFTBRACE ExprCaseClauseList RIGHTBRACE {;}
 	;
+
+ExprCaseClauseList:
+	ExprCaseClauseList ExprCaseClause {;}
+	| ExprCaseClause {;}
 
 ExprCaseClause:
 	ExprSwitchCase COLON StatementList {;}
@@ -403,17 +442,41 @@ RangeClause:
 	;
 
 Expression:
-	UnaryExpr
-	| Expression Binary_OP Expression
+	ExpressionOR {;}
 	;
 
- UnaryExpr:
+ExpressionOR:
+	ExpressionOR LOGOR ExpressionAND 
+	| ExpressionAND 
+	;
+
+ExpressionAND:
+	ExpressionAND LOGAND ExpressionREL  {;}
+	| ExpressionREL 
+	;
+
+ExpressionREL:
+		ExpressionREL Rel_OP ExpressionADD 
+	| ExpressionADD 
+	;
+
+ExpressionADD:
+	ExpressionADD Add_OP ExpressionMUL 
+	| ExpressionMUL 
+	;
+
+ExpressionMUL:
+	ExpressionMUL Mul_OP PrimaryExpr 
+	| UnaryExpr 
+	;
+
+UnaryExpr:
  	PrimaryExpr
  	| Unary_OP PrimaryExpr
  	;
 
  PrimaryExpr:
- 	Operand
+ 	Operand 
  	| MakeExpr
  	| PrimaryExpr Selector
  	| PrimaryExpr Index
@@ -463,12 +526,13 @@ TypeAssertion:
 
 Arguments:
 	LEFTPARAN RIGHTPARAN {;}
+	| LEFTPARAN ExpressionList RIGHTPARAN {;}
 	| LEFTPARAN ExpressionList ELIPSIS RIGHTPARAN {;}
 	;
 
 ExpressionList: 
-	Expression
-	| Expression COMMA ExpressionList
+	Expression {;}
+	| ExpressionList COMMA Expression {;}
 	;
 
 TypeDecl:
@@ -515,7 +579,11 @@ FieldDecl:
 
 
 PointerType:
-	MUL Type {;}
+	MUL BaseType {;} 
+	;
+
+BaseType:
+	Type
 	;
 
 ArrayType:
@@ -544,7 +612,7 @@ String:
 Assign_OP :
 	EQ {;}
 	| Add_OP EQ {;} 
-	| Mul_OP EQ {;}
+	| Mul_OP EQ {;} 
 	;
 
 Add_OP:
@@ -553,49 +621,19 @@ Add_OP:
 	| OR {;} 
 	| XOR {;}
 	;
-
-Rel_OP:
-	ISEQ {;}
-	| NEQ {;}
-	| LESSEQ {;} 
-	| GRTEQ {;}
-	| GRT {;}
-	| LESS {;}
-	;
-
-Mul_OP:
-	MUL {;}
-	| QUOT{;} 
-	| MOD {;}
-	| SHL {;}
-	| SHR {;}
-	| AND {;}
-	| ANDNOT {;}
-	;
-
-Unary_OP:
-	ADD  {;}
-	| SUB {;}
-	| NOT {;}
-	| XOR {;}
-	| MUL {;}
-	| AND {;}
-	;
-
-Binary_OP:
-	LOGAND {;}
-	| LOGOR {;}
-	| Rel_OP
-	| Add_OP
-	| Mul_OP
-	;
 %%
 
 
 
 	
 
-
+int main (int argc, char **argv) {
+	
+	yyin = fopen(argv[1], "r");	//taking input as argument
+	yyparse ( );
+	
+		
+}
 
 
 

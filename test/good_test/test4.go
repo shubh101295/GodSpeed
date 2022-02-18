@@ -4,18 +4,19 @@ import "fmt"
 
 func BinarySearch(x int, arr [1000]int, len int)bool{
 	var l int = 0
-	var r int = len-1
+	var r int = len
 
-	for l <= r {
+	for (l<r) {
+
 		m := l + (r-l)/2
-
 		if ( arr[m]==x ){
-			return true	
+			return true
 		} else if ( arr[m]<x ){
-			l = m+1;
+			l = m;
 		} else {
-			r = m-1
+			r = m
 		}
+
 	}
 	return false
 }
