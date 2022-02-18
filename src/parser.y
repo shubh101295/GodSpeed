@@ -37,13 +37,26 @@
 %type <nt> TypeAssertion Arguments ExpressionList ArrayType CompositeLit
 %type <nt> String ImportPath SliceType LiteralType FunctionName
 %type <nt> LiteralValue ElementList KeyedElement Key Element
-%type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt
+%type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt ExprCaseClauseList
 %type <nt> PackageClause ImportDeclList ImportDecl ImportSpecList TopLevelDeclList
-%type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type
+%type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type BaseType
 %type <nt> QualifiedIdent PointerType IdentifierList AliasDecl TypeDef
 
-
+%right ASSIGN
+%right INFER_EQ
+%left DOT
+%left COMMA
+%left LOGOR
+%left LOGAND
+%left ISEQ NEQ LESSEQ GRTEQ GRT LESS
+%left ADD SUB OR XOR
+%left MUL QUOT MOD SHL SHR AND ANDNOT
+%left NOT
+%left LEFTBRACE LEFTPARAN LEFTSQUARE RIGHTSQUARE RIGHTPARAN RIGHTBRACE
+%left SCOLON
+%left COLON
 %%
+
 
 // TODO: Fix  warning: type clash on default action: <nt> != <sval> errors by defining {;} action
 
@@ -284,7 +297,8 @@ Operand:
 	;
 
 OperandName:
-	QualifiedIdent
+	IDENTIFIER {;}	 
+	| QualifiedIdent 
 	;
 
 LiteralValue:
@@ -345,13 +359,17 @@ SwitchStmt:
 ExprSwitchStmt:
 	SWITCH LEFTBRACE RIGHTBRACE {;}
 	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE {;}
-	| SWITCH LEFTBRACE RIGHTBRACE Expression {;}
-	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE Expression {;}
-	| SWITCH LEFTBRACE RIGHTBRACE ExprCaseClause {;}
-	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE ExprCaseClause {;}
-	| SWITCH LEFTBRACE RIGHTBRACE Expression ExprCaseClause {;}
-	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE Expression ExprCaseClause {;}
+	| SWITCH Expression LEFTBRACE RIGHTBRACE {;}
+	| SWITCH SimpleStmt SCOLON Expression LEFTBRACE RIGHTBRACE {;}
+	| SWITCH LEFTBRACE ExprCaseClauseList RIGHTBRACE{;}
+	| SWITCH SimpleStmt SCOLON LEFTBRACE ExprCaseClauseList RIGHTBRACE{;}
+	| SWITCH Expression LEFTBRACE ExprCaseClauseList RIGHTBRACE {;}
+	| SWITCH SimpleStmt SCOLON Expression LEFTBRACE ExprCaseClauseList RIGHTBRACE {;}
 	;
+
+ExprCaseClauseList:
+	ExprCaseClauseList ExprCaseClause {;}
+	| ExprCaseClause {;}
 
 ExprCaseClause:
 	ExprSwitchCase COLON StatementList {;}
@@ -403,13 +421,13 @@ RangeClause:
 	;
 
 Expression:
-	UnaryExpr
-	| Expression Binary_OP Expression
+	UnaryExpr %prec NOT
+	| Expression Binary_OP Expression %prec MUL
 	;
 
  UnaryExpr:
  	PrimaryExpr
- 	| Unary_OP PrimaryExpr
+ 	| Unary_OP PrimaryExpr %prec NOT
  	;
 
  PrimaryExpr:
@@ -468,7 +486,7 @@ Arguments:
 
 ExpressionList: 
 	Expression
-	| Expression COMMA ExpressionList
+	| Expression COMMA Expression %prec COMMA
 	;
 
 TypeDecl:
@@ -515,7 +533,11 @@ FieldDecl:
 
 
 PointerType:
-	MUL Type {;}
+	MUL BaseType {;} %prec LEFTPARAN
+	;
+
+BaseType:
+	Type
 	;
 
 ArrayType:
@@ -543,8 +565,8 @@ String:
 
 Assign_OP :
 	EQ {;}
-	| Add_OP EQ {;} 
-	| Mul_OP EQ {;}
+	| Add_OP EQ {;} %prec ADD
+	| Mul_OP EQ {;} %prec MUL
 	;
 
 Add_OP:
@@ -574,20 +596,20 @@ Mul_OP:
 	;
 
 Unary_OP:
-	ADD  {;}
-	| SUB {;}
-	| NOT {;}
-	| XOR {;}
-	| MUL {;}
-	| AND {;}
+	ADD  {;} %prec NOT
+	| SUB {;} %prec NOT
+	| NOT {;} %prec NOT
+	| XOR {;} %prec NOT
+	| MUL {;} %prec NOT
+	| AND {;} %prec NOT
 	;
 
 Binary_OP:
-	LOGAND {;}
-	| LOGOR {;}
-	| Rel_OP
-	| Add_OP
-	| Mul_OP
+	LOGAND {;} %prec LOGAND
+	| LOGOR {;} %prec LOGOR
+	| Rel_OP %prec ISEQ
+	| Add_OP %prec ADD
+	| Mul_OP %prec MUL
 	;
 %%
 
