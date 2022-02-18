@@ -3,7 +3,7 @@
 	#include "parser.tab.h"
 	using namespace std;
 
-	extern int yylex();
+	extern "C" int yylex();
 	extern int yyparse();
 	extern FILE* yyin;
 	void yyerror(const char* s) {
@@ -61,10 +61,10 @@
 // TODO: Fix  warning: type clash on default action: <nt> != <sval> errors by defining {;} action
 
 SourceFile:
-	PackageClause SCOLON
-    | PackageClause SCOLON ImportDeclList
-	| PackageClause SCOLON TopLevelDeclList
-	| PackageClause SCOLON ImportDeclList TopLevelDeclList
+	PackageClause SCOLON {cout<<"PackageClause SCOLON";}
+    | PackageClause SCOLON ImportDeclList {cout<<"PackageClause SCOLON2";}
+	| PackageClause SCOLON TopLevelDeclList {cout<<"PackageClause SCOLON3";}
+	| PackageClause SCOLON ImportDeclList TopLevelDeclList {cout<<"PackageClause SCOLON4";}
     ;
 
 Rel_OP:
@@ -96,7 +96,7 @@ Unary_OP:
 	;
 
 PackageClause:
-	PACKAGE PackageName {;}
+	PACKAGE PackageName {cout<<"PackageClause\n";}
 	;
 
 PackageName:
@@ -104,8 +104,8 @@ PackageName:
 	;
 
 ImportDeclList:
-	ImportDeclList ImportDecl SCOLON {;}
-	| ImportDecl SCOLON {;}
+	ImportDeclList ImportDecl SCOLON {cout<<"ImportDeclList ImportDecl SCOLON\n";}
+	| ImportDecl SCOLON {cout<<"ImportDecl SCOLON\n";}
 	;
 
 ImportDecl:
@@ -130,8 +130,8 @@ ImportPath:
 	;
 
 TopLevelDeclList:
-	TopLevelDeclList TopLevelDecl SCOLON
-	| TopLevelDecl SCOLON
+	TopLevelDeclList TopLevelDecl SCOLON  { cout<<"TopLevelDeclList TopLevelDecl SCOLON\n";}
+	| TopLevelDecl SCOLON { cout<<"TopLevelDecl SCOLON\n";}
 	;
 
 TopLevelDecl:
@@ -149,8 +149,8 @@ Condition:
 	;
 
 StatementList:
-	StatementList Statement SCOLON
-	| Statement SCOLON
+	StatementList Statement SCOLON {cout<<"StatementList Statement SCOLON\n";}
+	| Statement SCOLON {cout<<"Statement SCOLON\n";}
 	;
 
 Statement:
@@ -181,6 +181,7 @@ FunctionDecl:
 
 FunctionName:
 	IDENTIFIER {;}
+	;
 
 MethodDecl:
 	FUNC Receiver IDENTIFIER Signature {;}
@@ -262,7 +263,7 @@ FunctionBody:
 	;
 
 Signature:
-	Parameters
+	Parameters {cout<<"Parameters\n";}
 	| Parameters Result;
 
 Result:
@@ -271,7 +272,7 @@ Result:
 	;
 
 Parameters:
-	LEFTPARAN RIGHTPARAN {;}
+	LEFTPARAN RIGHTPARAN {cout<<"LEFTPARAN RIGHTPARAN\n";}
 	| LEFTPARAN ParameterList RIGHTPARAN {;}
 	| LEFTPARAN ParameterList COMMA RIGHTPARAN {;}
 	;
@@ -633,7 +634,13 @@ Add_OP:
 
 	
 
-
+int main (int argc, char **argv) {
+	
+	yyin = fopen(argv[1], "r");	//taking input as argument
+	yyparse ( );
+	
+		
+}
 
 
 

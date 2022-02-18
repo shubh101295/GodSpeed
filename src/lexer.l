@@ -3,6 +3,7 @@
     #include<iostream>
     using namespace std;
     long long int column = 1;
+    #define YY_DECL extern "C" int yylex()
 %}
 %option yylineno
 
