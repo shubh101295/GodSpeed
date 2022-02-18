@@ -32,7 +32,7 @@
 %type <nt> ReturnStmt BreakStmt ContinueStmt GotoStmt FallthroughStmt StructType
 %type <nt> FunctionBody ForStmt RangeClause
 %type <nt> FunctionDecl ConstDecl SwitchStmt ExprSwitchCase ExprSwitchStmt
-%type <nt> Condition  UnaryExpr PrimaryExpr Assign_OP Rel_OP Add_OP Mul_OP Unary_OP _OP
+%type <nt> Condition  UnaryExpr PrimaryExpr Assign_OP Rel_OP Add_OP Mul_OP Unary_OP
 %type <nt> Selector Index Slice TypeDecl TypeSpecList TypeSpec VarDecl
 %type <nt> TypeAssertion Arguments ExpressionList ArrayType CompositeLit
 %type <nt> String ImportPath SliceType LiteralType FunctionName
@@ -66,6 +66,34 @@ SourceFile:
 	| PackageClause SCOLON TopLevelDeclList
 	| PackageClause SCOLON ImportDeclList TopLevelDeclList
     ;
+
+Rel_OP:
+	ISEQ {;}
+	| NEQ {;}
+	| LESSEQ {;} 
+	| GRTEQ {;}
+	| GRT {;}
+	| LESS {;}
+	;
+
+Mul_OP:
+	MUL {;}
+	| QUOT{;} 
+	| MOD {;}
+	| SHL {;}
+	| SHR {;}
+	| AND {;}
+	| ANDNOT {;}
+	;
+
+Unary_OP:
+	ADD  {;}
+	| SUB {;}
+	| NOT {;}
+	| XOR {;}
+	| MUL {;}
+	| AND {;}
+	;
 
 PackageClause:
 	PACKAGE PackageName {;}
@@ -421,37 +449,37 @@ RangeClause:
 	;
 
 Expression:
-	ExpressionOR
+	ExpressionOR {;}
 	;
 
 ExpressionOR:
-	ExpressionOR LOGOR ExpressionAND {;}
-	| ExpressionAND
+	ExpressionOR LOGOR ExpressionAND %prec LOGOR {;} 
+	| ExpressionAND %prec LOGAND
 	;
 
 ExpressionAND:
-	ExpressionAND LOGAND ExpressionREL {;}
-	| ExpressionREL
+	ExpressionAND LOGAND ExpressionREL %prec LOGAND {;}
+	| ExpressionREL %prec ISEQ
 	;
 
 ExpressionREL:
-	ExpressionREL Rel_OP ExpressionADD
-	| ExpressionADD
+	ExpressionREL Rel_OP ExpressionADD %prec ISEQ
+	| ExpressionADD %prec ADD
 	;
 
 ExpressionADD:
-	ExpressionADD Add_OP ExpressionMUL
-	| ExpressionMUL
+	ExpressionADD Add_OP ExpressionMUL %prec ADD
+	| ExpressionMUL %prec MUL
 	;
 
 ExpressionMUL:
-	ExpressionMUL Mul_OP PrimaryExpr
-	| UnaryExpr
+	ExpressionMUL Mul_OP PrimaryExpr %prec MUL
+	| UnaryExpr %prec NOT
 	;
 
  UnaryExpr:
  	PrimaryExpr
- 	| Unary_OP PrimaryExpr %prec NOT
+ 	| Unary_OP PrimaryExpr
  	;
 
  PrimaryExpr:
@@ -598,34 +626,6 @@ Add_OP:
 	| SUB {;} 
 	| OR {;} 
 	| XOR {;}
-	;
-
-Rel_OP:
-	ISEQ {;}
-	| NEQ {;}
-	| LESSEQ {;} 
-	| GRTEQ {;}
-	| GRT {;}
-	| LESS {;}
-	;
-
-Mul_OP:
-	MUL {;}
-	| QUOT{;} 
-	| MOD {;}
-	| SHL {;}
-	| SHR {;}
-	| AND {;}
-	| ANDNOT {;}
-	;
-
-Unary_OP:
-	ADD  {;} %prec NOT
-	| SUB {;} %prec NOT
-	| NOT {;} %prec NOT
-	| XOR {;} %prec NOT
-	| MUL {;} %prec NOT
-	| AND {;} %prec NOT
 	;
 %%
 
