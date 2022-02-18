@@ -114,8 +114,7 @@ extern int yydebug;
     RAW_STRING = 320,
     INTERPRETED_STRING = 321,
     BYTE_VAL = 322,
-    IDENTIFIER = 323,
-    ASSIGN = 324
+    IDENTIFIER = 323
   };
 #endif
 
@@ -128,7 +127,7 @@ union YYSTYPE
 	char* nt;
 	char* sval;
 
-#line 132 "parser.tab.h"
+#line 131 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

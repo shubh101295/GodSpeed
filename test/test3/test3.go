@@ -71,7 +71,7 @@ func main(){
 		fmt.Scanf("%d",&A[i])
 	}
 
-	A = mergesort(A,0,n-1)
+	A = mergesort(A,0,n)
 
 	for i:=0;i<n;i++ {
 		fmt.Printf("%d ",A[i])

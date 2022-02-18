@@ -42,19 +42,14 @@
 %type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type BaseType
 %type <nt> QualifiedIdent PointerType IdentifierList AliasDecl TypeDef
 
-%right ASSIGN
-%right INFER_EQ
-%left DOT
-%left COMMA
+%left EQ INFER_EQ
 %left LOGOR
 %left LOGAND
 %left ISEQ NEQ LESSEQ GRTEQ GRT LESS
 %left ADD SUB OR XOR
 %left MUL QUOT MOD SHL SHR AND ANDNOT
 %left NOT
-%left LEFTBRACE LEFTPARAN LEFTSQUARE RIGHTSQUARE RIGHTPARAN RIGHTBRACE
-%left SCOLON
-%left COLON
+%left LEFTBRACE LEFTPARAN LEFTSQUARE RIGHTSQUARE RIGHTPARAN RIGHTBRACE COMMA DOT COLON SCOLON
 %%
 
 
@@ -454,37 +449,47 @@ Expression:
 	;
 
 ExpressionOR:
-	ExpressionOR LOGOR ExpressionAND %prec LOGOR {;} 
+	ExpressionOR LOGOR ExpressionAND %prec LOGOR {cout<<"ExpressionOR LOGOR ExpressionAND %prec LOGOR "<<"\n";} 
 	| ExpressionAND %prec LOGAND
 	;
 
 ExpressionAND:
 	ExpressionAND LOGAND ExpressionREL %prec LOGAND {;}
-	| ExpressionREL %prec ISEQ
+	| ExpressionREL %prec ISEQ {cout<<"ExpressionREL\n";}
 	;
 
 ExpressionREL:
-	ExpressionREL Rel_OP ExpressionADD %prec ISEQ
-	| ExpressionADD %prec ADD
+		ExpressionREL ISEQ ExpressionADD %prec ISEQ
+	|	ExpressionREL NEQ ExpressionADD %prec ISEQ
+	|	ExpressionREL LESSEQ ExpressionADD %prec ISEQ
+	|	ExpressionREL GRTEQ ExpressionADD %prec ISEQ
+	|	ExpressionREL GRT ExpressionADD %prec ISEQ
+	|	ExpressionREL LESS ExpressionADD %prec ISEQ
+	
+	| ExpressionADD %prec ADD {cout<<"ExpressionADD\n";}
 	;
 
 ExpressionADD:
-	ExpressionADD Add_OP ExpressionMUL %prec ADD {cout<<"ExpressionADD Add_OP ExpressionMUL %prec ADD";}
-	| ExpressionMUL %prec MUL
+	ExpressionADD ADD ExpressionMUL %prec MUL {cout<<"ExpressionADD ADD ExpressionMUL\n";}
+	| ExpressionADD SUB ExpressionMUL %prec MUL {cout<<"ExpressionADD ADD ExpressionMUL\n";}
+	| ExpressionADD OR ExpressionMUL %prec MUL {cout<<"ExpressionADD ADD ExpressionMUL\n";}
+	| ExpressionADD XOR ExpressionMUL %prec MUL {cout<<"ExpressionADD ADD ExpressionMUL\n";}
+	
+	| ExpressionMUL %prec MUL {cout<<"ExpressionMUL\n";}
 	;
 
 ExpressionMUL:
 	ExpressionMUL Mul_OP PrimaryExpr %prec MUL
-	| UnaryExpr %prec NOT
+	| UnaryExpr %prec NOT {cout<<"UnaryExpr\n";}
 	;
 
- UnaryExpr:
- 	PrimaryExpr
+UnaryExpr:
+ 	PrimaryExpr {cout<<"PrimaryExpr\n";}
  	| Unary_OP PrimaryExpr
  	;
 
  PrimaryExpr:
- 	Operand
+ 	Operand {cout<<"Operand\n";}
  	| MakeExpr
  	| PrimaryExpr Selector
  	| PrimaryExpr Index
