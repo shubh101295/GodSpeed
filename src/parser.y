@@ -8,6 +8,7 @@
 	extern FILE* yyin;
 	void yyerror(const char* s) {
 		fprintf(stderr,"%s\n",s);
+		exit(1);
 	};
 %}
 
@@ -50,7 +51,6 @@
 %%
 
 
-// TODO: Fix  warning: type clash on default action: <nt> != <sval> errors by defining {;} action
 
 SourceFile:
 	PackageClause SCOLON {;}
@@ -631,7 +631,7 @@ int main (int argc, char **argv) {
 	
 	yyin = fopen(argv[1], "r");	//taking input as argument
 	yyparse ( );
-	
+	cout<<"THE GIVEN FILE WAS PARSABLE \n";
 		
 }
 
