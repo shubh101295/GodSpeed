@@ -1,19 +1,9 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-func main(){
-	
-	for i:=0;i<5;i++ {
-		fmt.Println("%d",i);
-	}
-	for true {
-		fmt.Println(5)
-	}
-	a:= 2+
-		3+
-		5
-
+func main() {
+	fmt.Println("v")
+	a := 2+4
+	var a int =3
 }

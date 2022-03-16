@@ -24,13 +24,44 @@ HEX_BYTE_VALUE (\\x[0-9a-fA-F][0-9a-fA-F])
 RAW_STRING (`([^`]|{NL})*`)
 INTERPRETED_STRING (\"({UNICODE_VALUE}|{BYTE_VALUE})*\")
 
+LOGOR "\|\|"
+LOGAND "&&"
+LESSEQ "<="
+LESS "<"
+GRTEQ ">="
+GRT ">"
+ISEQ "=="
+NEQ "!="
+SHL "<<"
+SHR ">>"
+ANDNOT "&^"
+PLUSPLUS "++"
+MINUSMINUS "--"
+INFER_EQ ":="
+COLON ":"
+ADD "+"
+SUB "-"
+MUL "*"
+QUOT "/"
+MOD "%"
+OR "|"
+AND "&"
+XOR "^"
+NOT "!"
+REL_OP  {ISEQ}|{NEQ}|{GRTEQ}|{GRT}|{LESSEQ}|{LESS}
+ADD_OP {ADD}|{SUB}|{OR}|{XOR}
+MUL_OP {MUL}|{QUOT}|{MOD}|{SHL}|{SHR}|{AND}|{ANDNOT}
+UNARY_OP {ADD}|{SUB}|{NOT}|{XOR}|{MUL}|{AND}
+ASSGN_OP ({ADD_OP}|{MUL_OP})?"="
+
+
 %x SINGLE_LINE_COMMENT
 %x MULTI_LINE_COMMENT
 %x EXTRA_SEMICOLON_MODE
 %%
     /* reserved keyword */
 
-<EXTRA_SEMICOLON_MODE>{NL} { BEGIN(INITIAL); return SCOLON;}
+<EXTRA_SEMICOLON_MODE>{NL} { cout<<"Entering XS"<<endl;BEGIN(INITIAL); return SCOLON;}
 
 "true"/[ ]*[\n] {  yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return TRUE;}
 "false"/[ ]*[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return FALSE;}
@@ -71,39 +102,39 @@ INTERPRETED_STRING (\"({UNICODE_VALUE}|{BYTE_VALUE})*\")
 "--"/[ ]*[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return MINUSMINUS;}
 "++" { yylval.sval = strdup(yytext); column+=yyleng; return PLUSPLUS;}
 "--" { yylval.sval = strdup(yytext); column+=yyleng; return MINUSMINUS;}
-"&^" { yylval.sval = strdup(yytext); column+=yyleng; return ANDNOT;}
+{ANDNOT} { yylval.sval = strdup(yytext); column+=yyleng; return ANDNOT;}
 
 "..." { yylval.sval = strdup(yytext); column+=yyleng; return ELIPSIS;}
 
     /* unary operators */
-"+" { yylval.sval = strdup(yytext); column+=yyleng; return ADD;}
-"-" { yylval.sval = strdup(yytext); column+=yyleng; return SUB;}
-"!" { yylval.sval = strdup(yytext); column+=yyleng; return NOT;}
-"^" { yylval.sval = strdup(yytext); column+=yyleng; return XOR;}
-"*" { yylval.sval = strdup(yytext); column+=yyleng; return MUL;}
-"&" { yylval.sval = strdup(yytext); column+=yyleng; return AND;}
-"|" { yylval.sval = strdup(yytext); column+=yyleng; return OR;}
+{ADD} { yylval.sval = strdup(yytext); column+=yyleng; return ADD;}
+{SUB} { yylval.sval = strdup(yytext); column+=yyleng; return SUB;}
+{NOT} { yylval.sval = strdup(yytext); column+=yyleng; return NOT;}
+{XOR} { yylval.sval = strdup(yytext); column+=yyleng; return XOR;}
+{MUL} { yylval.sval = strdup(yytext); column+=yyleng; return MUL;}
+{AND} { yylval.sval = strdup(yytext); column+=yyleng; return AND;}
+{OR} { yylval.sval = strdup(yytext); column+=yyleng; return OR;}
 
 
     /* binary operators */
-"||" { yylval.sval = strdup(yytext); column+=yyleng; return LOGOR;}
-"&&" { yylval.sval = strdup(yytext); column+=yyleng; return LOGAND;}
-"==" { yylval.sval = strdup(yytext); column+=yyleng; return ISEQ;}
-"!=" { yylval.sval = strdup(yytext); column+=yyleng; return NEQ;}
-"<=" { yylval.sval = strdup(yytext); column+=yyleng; return LESSEQ;}
-">=" { yylval.sval = strdup(yytext); column+=yyleng; return GRTEQ;}
-">" { yylval.sval = strdup(yytext); column+=yyleng; return GRT;}
-"<" { yylval.sval = strdup(yytext); column+=yyleng; return LESS;}
-"%" { yylval.sval = strdup(yytext); column+=yyleng; return MOD;}
-"/" { yylval.sval = strdup(yytext); column+=yyleng; return QUOT;}
-"<<" { yylval.sval = strdup(yytext); column+=yyleng; return SHL;}
-">>" { yylval.sval = strdup(yytext); column+=yyleng; return SHR;}
+{LOGOR} { yylval.sval = strdup(yytext); column+=yyleng; return LOGOR;}
+{LOGAND} { yylval.sval = strdup(yytext); column+=yyleng; return LOGAND;}
+{ISEQ} { yylval.sval = strdup(yytext); column+=yyleng; return ISEQ;}
+{NEQ} { yylval.sval = strdup(yytext); column+=yyleng; return NEQ;}
+{LESSEQ} { yylval.sval = strdup(yytext); column+=yyleng; return LESSEQ;}
+{GRTEQ} { yylval.sval = strdup(yytext); column+=yyleng; return GRTEQ;}
+{GRT} { yylval.sval = strdup(yytext); column+=yyleng; return GRT;}
+{LESS} { yylval.sval = strdup(yytext); column+=yyleng; return LESS;}
+{MOD} { yylval.sval = strdup(yytext); column+=yyleng; return MOD;}
+{QUOT} { yylval.sval = strdup(yytext); column+=yyleng; return QUOT;}
+{SHL} { yylval.sval = strdup(yytext); column+=yyleng; return SHL;}
+{SHR} { yylval.sval = strdup(yytext); column+=yyleng; return SHR;}
 
 
 
     /* Assignment */
-"=" { yylval.sval = strdup(yytext); column+=yyleng; return EQ;}
-":=" { yylval.sval = strdup(yytext); column+=yyleng; return INFER_EQ;}
+{INFER_EQ} { yylval.sval = strdup(yytext); column+=yyleng; return INFER_EQ;}
+{ASSGN_OP} { yylval.sval = strdup(yytext); column+=yyleng; return ASSGN_OP;}
 
     /*Paranthesis, Punctuations*/
 
@@ -128,7 +159,7 @@ INTERPRETED_STRING (\"({UNICODE_VALUE}|{BYTE_VALUE})*\")
 {DD}*\.({DD})*/[ ]*[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return FLOAT_VAL;}
 {DD}+\.?({DD})*[eE][+-]?{DD}+/[ ]*[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return FLOAT_VAL;}
 {DD}*\.?({DD})+[eE][+-]?{DD}+/[ ]*[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return FLOAT_VAL;}
-{DD}+/[ ]*[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return INTEGER_VAL;}
+{DD}+/[ ]*[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); /*cout<<"HERE !!!"<<endl;*/ return INTEGER_VAL;}
 0(x|X)[0-9a-fA-F]+/[ ]*[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return INTEGER_VAL;}
 0(o|O)[0-7]+/[ ]*[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return INTEGER_VAL;}
 0(b|B)[0-1]+/[ ]*[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return INTEGER_VAL;}

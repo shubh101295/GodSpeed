@@ -12,9 +12,9 @@ func BinarySearch(x int, arr [1000]int, len int)bool{
 		if ( arr[m]==x ){
 			return true
 		} else if ( arr[m]<x ){
-			l = m;
+			l = m+1;
 		} else {
-			r = m
+			r = m-1
 		}
 
 	}
@@ -26,7 +26,7 @@ func main(){
 	fmt.Scanln(&n)
 	var A[1000] int
 	for i:=0;i<n;i++ {
-		fmt.Scanf("%d",&A[i])
+		fmt.Scanf("%d",&A[i][j][k])
 	}
 
 	var x int

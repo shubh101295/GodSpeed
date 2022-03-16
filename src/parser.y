@@ -25,6 +25,8 @@
 %token <sval> MAKE GOTO FALLTHROUGH TYPE PLUSPLUS MINUSMINUS ANDNOT ELIPSIS ADD SUB NOT XOR MUL AND OR 
 %token <sval> LOGOR LOGAND ISEQ NEQ LESSEQ GRTEQ GRT LESS MOD QUOT SHL SHR EQ INFER_EQ RIGHTPARAN RIGHTBRACE RIGHTSQUARE
 %token <sval> LEFTPARAN LEFTBRACE LEFTSQUARE COLON DOT COMMA RAW_STRING INTERPRETED_STRING BYTE_VAL IDENTIFIER
+%token <sval> ASSGN_OP 
+
 %type <nt> SourceFile Expression
 %type <nt> Block StatementList Statement SimpleStmt EmptyStmt ExpressionStmt IncDecStmt MapType
 %type <nt> Assignment ShortVarDecl Declaration VarSpec PackageName
@@ -33,7 +35,7 @@
 %type <nt> ReturnStmt BreakStmt ContinueStmt GotoStmt FallthroughStmt StructType
 %type <nt> FunctionBody ForStmt RangeClause
 %type <nt> FunctionDecl ConstDecl SwitchStmt ExprSwitchCase ExprSwitchStmt
-%type <nt> Condition  UnaryExpr PrimaryExpr Assign_OP Rel_OP Add_OP Mul_OP Unary_OP
+%type <nt> Condition  UnaryExpr PrimaryExpr
 %type <nt> Selector Index Slice TypeDecl TypeSpecList TypeSpec VarDecl
 %type <nt> TypeAssertion Arguments ExpressionList ArrayType CompositeLit
 %type <nt> String ImportPath SliceType LiteralType FunctionName
@@ -43,11 +45,11 @@
 %type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type BaseType
 %type <nt> QualifiedIdent PointerType IdentifierList AliasDecl TypeDef
 
-%left EQ INFER_EQ
 %left LOGOR
 %left LOGAND
-%left ISEQ NEQ LESSEQ GRTEQ GRT LESS
-%left LEFTBRACE LEFTPARAN LEFTSQUARE RIGHTSQUARE RIGHTPARAN RIGHTBRACE COMMA DOT COLON SCOLON
+%left ISEQ NEQ GRTEQ GRT LESSEQ LESS
+%left ADD SUB OR
+%left MUL QUOT MOD SHL SHR AND ANDNOT XOR
 %%
 
 
@@ -58,34 +60,6 @@ SourceFile:
 	| PackageClause SCOLON TopLevelDeclList {;}
 	| PackageClause SCOLON ImportDeclList TopLevelDeclList {;}
     ;
-
-Rel_OP:
-	ISEQ {;}
-	| NEQ {;}
-	| LESSEQ {;} 
-	| GRTEQ {;}
-	| GRT {;}
-	| LESS {;}
-	;
-
-Mul_OP:
-	MUL {;}
-	| QUOT{;} 
-	| MOD {;}
-	| SHL {;}
-	| SHR {;}
-	| AND {;}
-	| ANDNOT {;}
-	;
-
-Unary_OP:
-	ADD  {;}
-	| SUB {;}
-	| NOT {;}
-	| XOR {;}
-	| MUL {;}
-	| AND {;}
-	;
 
 PackageClause:
 	PACKAGE PackageName {;}
@@ -141,14 +115,14 @@ Condition:
 	;
 
 StatementList:
-	StatementList Statement SCOLON {;}
-	| Statement SCOLON {;}
+	StatementList Statement SCOLON {cout<<"BB\n";}
+	| Statement SCOLON {cout<<"AA\n";}
 	;
 
 Statement:
 	Declaration
-	| LabeledStmt
-	| SimpleStmt
+	| LabeledStmt {cout<<"LabeledStmt:  \n";}
+	| SimpleStmt {cout<<"SimpleStmt:  \n";}
 	| ReturnStmt
 	| BreakStmt
 	| ContinueStmt
@@ -190,8 +164,8 @@ Label:
 
 SimpleStmt:
 	EmptyStmt
-	| ExpressionStmt
-	| IncDecStmt
+	| ExpressionStmt {cout<<"ExpressionStmt: \n";}
+	| IncDecStmt 
 	| Assignment
 	| ShortVarDecl
 	;
@@ -200,7 +174,7 @@ EmptyStmt:{;}
 	;
 
 ExpressionStmt:
-	Expression
+	Expression {cout<<"ExpressionStmt: Expression \n";}
 	;
 
 IncDecStmt:
@@ -209,7 +183,7 @@ IncDecStmt:
 	;
 
 Assignment:
-	ExpressionList Assign_OP ExpressionList
+	ExpressionList ASSGN_OP ExpressionList
 	;
 
 ShortVarDecl:
@@ -229,8 +203,8 @@ VarSpecList:
 
 VarSpec:
 	IdentifierList Type
-	| IdentifierList Type EQ ExpressionList
-	| IdentifierList EQ ExpressionList
+	| IdentifierList Type ASSGN_OP ExpressionList
+	| IdentifierList ASSGN_OP ExpressionList
 	;
 
 ConstDecl:
@@ -246,8 +220,8 @@ ConstSpecList:
 
 ConstSpec:
 	IdentifierList Type
-	| IdentifierList Type EQ ExpressionList
-	| IdentifierList EQ ExpressionList
+	| IdentifierList Type ASSGN_OP ExpressionList
+	| IdentifierList ASSGN_OP ExpressionList
 	;
 
 FunctionBody:
@@ -286,7 +260,7 @@ IdentifierList:
 	;
 
 QualifiedIdent:
-	PackageName DOT IDENTIFIER {;}
+	PackageName DOT IDENTIFIER { cout<<"QualifiedIdent:    "<<$3<<"\n";}
 	;
 
 Receiver:
@@ -312,13 +286,13 @@ Type:
 	;
 
 Operand:	
-	Literal
-	| OperandName
+	Literal {cout<<"Operand:Literal\n";}
+	| OperandName {cout<<"Operand:OperandName\n";}
 	| LEFTPARAN Expression RIGHTPARAN {;}
 	;
 
 OperandName:
-	IDENTIFIER {;}	 
+	IDENTIFIER { cout<<"OperandName:IDENTIFIER "<<$1<<"\n";}	 
 	| QualifiedIdent {;}
 	;
 
@@ -438,52 +412,102 @@ PostStmt:
 RangeClause:
 	RANGE Expression {;}
 	| IdentifierList INFER_EQ RANGE Expression
-	| ExpressionList EQ RANGE Expression
+	| ExpressionList ASSGN_OP RANGE Expression
 	;
-
 Expression:
-	ExpressionOR {;}
-	;
-
-ExpressionOR:
-	ExpressionOR LOGOR ExpressionAND 
-	| ExpressionAND 
-	;
-
-ExpressionAND:
-	ExpressionAND LOGAND ExpressionREL  {;}
-	| ExpressionREL 
-	;
-
-ExpressionREL:
-		ExpressionREL Rel_OP ExpressionADD 
-	| ExpressionADD 
-	;
-
-ExpressionADD:
-	ExpressionADD Add_OP ExpressionMUL 
-	| ExpressionMUL 
-	;
-
-ExpressionMUL:
-	ExpressionMUL Mul_OP PrimaryExpr 
-	| UnaryExpr 
+	Expression MUL Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression QUOT Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression MOD Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression SHL Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression SHR Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression AND Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression ANDNOT Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression ADD Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression SUB Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression OR Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression XOR Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression LOGAND Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression LOGOR Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression ISEQ Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression NEQ Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression GRTEQ Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression GRT Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression LESSEQ Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| Expression LESS Expression {
+		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		}
+	| UnaryExpr {
+		//cout<<"Unary Expr begins from expression" <<endl;
+		}
 	;
 
 UnaryExpr:
- 	PrimaryExpr
- 	| Unary_OP PrimaryExpr
+	MUL UnaryExpr { 
+		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
+		}
+	| AND UnaryExpr { 
+		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
+		}
+	| ADD UnaryExpr { 
+		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
+		}
+	| SUB UnaryExpr { 
+		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
+		}
+	| NOT UnaryExpr { 
+		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
+		}
+	| PrimaryExpr {
+		//cout<<"Primary begins from unary\n";
+		}
+ 	
  	;
 
  PrimaryExpr:
- 	Operand 
- 	| MakeExpr
- 	| PrimaryExpr Selector
- 	| PrimaryExpr Index
- 	| PrimaryExpr Slice
- 	| PrimaryExpr Arguments
- 	| OperandName StructLiteral
-	| PrimaryExpr TypeAssertion
+ 	Operand {cout<<"PrimaryExpr:Operand\n";}
+ 	| MakeExpr {cout<<"PrimaryExpr:MakeExpr\n";}
+ 	| PrimaryExpr Selector {cout<<"PrimaryExpr:Selector\n";}
+ 	| PrimaryExpr Index {cout<<"PrimaryExpr:Index\n";}
+ 	| PrimaryExpr Slice {cout<<"PrimaryExpr:Slice\n";}
+ 	| PrimaryExpr Arguments {cout<<"PrimaryExpr:Arguments\n";}
+ 	| OperandName StructLiteral {cout<<"PrimaryExpr:StructLiteral\n";}
+	| PrimaryExpr TypeAssertion {cout<<"PrimaryExpr:TypeAssertion\n";}
  	;
 
 StructLiteral:
@@ -551,7 +575,7 @@ TypeSpec:
 	;
 
 AliasDecl:
-	IDENTIFIER EQ Type {;}
+	IDENTIFIER ASSGN_OP Type {;}
 	;
 
 TypeDef:
@@ -609,18 +633,6 @@ String:
 	| INTERPRETED_STRING {;}
 	;
 
-Assign_OP :
-	EQ {;}
-	| Add_OP EQ {;} 
-	| Mul_OP EQ {;} 
-	;
-
-Add_OP:
-	ADD {;} 
-	| SUB {;} 
-	| OR {;} 
-	| XOR {;}
-	;
 %%
 
 
@@ -644,5 +656,4 @@ int main (int argc, char **argv) {
 
 
 	
-
 

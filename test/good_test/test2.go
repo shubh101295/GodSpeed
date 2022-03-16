@@ -12,7 +12,7 @@ func main(){
 	fmt.Scanf("%d %d",&a,&b);
 	c = 0
 
-	switch n%12 {
+	switch n%12+382882 {
 		case 0:
 			c = a | b
 		case 1:
@@ -20,7 +20,7 @@ func main(){
 		case 2:
 			c = a ^ b
 		case 3:
-			c = a & b
+			c = a.hdhdh & b
 		case 4:
 			c = a * b
 		case 5:
