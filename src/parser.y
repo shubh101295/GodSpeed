@@ -1,5 +1,8 @@
 %{
+
 	#include<bits/stdc++.h>
+	#include "node.hpp"
+
 	#include "parser.tab.h"
 	using namespace std;
 
@@ -10,6 +13,7 @@
 		fprintf(stderr,"%s\n",s);
 		exit(1);
 	};
+
 %}
 
 %define parse.error verbose
