@@ -1,5 +1,5 @@
 SIT languages
-Sourse - GOlang
+Source - GOlang
 Implementation - C++
 Target - X86
 
