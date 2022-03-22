@@ -1,5 +1,11 @@
+#ifndef _NODE_H
+#define _NODE_H
+
+
 #include<bits/stdc++.h>
+#include "datatypes.hpp"
 using namespace std;
+
 
 
 struct Node;
@@ -26,6 +32,8 @@ struct Node{
 	vector<NodeChildren> current_node_children;
 
 	Node(string _node_name): node_name(_node_name) {};
-	void add_non_terminal_children(Node *_non_terminal_node) 	   {};
-	void add_terminal_children(char *_terminal_string_value)	   {};
+	void add_non_terminal_children(Node *_non_terminal_node);
+	void add_terminal_children(string _terminal_string_value);
 };
+
+#endif

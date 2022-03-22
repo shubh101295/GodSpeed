@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func BinarySearch(x int, arr [1000]int, len int)bool{
+func BinarySearch(x int, arr [1000]int, len int) bool {
 	var l int = 0
 	var r int = len
 

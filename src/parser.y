@@ -2,7 +2,7 @@
 
 	#include<bits/stdc++.h>
 	#include "node.hpp"
-
+	#include "tables.hpp"
 	#include "parser.tab.h"
 	using namespace std;
 
@@ -14,12 +14,16 @@
 		exit(1);
 	};
 
+	SymbolTable* st = new SymbolTable();
+	TypesTable* tt = new TypesTable();
+	BreakLabels* bl = new BreakLabels();
+
 %}
 
 %define parse.error verbose
 
 %union {
-	char* nt;
+	Node* nt;
 	char* sval;
 }
 
@@ -47,7 +51,7 @@
 %type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt ExprCaseClauseList
 %type <nt> PackageClause ImportDeclList ImportDecl ImportSpecList TopLevelDeclList
 %type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type BaseType
-%type <nt> QualifiedIdent PointerType IdentifierList AliasDecl TypeDef
+%type <nt> PointerType IdentifierList AliasDecl TypeDef
 
 %left LOGOR
 %left LOGAND
@@ -59,10 +63,17 @@
 
 
 SourceFile:
-	PackageClause SCOLON {;}
+	PackageClause SCOLON {
+		;}
     | PackageClause SCOLON ImportDeclList {;}
 	| PackageClause SCOLON TopLevelDeclList {;}
-	| PackageClause SCOLON ImportDeclList TopLevelDeclList {;}
+	| PackageClause SCOLON ImportDeclList TopLevelDeclList {
+			// Node* current_node = new Node("SourceFile");
+			// current_node->add_non_terminal_children($1);
+			// current_node->add_non_terminal_children($3);
+			// current_node->add_non_terminal_children($4);
+			// $$ = current_node;
+			;}
     ;
 
 PackageClause:
@@ -263,10 +274,6 @@ IdentifierList:
 	| IDENTIFIER {;}
 	;
 
-QualifiedIdent:
-	PackageName DOT IDENTIFIER { cout<<"QualifiedIdent:    "<<$3<<"\n";}
-	;
-
 Receiver:
 	Parameters
 	;
@@ -296,8 +303,7 @@ Operand:
 	;
 
 OperandName:
-	IDENTIFIER { cout<<"OperandName:IDENTIFIER "<<$1<<"\n";}	 
-	| QualifiedIdent {;}
+	IDENTIFIER { cout<<"OperandName:IDENTIFIER "<<$1<<"\n";}	
 	;
 
 LiteralValue:
@@ -337,7 +343,13 @@ ReturnStmt:
 
 
 BreakStmt:
-	BREAK {;}
+	BREAK {
+		$$ = new Node("BreakStmt");
+		// current_node->add_non_terminal_children($1);
+		// current_node->add_non_terminal_children($3);
+		// current_node->add_non_terminal_children($4);
+		// $$ = current_node;
+	}
 	| BREAK Label {;}
 	;
 
