@@ -11,6 +11,7 @@ enum dataTypes{
 	_MAP,
 	_NULL, 
 	_POINTER,
+	_SLICE,
 	_STRUCT
 };
 
@@ -76,6 +77,16 @@ class PointerType: public DataType{
 	DataType* copyClass();
 	PointerType(DataType* _type_of_address_pointing_to): type_of_address_pointing_to(_type_of_address_pointing_to) 
 			{ current_data_type=_POINTER; };
+};
+
+class SliceType: public DataType{
+	DataType* slice_base;
+
+	string getDataType();
+	DataType* copyClass();
+	SliceType(DataType* _slice_base): slice_base(_slice_base) {
+		current_data_type=_SLICE;
+	}
 };
 
 class StructType: public DataType{

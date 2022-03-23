@@ -49,6 +49,12 @@ string PointerType::getDataType(){
 	return current_type;
 }
 
+string SliceType::getDataType(){
+	string current_type = "[ ] ";
+	current_type+=slice_base->getDataType();
+	return current_type;
+}
+
 string StructType::getDataType(){
 	string current_type = "struct { ";
 	auto it = data_of_struct.begin();
