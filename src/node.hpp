@@ -10,6 +10,14 @@ using namespace std;
 
 struct Node;
 struct NodeChildren;
+struct NodeData;
+
+struct NodeData {
+	string data_name;
+	NodeData *next_data;
+
+	NodeData(string _data_name): data_name(_data_name), next_data(NULL) {};
+};
 
 struct NodeChildren {
 	bool is_terminal_node;
@@ -30,6 +38,7 @@ struct NodeChildren {
 struct Node{
 	string node_name;
 	vector<NodeChildren> current_node_children;
+	NodeData* current_node_data;
 
 	Node(string _node_name): node_name(_node_name) {};
 	void add_non_terminal_children(Node *_non_terminal_node);
