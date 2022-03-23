@@ -1,4 +1,5 @@
 %{
+    #include "node.hpp"
     #include "parser.tab.h"
     #include<iostream>
     using namespace std;

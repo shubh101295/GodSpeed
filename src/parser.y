@@ -3,6 +3,7 @@
 	#include<bits/stdc++.h>
 	#include "node.hpp"
 	#include "tables.hpp"
+	#include "datatypes.hpp"
 	#include "parser.tab.h"
 	using namespace std;
 
@@ -13,6 +14,7 @@
 		fprintf(stderr,"%s\n",s);
 		exit(1);
 	};
+	Node* teempppp = new Node("werty");
 
 	SymbolTable* st = new SymbolTable();
 	TypesTable* tt = new TypesTable();
@@ -21,6 +23,9 @@
 %}
 
 %define parse.error verbose
+%code requires{
+	#include "node.hpp"
+}
 
 %union {
 	Node* nt;
