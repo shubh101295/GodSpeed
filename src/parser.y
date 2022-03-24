@@ -56,7 +56,7 @@
 %type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt ExprCaseClauseList
 %type <nt> PackageClause ImportDeclList ImportDecl ImportSpecList TopLevelDeclList
 %type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type BaseType
-%type <nt> PointerType IdentifierList AliasDecl TypeDef InitStmt PostStmt
+%type <nt> PointerType ForClause IdentifierList AliasDecl TypeDef InitStmt PostStmt
 
 %left LOGOR
 %left LOGAND
@@ -481,20 +481,73 @@ IfStmt:
 // remaining
 ForStmt:
 	FOR Block {;}
-	| FOR ForClause Block {;}
-	| FOR Condition Block {;}
-	| FOR RangeClause Block {;}
+	| FOR ForClause Block {
+		Node* curr = new Node("ForClause");
+		curr->add_non_terminal_children($2);
+		curr->add_non_terminal_children($3);
+
+		curr->current_node_data = new NodeData("ForClause");
+		curr->current_node_data->node_child = $2->current_node_data;
+		curr->current_node_data->next_data = new NodeData("Block");
+		curr->current_node_data->next_data->node_child = $3->current_node_data;
+		
+		$$ = curr;
+	}
+	| FOR Condition Block {
+		Node* curr = new Node("ForClause");
+		curr->add_non_terminal_children($2);
+		curr->add_non_terminal_children($3);
+
+		curr->current_node_data = new NodeData("Condition");
+		curr->current_node_data->node_child = $2->current_node_data;
+		curr->current_node_data->next_data = new NodeData("Block");
+		curr->current_node_data->next_data->node_child = $3->current_node_data;
+		
+		$$ = curr;
+	}
+	| FOR RangeClause Block {	
+		Node* curr = new Node("ForClause");
+		curr->add_non_terminal_children($2);
+		curr->add_non_terminal_children($3);
+
+		curr->current_node_data = new NodeData("RangeClause");
+		curr->current_node_data->node_child = $2->current_node_data;
+		curr->current_node_data->next_data = new NodeData("Block");
+		curr->current_node_data->next_data->node_child = $3->current_node_data;
+		
+		$$ = curr;
+	}
+
 	;
-// remaining
+
 ForClause:
-	InitStmt SCOLON SCOLON PostStmt
-	| InitStmt SCOLON Condition SCOLON PostStmt
+	InitStmt SCOLON SCOLON PostStmt {
+		Node* curr = new Node("ForClause");
+		curr->add_non_terminal_children($1);
+		curr->add_non_terminal_children($4);
+
+		curr->current_node_data = $1->current_node_data;
+		curr->current_node_data->next_data = $4->current_node_data;
+		
+		$$ = curr;
+	}
+	| InitStmt SCOLON Condition SCOLON PostStmt {
+		Node* curr = new Node("ForClause");
+		curr->add_non_terminal_children($1);
+		curr->add_non_terminal_children($3);
+		curr->add_non_terminal_children($5);
+
+		curr->current_node_data = $1->current_node_data;
+		curr->current_node_data->next_data = $3->current_node_data;
+		curr->current_node_data->next_data->next_data = $5->current_node_data;
+		
+		$$ = curr;
+	}
 	;
 
 InitStmt:
 	SimpleStmt{
 		Node* curr = new Node("InitStmt");
-		$$ = curr;
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
@@ -508,7 +561,7 @@ PostStmt:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
-		// $$ = curr;
+		$$ = curr;
 	} 
 	;
 
@@ -518,6 +571,7 @@ RangeClause:
 	| IdentifierList INFER_EQ RANGE Expression
 	| ExpressionList ASSGN_OP RANGE Expression
 	;
+
 Expression:
 	Expression MUL Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
