@@ -1,4 +1,3 @@
-
 %{
 
 	#include<bits/stdc++.h>
@@ -323,50 +322,120 @@ SliceType:
 	;
 
 ElementList:
-	KeyedElement
-	| ElementList COMMA KeyedElement
+	KeyedElement {
+		Node* curr = new Node("ElementList");
+		curr->add_non_terminal_children($1);
+		curr->current_node_data = $1->current_node_data;
+		curr->current_type = $1->current_type;
+		$$ = curr;
+	}
+	| ElementList COMMA KeyedElement {
+		Node* curr = new Node("ElementList");
+		curr->add_non_terminal_children($1);
+		curr->add_non_terminal_children($3);
+
+		curr->current_node_data = $1->current_node_data;
+		curr->current_type = $1->current_type;
+
+		last_node(curr->current_node_data)->next = $3->current_node_data;
+		last_node(curr->current_type)->next = $3->current_type;
+		$$ = curr;
+	}
 	;
 
 KeyedElement:
-	Element
-	| Key COLON Element
+	Element {
+		Node* curr = new Node("KeyedElement");
+		curr->add_non_terminal_children($1);
+		curr->current_node_data = $1->current_node_data;
+		curr->current_type = $1->current_type;
+		$$ = curr;
+	}
+	| Key COLON Element {
+		Node* curr = new Node("KeyedElement");
+		curr->add_non_terminal_children($1);
+		curr->add_non_terminal_children($3);
+		$$ = curr;
+	}
 	;
 
 Key:
-	Expression
-	| LiteralValue
+	Expression {
+		Node* curr = new Node("Key");
+		curr->add_non_terminal_children($1);
+		$$ = curr;
+	}
+	| LiteralValue {
+		Node* curr = new Node("Key");
+		curr->add_non_terminal_children($1);
+		$$ = curr;
+	}
 	;
 
 Element:
-	Expression
-	| LiteralValue
+	Expression {
+		Node* curr = new Node("Element");
+		curr->add_non_terminal_children($1);
+		curr->current_node_data = $1->current_node_data;
+		curr->current_type = $1->current_type;
+		$$ = curr;
+	}
+	| LiteralValue {
+		Node* curr = new Node("Element");
+		curr->add_non_terminal_children($1);
+		curr->current_node_data = $1->current_node_data;
+		curr->current_type = $1->current_type;
+		$$ = curr;
+	}
 	;
-
+// remaining
 ReturnStmt:
 	RETURN {;}
 	| RETURN ExpressionList {;}
 	;
 
-
+// remaining
 BreakStmt:
 	BREAK {
-		$$ = new Node("BreakStmt");
-		// current_node->add_non_terminal_children($1);
-		// current_node->add_non_terminal_children($3);
-		// current_node->add_non_terminal_children($4);
-		// $$ = current_node;
+		curr = new Node("BreakStmt");
+		curr->current_node_data = new NodeData (string($1));
+		// break labels
+		$$ = curr;
 	}
-	| BREAK Label {;}
+	| BREAK Label {
+		curr = new Node("BreakStmt");
+		curr->add_non_terminal_children($2);
+		curr->current_node_data = new NodeData (string($1));
+		curr->current_node_data->node_child = $2->current_node_data;
+		$$ = curr;
+	}
 	;
 
 
+// remaining (label:data->child)
 ContinueStmt:
-	CONTINUE {;}
-	| CONTINUE Label {;}
+	CONTINUE {
+		Node* curr = new Node("ContinueStmt");
+		curr->current_node_data = new NodeData(string($1))
+		$$ = curr;
+	}
+	| CONTINUE Label {
+		Node* curr = new Node("ContinueStmt");
+		curr->add_non_terminal_children($2);
+		curr->current_node_data = new NodeData(string($1))
+		curr->current_node_data->node_child = $2->current_node_data;
+		$$ = curr;
+	}
 	;
 
 GotoStmt:
-	GOTO Label {;}
+	GOTO Label {
+		Node* curr = new Node("GotoStmt");
+		curr->add_non_terminal_children($2);
+		curr->current_node_data = new NodeData(string($1))
+		curr->current_node_data->node_child = $2->current_node_data;
+		$$ = curr;
+	}
 	;
 
 SwitchStmt:
@@ -521,7 +590,7 @@ UnaryExpr:
  	
  	;
 
-// remaining
+// remaining isValidMemberon()
  PrimaryExpr:
  	Operand  {
 		Node* curr = new Node("PrimaryExpr");
@@ -537,7 +606,13 @@ UnaryExpr:
 		curr->current_type = $1->current_type;
 		$$ = curr;
 	}
- 	| PrimaryExpr Selector {cout<<"PrimaryExpr:Selector\n";}
+ 	| PrimaryExpr Selector {
+		Node* curr = new Node("PrimaryExpr");
+		curr->add_non_terminal_children($1);
+		curr->add_non_terminal_children($2);
+		curr->current_type = isValidMemberon($1->current_type)
+		$$ = curr;
+	}
  	| PrimaryExpr Index {cout<<"PrimaryExpr:Index\n";}
  	| PrimaryExpr Slice {
 		Node* curr = new Node("PrimaryExpr");
