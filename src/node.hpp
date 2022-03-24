@@ -15,8 +15,11 @@ struct NodeData;
 struct NodeData {
 	string data_name;
 	NodeData *next_data;
+	NodeData *node_child;
+	bool value;
 
-	NodeData(string _data_name): data_name(_data_name), next_data(NULL) {};
+	NodeData(string _data_name): data_name(_data_name), next_data(NULL), _value(false) {};
+	NodeData* last_next_child();
 };
 
 struct NodeChildren {
@@ -40,9 +43,12 @@ struct Node{
 	vector<NodeChildren> current_node_children;
 	NodeData* current_node_data;
 	DataType* current_type;
+
 	Node(string _node_name): node_name(_node_name) {};
 	void add_non_terminal_children(Node *_non_terminal_node);
 	void add_terminal_children(string _terminal_string_value);
+	NodeData* last_current_node_data();
+	DataType* last_current_type();
 };
 
 #endif

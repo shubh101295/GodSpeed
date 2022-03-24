@@ -19,7 +19,8 @@ class DataType {
 public:
 
 	dataTypes current_data_type;
-
+	DataType* next_type;
+	
 	DataType* copyClass() { return new DataType();}; 
 	string getDataType() {return "NO TYPE";};
 };
@@ -49,11 +50,11 @@ public:
 class FunctionType: public DataType{
 public:
 	vector<DataType *> argument_types;
-	DataType * return_type;
+	vector<DataType *> return_type;
 	
 	string getDataType();
 	DataType* copyClass();
-	FunctionType(vector<DataType *> _argument_types, DataType * _return_type):
+	FunctionType(vector<DataType *> _argument_types, vector<DataType *> _return_type):
 				argument_types(_argument_types), return_type(_return_type) 
 				{ current_data_type=_FUNCTION; };
 };

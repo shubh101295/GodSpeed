@@ -29,14 +29,18 @@ DataType *BasicType::copyClass() {
 
 string FunctionType::getDataType(){
 	string current_type = " func(";
-	for(int i=0;i<argument_types.size();i++)
+	for(int i=0;i<argument_types.size()-1;i++)
 	{
 		current_type+=argument_types[i]->getDataType()+", ";
 	}
 	if(argument_types.size()) current_type+=argument_types[argument_types.size()-1]->getDataType();
-	current_type+=") ";
-	current_type+=return_type->getDataType();
-	return current_type;
+	current_type+=") (";
+	for(int i=0;i<return_type.size()-1;i++)
+	{
+		current_type+=return_type[i]->getDataType()+", ";
+	}
+	if(return_type.size()) current_type+=return_type[return_type.size()-1]->getDataType();
+	return current_type+")";
 }
 
 DataType *FunctionType::copyClass() {

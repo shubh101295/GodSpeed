@@ -40,13 +40,20 @@ void SymbolTable::exit_latest_scope(){
 	update_current_scope();
 }
 
+void SymbolTable::output_csv_for_functions(string name_of_csv_file){
+	ofstream my_function_dump(name_of_csv_file);
+	my_function_dump<<"Scope,    variable_name,    variable_type\n";
+
+
+}
+
 
 map<pair<string,string>, DataType*> SymbolTable::get_symbol_table_data() {
 	return symbol_table;
 }
 
-bool SymbolTable::add_in_symbol_table(string new_variable,DataType* new_datatype) {
-	pair<string,string> new_key = {current_scope,new_variable};
+bool SymbolTable::add_in_symbol_table(pair<string,string> new_key,DataType* new_datatype) {
+	// pair<string,string> new_key = {current_scope,new_variable};
 	// auto new_key  = {"A","B"};
 	if(symbol_table.find(new_key)==symbol_table.end())
 	{
@@ -73,8 +80,8 @@ int SymbolTable::scope_level(string variable_name){
 	return -1;
 }
 
-DataType * SymbolTable::get_value_from_key(string _scope,string _variable_name){
-	pair<string,string> new_key = {_scope,_variable_name};
+DataType * SymbolTable::get_value_from_key(string _variable_name){
+	pair<string,string> new_key = {current_scope,_variable_name};
 	if(symbol_table.find(new_key)!=symbol_table.end())
 	{
 		return symbol_table[new_key];

@@ -25,10 +25,10 @@ public:
 	void           enter_new_scope();
 	void 		   exit_latest_scope();
 	int            scope_level(string variable_name);
-	bool           add_in_symbol_table(string new_variable,DataType* new_datatype);
+	bool           add_in_symbol_table(pair<string,string> new_variable,DataType* new_datatype);
 	string         get_current_scope();
 	map<pair<string,string>, DataType*>         get_symbol_table_data();
-	DataType*      get_value_from_key(string _scope,string _variable_name);
+	DataType*      get_value_from_key(string _variable_name);
 	DataType*      get_type(string variable_name);
 
 };
