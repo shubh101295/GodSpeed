@@ -2296,8 +2296,8 @@ yyreduce:
 		curr->current_node_data = (yyvsp[-2].nt)->current_node_data;
 		curr->current_type = (yyvsp[-2].nt)->current_type;
 
-		last_node(curr->current_node_data)->next = (yyvsp[0].nt)->current_node_data;
-		last_node(curr->current_type)->next = (yyvsp[0].nt)->current_type;
+		curr->last_current_node_data()->next_data = (yyvsp[0].nt)->current_node_data;
+		curr->last_current_type()->next_type = (yyvsp[0].nt)->current_type;
 		(yyval.nt) = curr;
 	}
 #line 2304 "parser.tab.c" /* yacc.c:1646  */
@@ -3162,8 +3162,8 @@ yyreduce:
 		curr->current_node_data = (yyvsp[-2].nt)->current_node_data;
 		curr->current_type = (yyvsp[-2].nt)->current_type;
 
-		last_node(curr->current_node_data)->next_data = (yyvsp[0].nt)->current_node_data;
-		last_node(curr->current_type)->next_type = (yyvsp[0].nt)->current_type;
+		curr->last_current_node_data()->next_data = (yyvsp[0].nt)->current_node_data;
+		curr->last_current_type()->next_type = (yyvsp[0].nt)->current_type;
 
 		(yyval.nt) = curr;
 	}

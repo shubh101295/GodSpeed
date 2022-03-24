@@ -337,8 +337,8 @@ ElementList:
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
 
-		last_node(curr->current_node_data)->next = $3->current_node_data;
-		last_node(curr->current_type)->next = $3->current_type;
+		curr->last_current_node_data()->next_data = $3->current_node_data;
+		curr->last_current_type()->next_type = $3->current_type;
 		$$ = curr;
 	}
 	;
@@ -831,8 +831,8 @@ ExpressionList:
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
 
-		last_node(curr->current_node_data)->next_data = $3->current_node_data;
-		last_node(curr->current_type)->next_type = $3->current_type;
+		curr->last_current_node_data()->next_data = $3->current_node_data;
+		curr->last_current_type()->next_type = $3->current_type;
 
 		$$ = curr;
 	}
