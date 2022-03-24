@@ -1208,7 +1208,7 @@ ExprSwitchStmt:
 ExprCaseClauseList:
 	ExprCaseClauseList ExprCaseClause {;}
 	| ExprCaseClause {;}
-
+	;
 ExprCaseClause:
 	ExprSwitchCase COLON StatementList {;}
 	;
@@ -1726,6 +1726,7 @@ ArrayType:
 		 }
 		 $$ = curr;
 		 }
+		 ;
 	
 
 Literal:
