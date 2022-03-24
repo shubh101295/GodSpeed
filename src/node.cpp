@@ -1,6 +1,5 @@
 #include<bits/stdc++.h>
 #include "node.hpp"
-#include "datatypes.hpp"
 using namespace std;
 
 #define pb push_back
@@ -13,31 +12,4 @@ void Node::add_non_terminal_children(Node *_non_terminal_node){
 void Node::add_terminal_children(string _terminal_string_value){
 	NodeChildren* current_child = new NodeChildren(_terminal_string_value);
 	current_node_children.pb(*current_child);
-}
-
-NodeData* Node::last_current_node_data(){
-	NodeData* temp = current_node_data;
-	while(temp->next_data!=NULL)
-	{
-		temp = temp->next_data;
-	}
-	return temp;
-}
-
-DataType* Node::last_current_type(){
-	DataType* temp = current_type;
-	while(temp->next_type!=NULL)
-	{
-		temp = temp->next_type;
-	}
-	return temp;
-}
-
-NodeData* NodeData::last_next_child(){
-	NodeData* temp = node_child;
-	while(temp->next_data!=NULL)
-	{
-		temp = temp->next_data;
-	}
-	return temp;
 }
