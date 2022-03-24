@@ -11,18 +11,22 @@ enum dataTypes{
 	_MAP,
 	_NULL, 
 	_POINTER,
+	_SLICE,
 	_STRUCT
 };
 
 class DataType {
 public:
-	dataTypes current_data_type;
 
-	DataType* copyClass(); 
-	string getDataType() {return "ERROR";};
+	dataTypes current_data_type;
+	DataType* next_type;
+	
+	DataType* copyClass() { return new DataType();}; 
+	string getDataType() {return "NO TYPE";};
 };
 
 class ArrayType: public DataType{
+public:
 	DataType* array_index_type;
 	int array_size;
 
@@ -35,6 +39,7 @@ class ArrayType: public DataType{
 };
 
 class BasicType: public DataType{
+public:
 	string base_type;
 
 	string getDataType();
@@ -43,17 +48,19 @@ class BasicType: public DataType{
 };
 
 class FunctionType: public DataType{
+public:
 	vector<DataType *> argument_types;
-	DataType * return_type;
+	vector<DataType *> return_type;
 	
 	string getDataType();
 	DataType* copyClass();
-	FunctionType(vector<DataType *> _argument_types, DataType * _return_type):
+	FunctionType(vector<DataType *> _argument_types, vector<DataType *> _return_type):
 				argument_types(_argument_types), return_type(_return_type) 
 				{ current_data_type=_FUNCTION; };
 };
 
 class MapType: public DataType{
+public:
 	DataType* key_datatype;
 	DataType* value_datatype;
 	
@@ -64,12 +71,14 @@ class MapType: public DataType{
 };
 
 class NullType: public DataType{
+public:
 	string getDataType();
 	DataType* copyClass();
 	NullType() { current_data_type=_NULL; };	
 };
 
 class PointerType: public DataType{
+public:
 	DataType* type_of_address_pointing_to;
 
 	string getDataType();
@@ -78,7 +87,19 @@ class PointerType: public DataType{
 			{ current_data_type=_POINTER; };
 };
 
+class SliceType: public DataType{
+public:
+	DataType* slice_base;
+
+	string getDataType();
+	DataType* copyClass();
+	SliceType(DataType* _slice_base): slice_base(_slice_base) {
+		current_data_type=_SLICE;
+	}
+};
+
 class StructType: public DataType{
+public:
 	map<string, DataType*> data_of_struct;
 
 	string getDataType();
