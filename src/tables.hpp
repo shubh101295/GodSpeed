@@ -24,6 +24,7 @@ public:
 	};
 	void           enter_new_scope();
 	void 		   exit_latest_scope();
+	void 		   output_csv_for_functions(string name_of_csv_file);
 	int            scope_level(string variable_name);
 	bool           add_in_symbol_table(pair<string,string> new_variable,DataType* new_datatype);
 	string         get_current_scope();
