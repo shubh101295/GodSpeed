@@ -394,16 +394,16 @@ ReturnStmt:
 	| RETURN ExpressionList {;}
 	;
 
-// remaining
+// remaining break labels
 BreakStmt:
 	BREAK {
-		curr = new Node("BreakStmt");
+		Node* curr = new Node("BreakStmt");
 		curr->current_node_data = new NodeData (string($1));
 		// break labels
 		$$ = curr;
 	}
 	| BREAK Label {
-		curr = new Node("BreakStmt");
+		Node* curr = new Node("BreakStmt");
 		curr->add_non_terminal_children($2);
 		curr->current_node_data = new NodeData (string($1));
 		curr->current_node_data->node_child = $2->current_node_data;
@@ -416,13 +416,13 @@ BreakStmt:
 ContinueStmt:
 	CONTINUE {
 		Node* curr = new Node("ContinueStmt");
-		curr->current_node_data = new NodeData(string($1))
+		curr->current_node_data = new NodeData(string($1));
 		$$ = curr;
 	}
 	| CONTINUE Label {
 		Node* curr = new Node("ContinueStmt");
 		curr->add_non_terminal_children($2);
-		curr->current_node_data = new NodeData(string($1))
+		curr->current_node_data = new NodeData(string($1));
 		curr->current_node_data->node_child = $2->current_node_data;
 		$$ = curr;
 	}
@@ -432,16 +432,16 @@ GotoStmt:
 	GOTO Label {
 		Node* curr = new Node("GotoStmt");
 		curr->add_non_terminal_children($2);
-		curr->current_node_data = new NodeData(string($1))
+		curr->current_node_data = new NodeData(string($1));
 		curr->current_node_data->node_child = $2->current_node_data;
 		$$ = curr;
 	}
 	;
-
+// remaining
 SwitchStmt:
 	ExprSwitchStmt
 	;
-
+// remaining
 ExprSwitchStmt:
 	SWITCH LEFTBRACE RIGHTBRACE {;}
 	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE {;}
@@ -452,24 +452,24 @@ ExprSwitchStmt:
 	| SWITCH Expression LEFTBRACE ExprCaseClauseList RIGHTBRACE {;}
 	| SWITCH SimpleStmt SCOLON Expression LEFTBRACE ExprCaseClauseList RIGHTBRACE {;}
 	;
-
+// remaining
 ExprCaseClauseList:
 	ExprCaseClauseList ExprCaseClause {;}
 	| ExprCaseClause {;}
-
+// remaining
 ExprCaseClause:
 	ExprSwitchCase COLON StatementList {;}
 	;
-
+// remaining
 ExprSwitchCase:
 	CASE ExpressionList {;}
 	| DEFAULT {;}
 	;
-
+// remaining
 FallthroughStmt:
 	FALLTHROUGH {;}
 	;
-
+// remaining
 IfStmt:
 	IF Expression Block {;}
 	|IF SimpleStmt SCOLON Expression Block {;}
@@ -478,28 +478,40 @@ IfStmt:
 	|IF SimpleStmt SCOLON Expression Block ELSE IfStmt {;}
 	|IF SimpleStmt SCOLON Expression Block ELSE Block {;}
 	;
-
+// remaining
 ForStmt:
 	FOR Block {;}
 	| FOR ForClause Block {;}
 	| FOR Condition Block {;}
 	| FOR RangeClause Block {;}
 	;
-
+// remaining
 ForClause:
 	InitStmt SCOLON SCOLON PostStmt
 	| InitStmt SCOLON Condition SCOLON PostStmt
 	;
 
 InitStmt:
-	SimpleStmt
+	SimpleStmt{
+		Node* curr = new Node("InitStmt");
+		curr->add_non_terminal_children($1);
+		curr->current_type = $1->current_type;
+		curr->current_node_data = $1->current_node_data;
+		// $$ = curr;
+	} 
 	;
 
 PostStmt:
-	SimpleStmt
+	SimpleStmt{
+		Node* curr = new Node("PostStmt");
+		curr->add_non_terminal_children($1);
+		curr->current_type = $1->current_type;
+		curr->current_node_data = $1->current_node_data;
+		// $$ = curr;
+	} 
 	;
 
-
+// remaining
 RangeClause:
 	RANGE Expression {;}
 	| IdentifierList INFER_EQ RANGE Expression
@@ -625,6 +637,7 @@ UnaryExpr:
 		curr->add_non_terminal_children($1);
 		curr->add_non_terminal_children($2)
 		$$ = curr;
+		// remaining
 	}
  	| OperandName StructLiteral {cout<<"PrimaryExpr:StructLiteral\n";}
 	| PrimaryExpr TypeAssertion {
@@ -726,7 +739,6 @@ Slice:
 	}
 	 ;
 
-// remaining (child)
 MakeExpr:
 	MAKE LEFTPARAN Type COMMA Expression COMMA Expression RIGHTPARAN {
 		Node* curr = new Node("MakeExpr");
@@ -736,6 +748,8 @@ MakeExpr:
 
 		curr->current_type = $3->current_type;
 		curr->current_node_data = new NodeData("Make");
+		curr->current_node_data->node_child = $5->current_node_data;
+		curr->current_node_data->node_child->next_data = $7->current_node_data;
 		$$ = curr;
 	}
 	| MAKE LEFTPARAN Type COMMA Expression RIGHTPARAN {
@@ -745,6 +759,7 @@ MakeExpr:
 
 		curr->current_type = $3->current_type;
 		curr->current_node_data = new NodeData("Make");
+		curr->current_node_data->node_child = $5->current_node_data;
 		$$ = curr;
 	}
 	| MAKE LEFTPARAN Type RIGHTPARAN {
@@ -798,7 +813,6 @@ Arguments:
 		$$ = curr;}
 	;
 	
-// remaining
 ExpressionList: 
 	Expression {
 		Node* curr = new Node("ExpressionList");
@@ -814,8 +828,11 @@ ExpressionList:
 		curr->add_non_terminal_children($1);
 		curr->add_non_terminal_children($3);
 
-		curr->current_node_data = $3->current_node_data;
-		curr->current_type = $3->current_type;
+		curr->current_node_data = $1->current_node_data;
+		curr->current_type = $1->current_type;
+
+		last_node(curr->current_node_data)->next_data = $3->current_node_data;
+		last_node(curr->current_type)->next_type = $3->current_type;
 
 		$$ = curr;
 	}
@@ -912,7 +929,6 @@ FieldDeclList:
 	}
 	;
 
-// Remaining
  FieldDecl:
 	IdentifierList Type String {
 		Node* curr = new Node("FieldDecl");
@@ -921,18 +937,39 @@ FieldDeclList:
 		curr->add_non_terminal_children($3);
 
 		DataType* tp = $2->current_type;
-//		tp->next = NULL;
+		tp->next_type = NULL;
 
 		NodeData* lp = $1->current_node_data;
-		
+		map< string, DataType*> m;
 
-
+		while(lp != NULL) {
+            m[lp->data_name] = tp->copyClass();
+            lp = lp->next_data;
+        }
+		curr->current_type = new StructType(m);
 		$$ = curr;
 		}
-	| IdentifierList Type
+	| IdentifierList Type {
+		Node* curr = new Node("FieldDecl");
+		curr->add_non_terminal_children($1);
+		curr->add_non_terminal_children($2);
+
+		DataType* tp = $2->current_type;
+		tp->next_type = NULL;
+
+		NodeData* lp = $1->current_node_data;
+		map< string, DataType*> m;
+
+		while(lp != NULL) {
+            m[lp->data_name] = tp->copyClass();
+            lp = lp->next_data;
+        }
+		curr->current_type = new StructType(m);
+		$$ = curr;
+		}
 	;
 
-// remaining (data->name)
+
 PointerType:
 	MUL BaseType {
 		Node* curr = new Node("PointerType");
@@ -942,6 +979,11 @@ PointerType:
 		curr->current_type = $2->current_type;
 		curr->current_node_data = $2->current_node_data;
 
+		if($2->current_type->getDataType() == "NO TYPE"){
+			$2->current_type = new BasicType($2->current_node_data->data_name);
+		}
+
+		curr->current_type = new PointerType($2->current_type->copyClass());
 
 		$$ = curr;
 	} 
