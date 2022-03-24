@@ -59,7 +59,6 @@ public:
 };
 
 class MapType: public DataType{
-public:
 	DataType* key_datatype;
 	DataType* value_datatype;
 	
@@ -70,14 +69,12 @@ public:
 };
 
 class NullType: public DataType{
-public:
 	string getDataType();
 	DataType* copyClass();
 	NullType() { current_data_type=_NULL; };	
 };
 
 class PointerType: public DataType{
-public:
 	DataType* type_of_address_pointing_to;
 
 	string getDataType();
@@ -87,7 +84,6 @@ public:
 };
 
 class SliceType: public DataType{
-public:
 	DataType* slice_base;
 
 	string getDataType();
@@ -98,7 +94,6 @@ public:
 };
 
 class StructType: public DataType{
-public:
 	map<string, DataType*> data_of_struct;
 
 	string getDataType();

@@ -39,7 +39,7 @@ struct Node{
 	string node_name;
 	vector<NodeChildren> current_node_children;
 	NodeData* current_node_data;
-	DataType* current_type;
+	DataT
 	Node(string _node_name): node_name(_node_name) {};
 	void add_non_terminal_children(Node *_non_terminal_node);
 	void add_terminal_children(string _terminal_string_value);

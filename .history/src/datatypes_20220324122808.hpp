@@ -25,7 +25,6 @@ public:
 };
 
 class ArrayType: public DataType{
-public:
 	DataType* array_index_type;
 	int array_size;
 
@@ -38,7 +37,6 @@ public:
 };
 
 class BasicType: public DataType{
-public:
 	string base_type;
 
 	string getDataType();
@@ -47,7 +45,6 @@ public:
 };
 
 class FunctionType: public DataType{
-public:
 	vector<DataType *> argument_types;
 	DataType * return_type;
 	
@@ -59,7 +56,6 @@ public:
 };
 
 class MapType: public DataType{
-public:
 	DataType* key_datatype;
 	DataType* value_datatype;
 	
@@ -70,14 +66,12 @@ public:
 };
 
 class NullType: public DataType{
-public:
 	string getDataType();
 	DataType* copyClass();
 	NullType() { current_data_type=_NULL; };	
 };
 
 class PointerType: public DataType{
-public:
 	DataType* type_of_address_pointing_to;
 
 	string getDataType();
@@ -87,7 +81,6 @@ public:
 };
 
 class SliceType: public DataType{
-public:
 	DataType* slice_base;
 
 	string getDataType();
@@ -98,7 +91,6 @@ public:
 };
 
 class StructType: public DataType{
-public:
 	map<string, DataType*> data_of_struct;
 
 	string getDataType();

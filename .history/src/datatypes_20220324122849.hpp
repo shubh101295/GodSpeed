@@ -98,7 +98,6 @@ public:
 };
 
 class StructType: public DataType{
-public:
 	map<string, DataType*> data_of_struct;
 
 	string getDataType();

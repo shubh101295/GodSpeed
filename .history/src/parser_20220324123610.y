@@ -795,7 +795,7 @@ BasicLit:
 	| String {
 		 Node* curr = new Node("BasicLit");
 		 curr->add_non_terminal_children($1);
-		 curr->current_node_data = $1->current_node_data;
+		 curr->current_node_data = $1->cu;
 		 curr->current_type = new BasicType("string");
 		 $$ = curr;
 		 }

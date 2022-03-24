@@ -87,7 +87,6 @@ public:
 };
 
 class SliceType: public DataType{
-public:
 	DataType* slice_base;
 
 	string getDataType();
@@ -98,7 +97,6 @@ public:
 };
 
 class StructType: public DataType{
-public:
 	map<string, DataType*> data_of_struct;
 
 	string getDataType();

@@ -727,6 +727,8 @@ FieldDeclList:
 		
 
 
+		curr->current_node_data = new NodeData($1);
+		curr->current_type = new BasicType("int");
 		$$ = curr;
 		}
 	| IdentifierList Type
@@ -747,7 +749,7 @@ ArrayType:
 		 curr->add_non_terminal_children($2);
 		 curr->add_non_terminal_children($4);
 		 if($2->current_type->getDataType() == "int"){
-//			 curr->current_type = new ArrayType
+			 curr->current_type = new ArrayType
 		 }
 		 $$ = curr;
 		 }
@@ -795,7 +797,7 @@ BasicLit:
 	| String {
 		 Node* curr = new Node("BasicLit");
 		 curr->add_non_terminal_children($1);
-		 curr->current_node_data = $1->current_node_data;
+		 curr->current_node_data = new NodeData(string($1));
 		 curr->current_type = new BasicType("string");
 		 $$ = curr;
 		 }

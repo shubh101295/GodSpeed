@@ -73,11 +73,11 @@ SourceFile:
     | PackageClause SCOLON ImportDeclList {;}
 	| PackageClause SCOLON TopLevelDeclList {;}
 	| PackageClause SCOLON ImportDeclList TopLevelDeclList {
-			Node* current_node = new Node("SourceFile");
-			current_node->add_non_terminal_children($1);
-			current_node->add_non_terminal_children($3);
-			current_node->add_non_terminal_children($4);
-			$$ = current_node;
+			// Node* current_node = new Node("SourceFile");
+			// current_node->add_non_terminal_children($1);
+			// current_node->add_non_terminal_children($3);
+			// current_node->add_non_terminal_children($4);
+			// $$ = current_node;
 			;}
     ;
 
@@ -566,169 +566,59 @@ MakeExpr:
 	;
 
 TypeAssertion:
-	DOT LEFTPARAN Type RIGHTPARAN {
-		Node* curr = new Node("TypeAssertion");
-		curr->add_non_terminal_children($3);
-		$$ = curr;
-	}
+	DOT LEFTPARAN Type RIGHTPARAN {;}
 	;
 
 Arguments:
-	LEFTPARAN RIGHTPARAN {
-		Node* curr = new Node("Arguments");
-		$$ = curr;
-	}
-	| LEFTPARAN ExpressionList RIGHTPARAN {
-		Node* curr = new Node("Arguments");
-		curr->add_non_terminal_children($2);
-
-		curr->current_node_data = $2->current_node_data;
-		curr->current_type = $2->current_type;
-
-		$$ = curr;
-	}
-	| LEFTPARAN ExpressionList ELIPSIS RIGHTPARAN {
-		Node* curr = new Node("Arguments");
-		curr->add_non_terminal_children($2);
-		curr->add_terminal_children(string($3));
-
-		curr->current_node_data = $2->current_node_data;
-		curr->current_type = $2->current_type;
-
-		$$ = curr;}
+	LEFTPARAN RIGHTPARAN {;}
+	| LEFTPARAN ExpressionList RIGHTPARAN {;}
+	| LEFTPARAN ExpressionList ELIPSIS RIGHTPARAN {;}
 	;
-	
-// remaining
+
 ExpressionList: 
-	Expression {
-		Node* curr = new Node("ExpressionList");
-		curr->add_non_terminal_children($1);
-
-		curr->current_node_data = $1->current_node_data;
-		curr->current_type = $1->current_type;
-
-		$$ = curr;
-	}
-	| ExpressionList COMMA Expression {
-		Node* curr = new Node("ExpressionList");
-		curr->add_non_terminal_children($1);
-		curr->add_non_terminal_children($3);
-
-		curr->current_node_data = $3->current_node_data;
-		curr->current_type = $3->current_type;
-
-		$$ = curr;
-	}
+	Expression {;}
+	| ExpressionList COMMA Expression {;}
 	;
-// remaining
+
 TypeDecl:
 	TYPE LEFTPARAN TypeSpecList RIGHTPARAN {;}
 	| TYPE TypeSpec {;}
 	;
-// remaining
+
 TypeSpecList:
 	TypeSpecList TypeSpec SCOLON
 	| TypeSpec SCOLON
 	;
-// remaining
+
 TypeSpec:
 	AliasDecl
 	| TypeDef
 	;
-// remaining
+
 AliasDecl:
 	IDENTIFIER ASSGN_OP Type {;}
 	;
-// remaining
+
 TypeDef:
 	IDENTIFIER Type {;}
 	;
 
 MapType:
-	MAP LEFTSQUARE Type RIGHTSQUARE Type {
-		Node* curr = new Node("MapType");
-		curr->add_terminal_children(string($1));
-		curr->add_non_terminal_children($3);
-		curr->add_non_terminal_children($5);
-
-		DataType *key, *value;
-		key = $3->current_type;
-		value = $5->current_type;
-
-		curr->current_type = new MapType(key,value);
-		$$ = curr;
-	}
+	MAP LEFTSQUARE Type RIGHTSQUARE Type {;}
 	;
 
 StructType:
-	STRUCT LEFTBRACE FieldDeclList RIGHTBRACE {
-		Node* curr = new Node("StructType");
-		curr->add_terminal_children(string($1));
-		curr->add_non_terminal_children($3);
-
-		curr->current_node_data = $3->current_node_data;
-		curr->current_type = $3->current_type;
-
-		$$ = curr;
-	}
-
-	| STRUCT LEFTBRACE RIGHTBRACE {
-		Node* curr = new Node("StructType");
-		curr->add_terminal_children(string($1));
-
-		//map< string, DataType*> mem = new map< string, DataType*>;
-		curr->current_type = new StructType(*(new map<string,DataType*>));
-
-		$$ = curr;
-	}
+	STRUCT LEFTBRACE FieldDeclList RIGHTBRACE {;}
+	| STRUCT LEFTBRACE RIGHTBRACE {;}
 	;
 
 FieldDeclList:
-	FieldDecl SCOLON {
-		Node* curr = new Node("FieldDeclList");
-		curr->current_node_data = $1->current_node_data;
-		curr->current_type = $1->current_type;
-		$$ = curr;
-	}
-	| FieldDeclList FieldDecl SCOLON {
-		Node* curr = new Node("FieldDeclList");
-		curr->add_non_terminal_children($1);
-		curr->add_non_terminal_children($2);
-		curr->current_node_data = $1->current_node_data;
-
-		map< string, DataType*> mem1 = ((StructType*)$1->current_type)->data_of_struct;
-		map< string, DataType*> mem2 = ((StructType*)$2->current_type)->data_of_struct;
-
-		for(auto& it: mem2) {
-            string key = it.first;
-			DataType* value = it.second->copyClass();
-//            if(mem1.find(key) == mem1.end()) {
-// Remaining                ERROR_N("Redeclaration of struct member: ", key, @2);
-//            }
-			mem1[key] = value;
-        }
-        curr->current_type = new StructType(mem1);
-		$$ = curr;
-	}
+	FieldDecl SCOLON {;}
+	| FieldDeclList FieldDecl SCOLON {;}
 	;
 
-// Remaining
- FieldDecl:
-	IdentifierList Type String {
-		Node* curr = new Node("FieldDecl");
-		curr->add_non_terminal_children($1);
-		curr->add_non_terminal_children($2);
-		curr->add_non_terminal_children($3);
-
-		DataType* tp = $2->current_type;
-//		tp->next = NULL;
-
-		NodeData* lp = $1->current_node_data;
-		
-
-
-		$$ = curr;
-		}
+FieldDecl:
+	IdentifierList Type String
 	| IdentifierList Type
 	;
 
@@ -740,90 +630,28 @@ PointerType:
 BaseType:
 	Type
 	;
-// Remaining
+
 ArrayType:
-	LEFTSQUARE Expression RIGHTSQUARE Type {
-		 Node* curr = new Node("ArrayType");
-		 curr->add_non_terminal_children($2);
-		 curr->add_non_terminal_children($4);
-		 if($2->current_type->getDataType() == "int"){
-//			 curr->current_type = new ArrayType
-		 }
-		 $$ = curr;
-		 }
-	
+	LEFTSQUARE Expression RIGHTSQUARE Type {;}
+	;
 
 Literal:
-	BasicLit {
-		 Node* curr = new Node("Literal");
-		 curr->add_non_terminal_children($1);
-		 curr->current_node_data = $1->current_node_data;
-		 curr->current_type = $1->current_type;
-		 $$ = curr;
-		 }
-    |	 CompositeLit{
-		 Node* curr =new Node("Literal");
-		 curr->add_non_terminal_children($1);
-		 curr->current_node_data = $1->current_node_data;
-		 curr->current_type = $1->current_type;
-		 $$ = curr;
-		 }
+	BasicLit
+	| CompositeLit
 	;
 
 BasicLit:
-	INTEGER_VAL {
-		 Node* curr = new Node("BasicLit");
-		 curr->add_terminal_children(string($1));
-		 curr->current_node_data = new NodeData($1);
-		 curr->current_type = new BasicType("int");
-		 $$ = curr;
-		 }
-	| FLOAT_VAL {
-		 Node* curr = new Node("BasicLit");
-		 curr->add_terminal_children(string($1));
-		 curr->current_node_data = new NodeData($1);
-		 curr->current_type = new BasicType("float");
-		 $$ = curr;
-		 }
-	| BYTE_VAL  {
-		 Node* curr = new Node("BasicLit");
-		 curr->add_terminal_children($1);
-		 curr->current_node_data = new NodeData(string($1));
-		 curr->current_type = new BasicType("byte");
-		 $$ = curr;
-		 }
-	| String {
-		 Node* curr = new Node("BasicLit");
-		 curr->add_non_terminal_children($1);
-		 curr->current_node_data = $1->current_node_data;
-		 curr->current_type = new BasicType("string");
-		 $$ = curr;
-		 }
-	| TRUE      {
-		 Node* curr = new Node("BasicLit");
-		 curr->add_terminal_children(string($1));
-		 curr->current_node_data = new NodeData($1);
-		 curr->current_type = new BasicType("bool");
-		 $$ = curr;
-		 }
-	| FALSE     {
-		 Node* curr = new Node("BasicLit");
-		 curr->add_terminal_children(string($1));
-		 curr->current_node_data = new NodeData($1);
-		 curr->current_type = new BasicType("bool");
-		 $$ = curr;
-		 }
+	INTEGER_VAL {;}
+	| FLOAT_VAL {;}
+	| BYTE_VAL  {;}
+	| String
+	| TRUE      {;}
+	| FALSE     {;}
 	;
 
 String:
-	RAW_STRING { Node* curr = new Node("String");
-			 curr->add_terminal_children(string($1));
-			 curr->current_node_data = new NodeData($1);
-			 $$ = curr;}
-	| INTERPRETED_STRING { Node* curr = new Node("String");
-			 curr->add_terminal_children(string($1));
-			 curr->current_node_data = new NodeData($1);
-			 $$ = curr;}
+	RAW_STRING {;}
+	| INTERPRETED_STRING {;}
 	;
 
 %%
@@ -839,3 +667,14 @@ int main (int argc, char **argv) {
 	cout<<"THE GIVEN FILE WAS PARSABLE \n";
 		
 }
+
+
+
+
+
+
+
+
+
+	
+
