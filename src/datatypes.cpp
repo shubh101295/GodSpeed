@@ -15,10 +15,17 @@ string ArrayType::getDataType(){
 // 	return &current_copy;
 // }
 
+DataType *ArrayType::copyClass() {
+    return (new ArrayType(*this));
+}
+
 string BasicType::getDataType(){
 	return base_type;
 }
 
+DataType *BasicType::copyClass() {
+    return (new BasicType(*this));
+}
 
 string FunctionType::getDataType(){
 	string current_type = " func(";
@@ -32,6 +39,11 @@ string FunctionType::getDataType(){
 	return current_type;
 }
 
+DataType *FunctionType::copyClass() {
+    return (new FunctionType(*this));
+}
+
+
 string MapType::getDataType(){
 	string current_type = "map [ ";
 	current_type+=key_datatype->getDataType()+" ] ";
@@ -39,8 +51,17 @@ string MapType::getDataType(){
 	return current_type;
 }
 
+DataType *MapType::copyClass() {
+    return (new MapType(*this));
+}
+
+
 string NullType::getDataType(){
 	return "NULL";
+}
+
+DataType *NullType::copyClass() {
+    return (new NullType(*this));
 }
 
 string PointerType::getDataType(){
@@ -49,11 +70,20 @@ string PointerType::getDataType(){
 	return current_type;
 }
 
+DataType *PointerType::copyClass() {
+    return (new PointerType(*this));
+}
+
 string SliceType::getDataType(){
 	string current_type = "[ ] ";
 	current_type+=slice_base->getDataType();
 	return current_type;
 }
+
+DataType *SliceType::copyClass() {
+    return (new SliceType(*this));
+}
+
 
 string StructType::getDataType(){
 	string current_type = "struct { ";
@@ -66,4 +96,8 @@ string StructType::getDataType(){
 	}
 	current_type+="};";
 	return current_type;
+}
+
+DataType *StructType::copyClass() {
+    return (new StructType(*this));
 }

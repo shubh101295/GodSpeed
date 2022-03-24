@@ -19,8 +19,8 @@ class DataType {
 public:
 	dataTypes current_data_type;
 
-	DataType* copyClass(); 
-	string getDataType() {return "ERROR";};
+	DataType* copyClass() { return new DataType();}; 
+	string getDataType() {return "NO TYPE";};
 };
 
 class ArrayType: public DataType{
