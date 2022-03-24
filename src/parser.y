@@ -520,49 +520,173 @@ UnaryExpr:
  	
  	;
 
+// remaining
  PrimaryExpr:
- 	Operand {cout<<"PrimaryExpr:Operand\n";}
- 	| MakeExpr {cout<<"PrimaryExpr:MakeExpr\n";}
+ 	Operand  {
+		Node* curr = new Node("PrimaryExpr");
+		curr->add_non_terminal_children($1);
+		curr->current_node_data = $1->current_node_data;
+		curr->current_type = $1->current_type;
+		$$ = curr;
+	}
+ 	| MakeExpr {
+		Node* curr = new Node("PrimaryExpr");
+		curr->add_non_terminal_children($1);
+		curr->current_node_data = $1->current_node_data;
+		curr->current_type = $1->current_type;
+		$$ = curr;
+	}
  	| PrimaryExpr Selector {cout<<"PrimaryExpr:Selector\n";}
  	| PrimaryExpr Index {cout<<"PrimaryExpr:Index\n";}
- 	| PrimaryExpr Slice {cout<<"PrimaryExpr:Slice\n";}
- 	| PrimaryExpr Arguments {cout<<"PrimaryExpr:Arguments\n";}
+ 	| PrimaryExpr Slice {
+		Node* curr = new Node("PrimaryExpr");
+		curr->add_non_terminal_children($1);
+		curr->add_non_terminal_children($2);
+		$$ = curr;
+	}
+ 	| PrimaryExpr Arguments {
+		Node* curr = new Node("PrimaryExpr");
+		curr->add_non_terminal_children($1);
+		curr->add_non_terminal_children($2)
+		$$ = curr;
+	}
  	| OperandName StructLiteral {cout<<"PrimaryExpr:StructLiteral\n";}
-	| PrimaryExpr TypeAssertion {cout<<"PrimaryExpr:TypeAssertion\n";}
+	| PrimaryExpr TypeAssertion {
+		Node* curr = new Node("PrimaryExpr");
+		curr->add_non_terminal_children($1);
+		curr->add_non_terminal_children($2)
+		$$ = curr;
+	}
  	;
 
 StructLiteral:
-	LEFTBRACE KeyValueList RIGHTBRACE {;}
+	LEFTBRACE KeyValueList RIGHTBRACE {
+		Node* curr = new Node("StructLiteral");
+		curr->add_non_terminal_children($2);
+		$$ = curr;
+	} 
 	;
 
 KeyValueList :
- 	Expression COLON Expression 
- 	| Expression COLON Expression COMMA KeyValueList
+ 	Expression COLON Expression {
+		Node* curr = new Node("KeyValueList");
+		curr->add_non_terminal_children($1);
+		curr->add_non_terminal_children($3);
+		$$ = curr;
+	} 
+ 	| Expression COLON Expression COMMA KeyValueList {
+		Node* curr = new Node("KeyValueList");
+		curr->add_non_terminal_children($1);
+		curr->add_non_terminal_children($3);
+		curr->add_non_terminal_children($5);
+		$$ = curr;
+	} 
  	;
 
 
 Selector : 
-	DOT IDENTIFIER {;}
+	DOT IDENTIFIER {
+		Node* curr = new Node("Selector");
+		curr->add_terminal_children($2);
+
+		curr->current_node_data = new NodeData(string($2));
+
+		$$ = curr;
+	} 
 	;
 
 Index:
-	LEFTSQUARE Expression RIGHTSQUARE {;}
+	LEFTSQUARE Expression RIGHTSQUARE {
+		Node* curr = new Node("Index");
+		curr->add_non_terminal_children($2);
+
+		curr->current_type = $2->current_type;
+		curr->current_node_data = $2->current_node_data;
+
+		$$ = curr;
+	} 
 	;
 
 Slice:
-	 LEFTSQUARE COLON Expression RIGHTSQUARE {;}
-	 | LEFTSQUARE COLON RIGHTSQUARE {;}
-	 | LEFTSQUARE Expression COLON RIGHTSQUARE  {;}
-	 | LEFTSQUARE Expression COLON Expression RIGHTSQUARE {;}
-	 | LEFTSQUARE COLON Expression COLON Expression RIGHTSQUARE {;} 
-	 | LEFTSQUARE Expression COLON Expression COLON Expression RIGHTSQUARE {;}
+	 LEFTSQUARE COLON Expression RIGHTSQUARE {
+		Node* curr = new Node("Slice");
+		curr->add_terminal_children(string($2));
+		curr->add_non_terminal_children($3)
+		$$ = curr;
+	}
+	 | LEFTSQUARE COLON RIGHTSQUARE {
+		Node* curr = new Node("Slice");
+		$$ = curr;
+	}
+	 | LEFTSQUARE Expression COLON RIGHTSQUARE  {
+		Node* curr = new Node("Slice");
+		curr->add_non_terminal_children($2);
+		curr->add_terminal_children(string($3));
+		$$ = curr;
+	}
+	 | LEFTSQUARE Expression COLON Expression RIGHTSQUARE {
+		Node* curr = new Node("Slice");
+		curr->add_non_terminal_children($2);
+		curr->add_terminal_children(string($3));
+		curr->add_non_terminal_children($4);
+		$$ = curr;
+	}
+	 | LEFTSQUARE COLON Expression COLON Expression RIGHTSQUARE {
+		Node* curr = new Node("Slice");
+		curr->add_terminal_children(string($2));
+		curr->add_non_terminal_children($3);
+		curr->add_terminal_children(string($4));
+		curr->add_non_terminal_children($5);
+		$$ = curr;
+	}
+	 | LEFTSQUARE Expression COLON Expression COLON Expression RIGHTSQUARE {
+		Node* curr = new Node("Slice");
+		curr->add_non_terminal_children($2);
+		curr->add_terminal_children(string($3));
+		curr->add_non_terminal_children($4);
+		curr->add_terminal_children(string($5));
+		curr->add_non_terminal_children($6);
+		$$ = curr;
+	}
 	 ;
 
+// remaining (child)
 MakeExpr:
-	MAKE LEFTPARAN Type COMMA Expression COMMA Expression RIGHTPARAN {;}
-	| MAKE LEFTPARAN Type COMMA Expression RIGHTPARAN {;}
-	| MAKE LEFTPARAN Type RIGHTPARAN {;}
-	| NEW LEFTPARAN Type RIGHTPARAN {;}
+	MAKE LEFTPARAN Type COMMA Expression COMMA Expression RIGHTPARAN {
+		Node* curr = new Node("MakeExpr");
+		curr->add_non_terminal_children($3);
+		curr->add_non_terminal_children($5);
+		curr->add_non_terminal_children($7);
+
+		curr->current_type = $3->current_type;
+		curr->current_node_data = new NodeData("Make");
+		$$ = curr;
+	}
+	| MAKE LEFTPARAN Type COMMA Expression RIGHTPARAN {
+		Node* curr = new Node("MakeExpr");
+		curr->add_non_terminal_children($3);
+		curr->add_non_terminal_children($5);
+
+		curr->current_type = $3->current_type;
+		curr->current_node_data = new NodeData("Make");
+		$$ = curr;
+	}
+	| MAKE LEFTPARAN Type RIGHTPARAN {
+		Node* curr = new Node("MakeExpr");
+		curr->add_non_terminal_children($3);
+
+		curr->current_type = $3->current_type;
+		curr->current_node_data = new NodeData("Make");
+		$$ = curr;
+	}
+	| NEW LEFTPARAN Type RIGHTPARAN {
+		Node* curr = new Node("NewExpr");
+		curr->add_non_terminal_children($3);
+
+		curr->current_type = new PointerType($3->current_type);
+		curr->current_node_data = new NodeData("New");
+		$$ = curr;
+	}
 	;
 
 TypeAssertion:
@@ -732,13 +856,31 @@ FieldDeclList:
 	| IdentifierList Type
 	;
 
-
+// remaining (data->name)
 PointerType:
-	MUL BaseType {;} 
+	MUL BaseType {
+		Node* curr = new Node("PointerType");
+		curr->add_terminal_children($1);
+		curr->add_non_terminal_children($2);
+
+		curr->current_type = $2->current_type;
+		curr->current_node_data = $2->current_node_data;
+
+
+		$$ = curr;
+	} 
 	;
 
 BaseType:
-	Type
+	Type{
+		Node* curr = new Node("BaseType");
+		curr->add_non_terminal_children($1);
+
+		curr->current_type = $1->current_type;
+		curr->current_node_data = $1->current_node_data;
+
+		$$ = curr;
+	} 
 	;
 // Remaining
 ArrayType:
