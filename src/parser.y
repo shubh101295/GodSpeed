@@ -56,7 +56,7 @@
 %type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt ExprCaseClauseList
 %type <nt> PackageClause ImportDeclList ImportDecl ImportSpecList TopLevelDeclList
 %type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type BaseType
-%type <nt> PointerType IdentifierList AliasDecl TypeDef
+%type <nt> PointerType IdentifierList AliasDecl TypeDef InitStmt PostStmt
 
 %left LOGOR
 %left LOGAND
@@ -494,10 +494,11 @@ ForClause:
 InitStmt:
 	SimpleStmt{
 		Node* curr = new Node("InitStmt");
+		$$ = curr;
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
-		// $$ = curr;
+		$$ = curr;
 	} 
 	;
 
