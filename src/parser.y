@@ -1180,7 +1180,7 @@ ReturnStmt:
 		$$ -> add_non_terminal_children($2);
 		$$->current_node_data = new NodeData(string($1));
 		$$->current_node_data->node_child = $2->current_node_data;
-		
+
 	}
 	;
 
@@ -1246,24 +1246,44 @@ ExprSwitchStmt:
 	;
 
 ExprCaseClauseList:
-	ExprCaseClauseList ExprCaseClause {;}
-	| ExprCaseClause {;}
+	ExprCaseClauseList ExprCaseClause {
+		$$ = new Node("ExprCaseClauseList");
+		$$->add_non_terminal_children($1);
+		$$->add_non_terminal_children($2);
+	}
+	| ExprCaseClause {
+		$$ = new Node("ExprCaseClauseList");
+		$$->add_non_terminal_children($1);
+	}
 	;
 ExprCaseClause:
-	ExprSwitchCase COLON StatementList {;}
+	ExprSwitchCase COLON StatementList {
+		$$ = new Node("ExprCaseClause");
+		$$ -> add_non_terminal_children($1);
+		$$ -> add_non_terminal_children($3);
+	}
 	;
 
 ExprSwitchCase:
-	CASE ExpressionList {;}
-	| DEFAULT {;}
+	CASE ExpressionList {
+		$$ = new Node("ExprSwitchCase");
+		$$ -> add_non_terminal_children($2);
+	}
+	| DEFAULT {
+		$$ = new Node("ExprSwitchCase");
+	}
 	;
 
 FallthroughStmt:
-	FALLTHROUGH {;}
+	FALLTHROUGH {
+		$$ = new Node("FallthroughStmt");
+	}
 	;
 
 IfStmt:
-	IF Expression Block {;}
+	IF Expression Block {
+		
+	}
 	|IF SimpleStmt SCOLON Expression Block {;}
 	|IF Expression Block ELSE IfStmt {;}
 	|IF Expression Block ELSE Block {;}
