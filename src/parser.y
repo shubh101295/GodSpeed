@@ -85,6 +85,7 @@ SourceFile:
 
 OpenBlock:
 	{
+		cout<<"OpenBlock: \n";
 		st->enter_new_scope();
 	}
 	;
@@ -98,6 +99,7 @@ CloseBlock:
 PackageClause:
 	PACKAGE PackageName {
 		Node* curr = new Node("PackageClause");
+		cout<<"PackageClause:	PACKAGE PackageName \n";
 		curr -> add_non_terminal_children($2);
 		$$ = curr;
 	}
@@ -106,6 +108,7 @@ PackageClause:
 PackageName:
 	IDENTIFIER {
 		Node* curr = new Node("PackageName");
+		cout<<"PackageName: IDENTIFIER - "<<string($1)<<"\n";
 		curr -> add_terminal_children(string($1));
 		$$ = curr;
 	}
@@ -120,6 +123,7 @@ ImportDeclList:
 	}
 	| ImportDecl SCOLON {
 		Node* curr = new Node("ImportDeclList");
+		cout<<"ImportDeclList: ImportDecl SCOLON \n";
 		curr->add_non_terminal_children($1);
 		$$ = curr;
 	}
@@ -128,6 +132,7 @@ ImportDeclList:
 ImportDecl:
 	IMPORT LEFTPARAN ImportSpecList RIGHTPARAN {
 		Node* curr = new Node("ImportDecl");
+		cout<<"ImportDecl:IMPORT LEFTPARAN ImportSpecList RIGHTPARAN\n";
 		curr->add_non_terminal_children($3);
 		$$ = curr;
 	}
@@ -137,6 +142,7 @@ ImportDecl:
 	}
 	| IMPORT ImportSpec {
 		Node* curr = new Node("ImportDecl");
+		cout<<"ImportDecl: IMPORT ImportSpec \n";
 		curr->add_non_terminal_children($2);
 		$$ = curr;
 	}
@@ -170,6 +176,7 @@ ImportSpec:
 		$$ = curr;
 	}
 	| ImportPath {
+		cout<<"ImportSpec: ImportPath\n";
 		Node* curr = new Node("ImportSpec");
 		curr->add_non_terminal_children($1);
 		$$ = curr;
@@ -179,6 +186,7 @@ ImportSpec:
 ImportPath:
 	String {
 		Node* curr = new Node("ImportPath");
+		cout<<"ImportPath: String\n";
 		curr->add_non_terminal_children($1);
 		$$ = curr;
 	}
@@ -195,6 +203,7 @@ TopLevelDeclList:
 	}
 	| TopLevelDecl SCOLON { 
 		Node* curr = new Node("TopLevelDeclList");
+		cout<<"TopLevelDeclList: TopLevelDecl SCOLON\n";
 		curr->add_non_terminal_children($1);
 		$$ = curr;
 		$$->current_node_data = $1->current_node_data;
@@ -211,6 +220,7 @@ TopLevelDecl:
 	}
 	| FunctionDecl {
 		Node* curr = new Node("TopLevelDecl");
+		cout<<"TopLevelDecl : FunctionDecl\n";
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
@@ -245,6 +255,7 @@ Condition:
 
 StatementList:
 	StatementList Statement SCOLON {
+		cout<<"StatementList: 	StatementList Statement SCOLON\n";
 		Node* curr = new Node("StatementList");
 		curr->add_non_terminal_children($1);
 		curr->add_non_terminal_children($2);
@@ -253,11 +264,13 @@ StatementList:
 		($$->current_node_data->last_next_child())->next_data = $2->current_node_data;
 	}
 	| Statement SCOLON {
+		cout<<"Statement SCOLON\n";
 		Node* curr = new Node("StatementList");
 		curr->add_non_terminal_children($1);
 		$$ = curr;
 		$$->current_node_data = new NodeData("list");
-		if(!$1->current_node_data){
+		cout<<"HERE\n";
+		if($1->current_node_data==NULL){
 			cout<<"NO AST found here! Exiting........";
 			exit(1);	
 		}
@@ -267,6 +280,7 @@ StatementList:
 
 Statement:
 	Declaration {
+		cout<<"Statement: 	Declaration\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -274,6 +288,7 @@ Statement:
 		$$ = curr;
 	}
 	| LabeledStmt {
+		cout<<"Statement:	LabeledStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -282,6 +297,7 @@ Statement:
 	}
 	| SimpleStmt {
 		Node* curr = new Node("Statement");
+		cout<<"Statement:	SimpleStmt\n";
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
@@ -433,6 +449,7 @@ SimpleStmt:
 		$$->current_node_data = $1->current_node_data;
 	}
 	| ExpressionStmt {
+		cout<<"SimpleStmt: ExpressionStmt\n";
 		$$ = new Node("SimpleStmt");
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
@@ -466,6 +483,7 @@ EmptyStmt:{
 
 ExpressionStmt:
 	Expression {
+		cout<<"ExpressionStmt: Expression\n";
 		$$ = new Node("ExpressionStmt");
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
@@ -774,6 +792,7 @@ FunctionBody:
 
 Signature:
 	Parameters {
+		cout<<"Signature: Parameters\n";
 		$$ = new Node("Signature");
 		$$ -> add_non_terminal_children($1);
 		$$ -> current_node_data = new NodeData("params");
@@ -800,6 +819,7 @@ Signature:
 	}
 	| Parameters Result {
 		$$ = new Node("Signature");
+		cout<<"Signature: Parameters Result\n";
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
 		$$ -> current_node_data = new NodeData("params");
@@ -869,6 +889,7 @@ TypeList:
 
 Parameters:
 	LEFTPARAN RIGHTPARAN {
+		cout<<"Parameters: LEFTPARAN RIGHTPARAN \n";
 		$$ = new Node("Parameters");
 		$$->current_node_data = NULL;
 		$$-> current_type = NULL;
@@ -1025,6 +1046,7 @@ Operand:
 		$$->current_type = $1->current_type;
 	}
 	| OperandName {
+		cout<<"Operand: OperandName";
 		$$ = new Node("Operand");
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
@@ -1040,11 +1062,19 @@ Operand:
 
 OperandName:
 	IDENTIFIER {
+		cout<<"OperandName:	IDENTIFIER - "<<string($1)<<"\n";
 		$$ = new Node("OperandName");
+		cout<<"OperandName2:	IDENTIFIER - "<<string($1)<<"\n";
 		$$->add_terminal_children(string($1));
+		cout<<"OperandName3:	IDENTIFIER - "<<string($1)<<"\n";
+		
+		$$->current_node_data = new NodeData(string($1));
 		$$->current_node_data->value = true;
+		cout<<"OperandName4:	IDENTIFIER - "<<string($1)<<"\n";
+		
 		$$->current_type = st->get_type(string($1))?st->get_type(string($1)):new BasicType("undefined");
-
+		cout<<"OperandName5:	IDENTIFIER - "<<string($1)<<"\n";
+		
 	}	
 	;
 
@@ -1316,7 +1346,7 @@ Expression:
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
 		}
 	| UnaryExpr {
-		//cout<<"Unary Expr begins from expression" <<endl;
+		cout<<"Unary Expr begins from expression" <<endl;
 		}
 	;
 
@@ -1337,7 +1367,7 @@ UnaryExpr:
 		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
 		}
 	| PrimaryExpr {
-		//cout<<"Primary begins from unary\n";
+		cout<<"Primary begins from unary\n";
 		}
  	
  	;
@@ -1345,6 +1375,7 @@ UnaryExpr:
 // remaining isValidMemberon()
  PrimaryExpr:
  	Operand  {
+ 		cout<<" PrimaryExpr: Operand \n";
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children($1);
 		curr->current_node_data = $1->current_node_data;
@@ -1359,6 +1390,7 @@ UnaryExpr:
 		$$ = curr;
 	}
  	| PrimaryExpr Selector {
+ 		cout<<"PrimaryExpr: PrimaryExpr Selector\n";
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children($1);
 		curr->add_non_terminal_children($2);
@@ -1415,8 +1447,9 @@ KeyValueList :
  	;
 
 
-Selector : 
+Selector: 
 	DOT IDENTIFIER {
+		cout<<"Selector:  DOT IDENTIFIER\n";
 		Node* curr = new Node("Selector");
 		curr->add_terminal_children($2);
 
