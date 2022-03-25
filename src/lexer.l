@@ -185,8 +185,8 @@ ASSGN_OP ({ADD_OP}|{MUL_OP})?"="
 {RAW_STRING}                               { yylval.sval = strdup(yytext); return RAW_STRING; }
 {INTERPRETED_STRING}                       { yylval.sval = strdup(yytext); return INTERPRETED_STRING; }
 
-{LETTER}({LETTER}|{DD})*/[ ]*[\n] { yylval.sval = strdup(yytext); column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return IDENTIFIER;}
-{LETTER}({LETTER}|{DD})* { yylval.sval = strdup(yytext); column+=yyleng; return IDENTIFIER;}
+{LETTER}({LETTER}|{DD})*/[ ]*[\n] { yylval.sval = strdup(yytext); cout<<yytext<<"--LEXER\n"; column+=yyleng; BEGIN(EXTRA_SEMICOLON_MODE); return IDENTIFIER;}
+{LETTER}({LETTER}|{DD})* { yylval.sval = strdup(yytext); cout<<yytext<<"--LEXER\n"; column+=yyleng; return IDENTIFIER;}
 
 [ ] { yylval.sval = strdup(yytext); column+=yyleng;}
 [\t] {column+=4;yyleng=4;}
