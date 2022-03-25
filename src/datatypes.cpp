@@ -15,22 +15,38 @@ string ArrayType::getDataType(){
 // 	return &current_copy;
 // }
 
+DataType *ArrayType::copyClass() {
+    return (new ArrayType(*this));
+}
+
 string BasicType::getDataType(){
 	return base_type;
 }
 
+DataType *BasicType::copyClass() {
+    return (new BasicType(*this));
+}
 
 string FunctionType::getDataType(){
 	string current_type = " func(";
-	for(int i=0;i<argument_types.size();i++)
+	for(int i=0;i<argument_types.size()-1;i++)
 	{
 		current_type+=argument_types[i]->getDataType()+", ";
 	}
 	if(argument_types.size()) current_type+=argument_types[argument_types.size()-1]->getDataType();
-	current_type+=") ";
-	current_type+=return_type->getDataType();
-	return current_type;
+	current_type+=") (";
+	for(int i=0;i<return_type.size()-1;i++)
+	{
+		current_type+=return_type[i]->getDataType()+", ";
+	}
+	if(return_type.size()) current_type+=return_type[return_type.size()-1]->getDataType();
+	return current_type+")";
 }
+
+DataType *FunctionType::copyClass() {
+    return (new FunctionType(*this));
+}
+
 
 string MapType::getDataType(){
 	string current_type = "map [ ";
@@ -39,8 +55,17 @@ string MapType::getDataType(){
 	return current_type;
 }
 
+DataType *MapType::copyClass() {
+    return (new MapType(*this));
+}
+
+
 string NullType::getDataType(){
 	return "NULL";
+}
+
+DataType *NullType::copyClass() {
+    return (new NullType(*this));
 }
 
 string PointerType::getDataType(){
@@ -48,6 +73,21 @@ string PointerType::getDataType(){
 	current_type+=type_of_address_pointing_to->getDataType();
 	return current_type;
 }
+
+DataType *PointerType::copyClass() {
+    return (new PointerType(*this));
+}
+
+string SliceType::getDataType(){
+	string current_type = "[ ] ";
+	current_type+=slice_base->getDataType();
+	return current_type;
+}
+
+DataType *SliceType::copyClass() {
+    return (new SliceType(*this));
+}
+
 
 string StructType::getDataType(){
 	string current_type = "struct { ";
@@ -60,4 +100,8 @@ string StructType::getDataType(){
 	}
 	current_type+="};";
 	return current_type;
+}
+
+DataType *StructType::copyClass() {
+    return (new StructType(*this));
 }
