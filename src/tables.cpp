@@ -2,6 +2,8 @@
 #include "tables.hpp"
 using namespace std;
 
+#define pb push_back
+
 void SymbolTable::update_current_scope() {
 	current_scope = "";
 	for( int i=0;i<=current_block_inside_count;i++)
@@ -18,13 +20,15 @@ void SymbolTable::enter_new_scope() {
 	current_block_inside_count+=1;
 	if(current_block_inside_count>=current_block_numbers.size())
 	{
-		vector<int> new_cbn(current_block_inside_count+1);
-		for(int i=0;i<(current_block_inside_count);i++)
-		{
-			new_cbn[i]= current_block_numbers[i];
-		}
-		new_cbn[current_block_inside_count] = 0;
-		current_block_numbers = new_cbn;
+		// sizes increase only one at a time
+		current_block_numbers.pb(0);
+		// vector<int> new_cbn(current_block_inside_count+1);
+		// for(int i=0;i<(current_block_inside_count);i++)
+		// {
+		// 	new_cbn[i]= current_block_numbers[i];
+		// }
+		// new_cbn[current_block_inside_count] = 0;
+		// current_block_numbers = new_cbn;
 	}
 	current_block_numbers[current_block_inside_count]+=1;
 	update_current_scope();
@@ -36,12 +40,21 @@ void SymbolTable::exit_latest_scope(){
 	update_current_scope();
 }
 
+void SymbolTable::output_csv_for_functions(string name_of_csv_file){
+	ofstream my_function_dump(name_of_csv_file);
+	my_function_dump<<"Scope,    variable_name,    variable_type\n";
+
+
+}
+
+
 map<pair<string,string>, DataType*> SymbolTable::get_symbol_table_data() {
 	return symbol_table;
 }
 
 bool SymbolTable::add_in_symbol_table(pair<string,string> new_key,DataType* new_datatype) {
-	// check all levels left
+	// pair<string,string> new_key = {current_scope,new_variable};
+	// auto new_key  = {"A","B"};
 	if(symbol_table.find(new_key)==symbol_table.end())
 	{
 		symbol_table[new_key] = new_datatype;
@@ -49,6 +62,46 @@ bool SymbolTable::add_in_symbol_table(pair<string,string> new_key,DataType* new_
 	}
 	// was already present in the scope
 	return false;
+}
+
+int SymbolTable::scope_level(string variable_name){
+	string temp_scope = "";
+	vector<string> temp_scopes;
+	for( int i=0;i<=current_block_inside_count;i++) {
+		temp_scope+=to_string(current_block_numbers[i])+";";
+		temp_scopes.pb(temp_scope);
+	}
+	reverse(temp_scopes.begin(),temp_scopes.end());
+	int ans=0;
+	for(auto val:temp_scopes){
+		if (symbol_table.find({val,variable_name})!=symbol_table.end()) return ans;
+		ans+=1;
+	}
+	return -1;
+}
+
+DataType * SymbolTable::get_value_from_key(string _variable_name){
+	pair<string,string> new_key = {current_scope,_variable_name};
+	if(symbol_table.find(new_key)!=symbol_table.end())
+	{
+		return symbol_table[new_key];
+	}
+	return NULL;	
+}
+
+DataType* SymbolTable::get_type(string variable_name){
+	// returns the DataType* from the latest scope
+	string temp_scope = "";
+	vector<string> temp_scopes;
+	for( int i=0;i<=current_block_inside_count;i++) {
+		temp_scope+=to_string(current_block_numbers[i])+";";
+		temp_scopes.pb(temp_scope);
+	}
+	reverse(temp_scopes.begin(),temp_scopes.end());
+	for(auto val:temp_scopes){
+		if (symbol_table.find({val,variable_name})!=symbol_table.end()) return symbol_table[{val,variable_name}]->copyClass();
+	}
+	return NULL;
 }
 
 bool TypesTable::add_in_type_table(pair<string,string> new_key,DataType* new_datatype) {
@@ -65,7 +118,6 @@ bool TypesTable::add_in_type_table(pair<string,string> new_key,DataType* new_dat
 map<pair<string,string>, DataType*> TypesTable::get_type_table_data() {
 	return type_table;
 }
-
 
 void BreakLabels::add_new_break_label(string _break_label){
 	break_labels_list_position+=1;

@@ -1185,7 +1185,7 @@ GotoStmt:
 		curr->add_terminal_children(string($2));
 		curr->current_node_data = new NodeData(string($1));
 		// still remaining
-		//curr->current_node_data->node_child = $2->current_node_data;
+		// curr->current_node_data->node_child = $2->current_node_data;
 		$$ = curr;
 	}
 	;
@@ -1443,7 +1443,7 @@ Slice:
 		Node* curr = new Node("Slice");
 		curr->add_terminal_children(string($2));
 		// still ramining
-		// curr->add_non_terminal_children($3);
+		curr->add_non_terminal_children($3);
 		$$ = curr;
 	}
 	 | LEFTSQUARE COLON RIGHTSQUARE {
@@ -1660,7 +1660,7 @@ FieldDeclList:
             string key = it.first;
 			DataType* value = it.second->copyClass();
 //            if(mem1.find(key) == mem1.end()) {
-// Remaining                ERROR_N("Redeclaration of struct member: ", key, @2);
+// Remaining                ("Redeclaration of struct member: ", key, @2);
 //            }
 			mem1[key] = value;
         }
