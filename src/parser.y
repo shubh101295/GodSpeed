@@ -1327,9 +1327,9 @@ RangeClause:
 		$$ -> current_node_data = new NodeData("RangeClause");
 		$$ -> current_node_data -> node_child = new NodeData("IdentifierList");
 		$$ -> current_node_data -> node_child -> node_child = $1->current_node_data;
-		NodeData* it = $$->current_node_data -> child;
+		NodeData* it = $$->current_node_data -> node_child;
 		it->next = new NodeData("RangeExpression");
-		it->next->child = $4->current_node_data;
+		it->next->node_child = $4->current_node_data;
 	}
 	| ExpressionList ASSGN_OP RANGE Expression {
 		$$ = new Node("RangeClause");
@@ -1338,9 +1338,9 @@ RangeClause:
 		$$ -> current_node_data = new NodeData("RangeClause");
 		$$ -> current_node_data -> node_child = new NodeData("ExpressionList");
 		$$ -> current_node_data -> node_child -> node_child = $1->current_node_data;
-		NodeData* it = $$->current_node_data -> child;
+		NodeData* it = $$->current_node_data -> node_child;
 		it->next = new NodeData("RangeExpression");
-		it->next->child = $4->current_node_data;
+		it->next->node_child = $4->current_node_data;
 
 	}
 	;
