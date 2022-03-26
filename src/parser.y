@@ -764,22 +764,22 @@ VarSpec:
 	}	
 	;
 
-ConstDecl:
-	CONST ConstSpec {;}
-	| CONST LEFTPARAN ConstSpecList RIGHTPARAN {;}
-	| CONST LEFTPARAN RIGHTPARAN {;}
-	;
+//ConstDecl:
+//	CONST ConstSpec {;}
+//	| CONST LEFTPARAN ConstSpecList RIGHTPARAN {;}
+//	| CONST LEFTPARAN RIGHTPARAN {;}
+//	;
 
-ConstSpecList:
-	ConstSpecList ConstSpec SCOLON
-	| ConstSpec SCOLON
-	;
+//ConstSpecList:
+//	ConstSpecList ConstSpec SCOLON
+//	| ConstSpec SCOLON
+//	;
 
-ConstSpec:
-	IdentifierList Type
-	| IdentifierList Type ASSGN_OP ExpressionList
-	| IdentifierList ASSGN_OP ExpressionList
-	;
+//ConstSpec:
+//	IdentifierList Type
+//	| IdentifierList Type ASSGN_OP ExpressionList
+//	| IdentifierList ASSGN_OP ExpressionList
+//	;
 
 FunctionBody:
 	Block {
@@ -1170,8 +1170,18 @@ Element:
 	;
 // remaining
 ReturnStmt:
-	RETURN {;}
-	| RETURN ExpressionList {;}
+	RETURN {
+		$$ = new Node("ReturnStmt");
+		$$ -> current_node_data = new NodeData(string($1));
+
+	}
+	| RETURN ExpressionList {
+		$$ = new Node("ReturnStmt");
+		$$ -> add_non_terminal_children($2);
+		$$->current_node_data = new NodeData(string($1));
+		$$->current_node_data->node_child = $2->current_node_data;
+
+	}
 	;
 
 // remaining
@@ -1236,24 +1246,44 @@ ExprSwitchStmt:
 	;
 
 ExprCaseClauseList:
-	ExprCaseClauseList ExprCaseClause {;}
-	| ExprCaseClause {;}
-
+	ExprCaseClauseList ExprCaseClause {
+		$$ = new Node("ExprCaseClauseList");
+		$$->add_non_terminal_children($1);
+		$$->add_non_terminal_children($2);
+	}
+	| ExprCaseClause {
+		$$ = new Node("ExprCaseClauseList");
+		$$->add_non_terminal_children($1);
+	}
+	;
 ExprCaseClause:
-	ExprSwitchCase COLON StatementList {;}
+	ExprSwitchCase COLON StatementList {
+		$$ = new Node("ExprCaseClause");
+		$$ -> add_non_terminal_children($1);
+		$$ -> add_non_terminal_children($3);
+	}
 	;
 
 ExprSwitchCase:
-	CASE ExpressionList {;}
-	| DEFAULT {;}
+	CASE ExpressionList {
+		$$ = new Node("ExprSwitchCase");
+		$$ -> add_non_terminal_children($2);
+	}
+	| DEFAULT {
+		$$ = new Node("ExprSwitchCase");
+	}
 	;
 
 FallthroughStmt:
-	FALLTHROUGH {;}
+	FALLTHROUGH {
+		$$ = new Node("FallthroughStmt");
+	}
 	;
 
 IfStmt:
-	IF Expression Block {;}
+	IF Expression Block {
+		
+	}
 	|IF SimpleStmt SCOLON Expression Block {;}
 	|IF Expression Block ELSE IfStmt {;}
 	|IF Expression Block ELSE Block {;}
@@ -1281,11 +1311,38 @@ PostStmt:
 	SimpleStmt
 	;
 
-
+// Might change, temporarily added
 RangeClause:
-	RANGE Expression {;}
-	| IdentifierList INFER_EQ RANGE Expression
-	| ExpressionList ASSGN_OP RANGE Expression
+	RANGE Expression {
+		$$ = new Node("RangeClause");
+		$$->add_non_terminal_children($2);
+		$$ -> current_node_data = new NodeData("RangeClause");
+		$$ -> current_node_data -> node_child = new NodeData("Expression");
+		$$ -> current_node_data ->node_child->node_child = $2->current_node_data;
+	}
+	| IdentifierList INFER_EQ RANGE Expression {
+		$$ = new Node("RangeClause");
+		$$->add_non_terminal_children($1);
+		$$->add_non_terminal_children($4);
+		$$ -> current_node_data = new NodeData("RangeClause");
+		$$ -> current_node_data -> node_child = new NodeData("IdentifierList");
+		$$ -> current_node_data -> node_child -> node_child = $1->current_node_data;
+		NodeData* it = $$->current_node_data -> child;
+		it->next = new NodeData("RangeExpression");
+		it->next->child = $4->current_node_data;
+	}
+	| ExpressionList ASSGN_OP RANGE Expression {
+		$$ = new Node("RangeClause");
+		$$->add_non_terminal_children($1);
+		$$->add_non_terminal_children($4);
+		$$ -> current_node_data = new NodeData("RangeClause");
+		$$ -> current_node_data -> node_child = new NodeData("ExpressionList");
+		$$ -> current_node_data -> node_child -> node_child = $1->current_node_data;
+		NodeData* it = $$->current_node_data -> child;
+		it->next = new NodeData("RangeExpression");
+		it->next->child = $4->current_node_data;
+
+	}
 	;
 Expression:
 	Expression MUL Expression {
@@ -1612,26 +1669,51 @@ ExpressionList:
 	;
 // remaining
 TypeDecl:
-	TYPE LEFTPARAN TypeSpecList RIGHTPARAN {;}
-	| TYPE TypeSpec {;}
+	TYPE LEFTPARAN TypeSpecList RIGHTPARAN {
+		$$ = new Node("TypeDecl");
+		$$->add_non_terminal_children($3);
+	}
+	| TYPE TypeSpec {
+		$$ = new Node("TypeDecl");
+		$$->add_non_terminal_children($2);
+	}
 	;
 // remaining
 TypeSpecList:
-	TypeSpecList TypeSpec SCOLON
-	| TypeSpec SCOLON
+	TypeSpecList TypeSpec SCOLON {
+		$$ = new Node("TypeSpecList");
+		$$ -> add_non_terminal_children($1);
+		$$ -> add_non_terminal_children($2);
+	}
+	| TypeSpec SCOLON {
+		$$ = new Node("TypeSpecList");
+		$$->add_non_terminal_children($1);
+	}
 	;
 // remaining
 TypeSpec:
-	AliasDecl
-	| TypeDef
+	AliasDecl {
+		$$ = new Node("TypeSpec");
+		$$->add_non_terminal_children($1);
+	}
+	| TypeDef {
+		$$ = new Node("TypeSpec");
+		$$->add_non_terminal_children($1);
+	}
 	;
 // remaining
 AliasDecl:
-	IDENTIFIER ASSGN_OP Type {;}
+	IDENTIFIER ASSGN_OP Type {
+		$$ = new Node("AliasDecl");
+		$$ -> add_non_terminal_children($3);
+	}
 	;
 // remaining
 TypeDef:
-	IDENTIFIER Type {;}
+	IDENTIFIER Type {
+		$$ =  new Node($2);
+		$$ ->add_non_terminal_children($2);
+	}
 	;
 
 MapType:
@@ -1759,6 +1841,7 @@ ArrayType:
 		 }
 		 $$ = curr;
 		 }
+		 ;
 	
 
 Literal:
