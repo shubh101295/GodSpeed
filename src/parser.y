@@ -522,8 +522,8 @@ Assignment:
 	ExpressionList ASSGN_OP ExpressionList {
 		$$ = new Node("Assignment");
 		$$->add_non_terminal_children($1);
-		$$->add_non_terminal_children($3);
 		$$->add_terminal_children(string($2));
+		$$->add_non_terminal_children($3);
 		DataType* left_type = $1->current_type;
 		DataType* right_type = $3->current_type;
 
@@ -1394,10 +1394,10 @@ IfStmt:
 		it->next_data = new NodeData("Else");
 		it->next_data->node_child = $8->current_node_data;
 
-		//if($5->current_type->getDataType() != "bool"){
-		//	cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$5->current_type->getDataType()<<endl;
-		//	exit(1);
-		//}
+		if($5->current_type->getDataType() != "bool"){
+			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$5->current_type->getDataType()<<endl;
+			exit(1);
+		}
 	}
 	|IF OpenBlock SimpleStmt SCOLON Expression Block ELSE Block CloseBlock {
 		$$ = new Node("IfStmt");
@@ -1419,10 +1419,10 @@ IfStmt:
 		it->next_data = new NodeData("Else");
 		it->next_data->node_child = $8->current_node_data;
 
-		//if($5->current_type->getDataType() != "bool"){
-		//	cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$5->current_type->getDataType()<<endl;
-		//	exit(1);
-		//}
+		if($5->current_type->getDataType() != "bool"){
+			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$5->current_type->getDataType()<<endl;
+			exit(1);
+		}
 	}
 	;
 
