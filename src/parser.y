@@ -47,7 +47,7 @@
 %type <nt> MethodDecl Receiver TopLevelDecl LabeledStmt
 %type <nt> ReturnStmt BreakStmt ContinueStmt GotoStmt FallthroughStmt StructType
 %type <nt> FunctionBody ForStmt RangeClause
-%type <nt> FunctionDecl ConstDecl SwitchStmt ExprSwitchCase ExprSwitchStmt
+%type <nt> FunctionDecl SwitchStmt ExprSwitchCase ExprSwitchStmt
 %type <nt> Condition  UnaryExpr PrimaryExpr
 %type <nt> Selector Index Slice TypeDecl TypeSpecList TypeSpec VarDecl
 %type <nt> TypeAssertion Arguments ExpressionList ArrayType CompositeLit
@@ -57,7 +57,7 @@
 %type <nt> PackageClause ImportDeclList ImportDecl ImportSpecList TopLevelDeclList
 %type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type BaseType
 %type <nt> PointerType IdentifierList AliasDecl TypeDef
-%type <nt> VarSpecList TypeList 
+%type <nt> VarSpecList TypeList ExprCaseClause
 %left LOGOR
 %left LOGAND
 %left ISEQ NEQ GRTEQ GRT LESSEQ LESS
@@ -380,15 +380,16 @@ Declaration:
 		curr->current_node_data = $1->current_node_data;
 		$$ = curr;
 	}
-	| ConstDecl  {
-		// might change
-		Node* curr = new Node("Declaration");
-		curr->add_non_terminal_children($1);
-		curr->current_type = $1->current_type;
-		curr->current_node_data = $1->current_node_data;
-		$$ = curr;
-	}
 	;
+
+	// | ConstDecl  {
+	// 	// might change
+	// 	Node* curr = new Node("Declaration");
+	// 	curr->add_non_terminal_children($1);
+	// 	curr->current_type = $1->current_type;
+	// 	curr->current_node_data = $1->current_node_data;
+	// 	$$ = curr;
+	// }
 
 FunctionDecl:
 	FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock {
@@ -1328,7 +1329,7 @@ IfStmt:
 		}
 	}
 	|IF OpenBlock Expression Block ELSE IfStmt CloseBlock {
-		$$ = new NodeData("IfStmt");
+		$$ = new Node("IfStmt");
 		$$->add_non_terminal_children($3);
 		$$->add_non_terminal_children($4);
 		$$->add_non_terminal_children($6);
@@ -1350,7 +1351,7 @@ IfStmt:
 
 	}	
 	|IF OpenBlock Expression Block ELSE Block CloseBlock {
-		$$ = new NodeData("IfStmt");
+		$$ = new Node("IfStmt");
 		$$->add_non_terminal_children($3);
 		$$->add_non_terminal_children($4);
 		$$->add_non_terminal_children($6);
@@ -1372,7 +1373,7 @@ IfStmt:
 
 	}
 	|IF OpenBlock SimpleStmt SCOLON Expression Block ELSE IfStmt CloseBlock {
-		$$ = new NodeData("IfStmt");
+		$$ = new Node("IfStmt");
 		$$->add_non_terminal_children($3);
 		$$->add_non_terminal_children($5);
 		$$->add_non_terminal_children($6);
@@ -1397,7 +1398,7 @@ IfStmt:
 		//}
 	}
 	|IF OpenBlock SimpleStmt SCOLON Expression Block ELSE Block CloseBlock {
-		$$ = new NodeData("IfStmt");
+		$$ = new Node("IfStmt");
 		$$->add_non_terminal_children($3);
 		$$->add_non_terminal_children($5);
 		$$->add_non_terminal_children($6);
@@ -1468,8 +1469,8 @@ ForStmt:
 		it->node_child = new NodeData("Condition");
 		it=it->node_child;
 		it->node_child = $3->current_node_data;
-		it->next= new NodeData("ForBody");
-		it = it->next;
+		it->next_data= new NodeData("ForBody");
+		it = it->next_data;
 		it->node_child= $5->current_node_data;
 	}
 	| FOR OpenBlock EmptyStmt Empty forMarker Expression Empty EmptyStmt Block forMarkerEnd CloseBlock {
@@ -2054,7 +2055,7 @@ UnaryExpr:
 			cout<<"Can not dereference a non-pointer! Exiting..."<<endl;
 			exit(1);
 		}
-		$$->current_type = dynamic_cast<PointerType*>($2->current_type)->type_of_address_pointing_to->copyClass();
+		$$->current_type = static_cast<PointerType*>($2->current_type)->type_of_address_pointing_to->copyClass();
 	}
 	| AND PrimaryExpr { 
 			$$ = new Node("UnaryExpr");
@@ -2379,7 +2380,7 @@ AliasDecl:
 // remaining
 TypeDef:
 	IDENTIFIER Type {
-		$$ =  new Node($2);
+		$$ =  new Node("TypeDef");
 		$$ ->add_non_terminal_children($2);
 	}
 	;
