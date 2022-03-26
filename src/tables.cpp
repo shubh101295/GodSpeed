@@ -119,8 +119,10 @@ map<pair<string,string>, DataType*> TypesTable::get_type_table_data() {
 	return type_table;
 }
 
-void BreakLabels::add_new_break_label(string _break_label){
+void BreakLabels::add_new_break_label(){
 	break_labels_list_position+=1;
+	break_label_count+=1;
+	string _break_label = "Label"+to_string(break_label_count);
 	if(break_labels_list_position>break_labels_list.size())
 	{
 		break_labels_list.resize(break_labels_list_position);	

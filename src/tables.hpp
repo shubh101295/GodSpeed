@@ -46,9 +46,10 @@ class BreakLabels{
 private:
 	vector<string> break_labels_list;
 	int            break_labels_list_position;
+	int            break_label_count;
 public:
-	BreakLabels(): break_labels_list_position(0) {};
-	void           add_new_break_label(string _break_label);
+	BreakLabels(): break_labels_list_position(0), break_label_count(0) {};
+	void           add_new_break_label();
 	bool 		   is_empty();
 	void           remove_last_break_label();
 };
