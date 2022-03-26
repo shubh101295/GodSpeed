@@ -104,7 +104,7 @@ DataType* SymbolTable::get_type(string variable_name){
 	return NULL;
 }
 
-bool TypesTable::add_in_type_table(pair<string,string> new_key,DataType* new_datatype) {
+bool TypesTable::add_in_type_table(string new_key,DataType* new_datatype) {
 	// check all levels left
 	if(type_table.find(new_key)==type_table.end())
 	{
@@ -115,7 +115,7 @@ bool TypesTable::add_in_type_table(pair<string,string> new_key,DataType* new_dat
 	return false;
 }
 
-map<pair<string,string>, DataType*> TypesTable::get_type_table_data() {
+map<string, DataType*> TypesTable::get_type_table_data() {
 	return type_table;
 }
 
