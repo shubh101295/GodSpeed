@@ -111,7 +111,7 @@ PackageName:
 		$$ = curr;
 	}
 	;
-// Might change
+
 ImportDeclList:
 	ImportDeclList ImportDecl SCOLON {
 		Node* curr = new Node("ImportDeclList");
@@ -146,7 +146,6 @@ ImportDecl:
 	}
 	;
 
-// Might change
 ImportSpecList:
 	ImportSpecList ImportSpec SCOLON {
 		Node* curr = new Node("ImportSpecList");
@@ -232,7 +231,7 @@ TopLevelDecl:
 		$$ = curr;
 	}
 	;
-// Might change
+
 Block:
     LEFTBRACE OpenBlock StatementList CloseBlock RIGHTBRACE {
     	Node* curr = new Node("Block");
@@ -247,6 +246,8 @@ Condition:
 	Expression {
 		Node* curr = new Node("Condition");
 		curr->add_non_terminal_children($1);
+		curr->current_node_data = $1->current_node_data;
+		curr->current_type = $1->current_type;
 		$$ = curr;
 	}
 	;
@@ -330,14 +331,17 @@ Statement:
 		$$ = curr;
 	}
 	| SwitchStmt {
-		// Might change - tpbe done by shubh
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
+		curr->current_type = $1->current_type;
+		curr->current_node_data = $1->current_node_data;
 		$$ = curr;
 	}
 	| FallthroughStmt {
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
+		curr->current_type = $1->current_type;
+		curr->current_node_data = $1->current_node_data;
 		$$ = curr;
 	}
 	| Block {
@@ -389,16 +393,17 @@ Declaration:
 	// 	$$ = curr;
 	// }
 
+// might change
 FunctionDecl:
 	FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock {
-		st->add_in_symbol_table({st->get_current_scope(),string($2)},$4->current_type);
 
 		Node* curr = new Node("FunctionDecl");
 		curr->add_terminal_children(string($2));
 		curr->add_non_terminal_children($4);
 		curr->add_non_terminal_children($5);
 		$$ = curr;
-		$$-> current_node_data = new NodeData("Function" + string($2));
+		st->add_in_symbol_table({st->get_current_scope(),string($2)},$4->current_type);
+		$$-> current_node_data = new NodeData("Function-" + string($2));
 		$$-> current_node_data->node_child = $5->current_node_data;
 
 	}
@@ -408,7 +413,7 @@ FunctionDecl:
 		curr->add_non_terminal_children($4);
 		$$ = curr;
 		st->add_in_symbol_table({st->get_current_scope(),string($2)},$4->current_type);
-		$$->current_node_data = new NodeData("Function"+ string($2));
+		$$->current_node_data = new NodeData("Function-"+ string($2));
 	}
 	;
 
@@ -425,6 +430,7 @@ MethodDecl:
 		curr->add_non_terminal_children($2);
 		curr->add_terminal_children(string($3));
 		curr->add_non_terminal_children($4);
+		curr->add_non_terminal_children($5);
 		$$=curr;
 	}
 	;
@@ -434,7 +440,7 @@ LabeledStmt:
 		$$ = new Node("LabeledStmt");
 		$$->add_terminal_children(string($1));
 		$$->add_non_terminal_children($3);
-		$$->current_node_data = new NodeData("label-" + string($1));
+		$$->current_node_data = new NodeData("Label-" + string($1));
 		$$->current_node_data->node_child = $3->current_node_data;
 	}
 	;
@@ -485,7 +491,8 @@ EmptyExpr : {   // For infinite looping
 		$$->current_node_data = new NodeData("true");
 		$$->current_type = new BasicType("bool");
 	}
-;
+	;
+
 ExpressionStmt:
 	Expression {
 		cout<<"ExpressionStmt: Expression\n";
@@ -645,22 +652,22 @@ VarDecl:
 		$$->current_node_data = $2->current_node_data;
 	}
 	| VAR LEFTPARAN VarSpecList RIGHTPARAN {
-		// Might change
 		$$ = new Node("VarDecl");
 		$$->add_non_terminal_children($3);
 		$$->current_type = $3->current_type;
 		$$->current_node_data = $3->current_node_data;
 	}
-	//| VAR LEFTPARAN RIGHTPARAN {;} // might change, as effectivly of no use
 	;
 
-// Might change, not defined
 VarSpecList:
 	VarSpecList VarSpec SCOLON {
 		$$ = new Node("VarSpecList");
+
+		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
-		$$->current_type = $2->current_type;
-		$$->current_node_data = $2->current_node_data;
+		$$->current_node_data = $1->current_node_data;
+		($$->current_node_data->last_next_child())->next_data = $2->current_node_data;
+		// might need to add type checks
 	}
 	| VarSpec SCOLON {
 		$$ = new Node("VarSpecList");
@@ -727,7 +734,6 @@ VarSpec:
 		bool newVar = false;
 		while(left_data || right_type || right_data){
 			if(!left_data || !right_type || !right_data){
-				//cout<<":= must have equal number of operands in LHS and RHS"<<endl;
 				cout<<"[unpacking error], '=' operator expected same number of operands on LHS and RHS";
 
 				exit(1);
@@ -735,13 +741,11 @@ VarSpec:
 
 			string name = left_data->data_name;
 			if(left_data->node_child){
-				//cout<<"Non identifier to the left of :=";
 				cout<<"[]"<<"Unexpected non identifier on the left of '=' operator";
 				exit(1);
 			}
 
 			if(right_type && right_type->getDataType() == "undefined"){
-				//cout<<"Identifier in RHS not yet declared"<<endl;
 				cout<<"[Undeclared Identifier]"<<"Identifier in RHS undeclared"<<endl;
 				exit(1);
 			}
@@ -953,8 +957,6 @@ ParameterDecl:
 			data = data->next_data;
 		}
 	}
-	//| IdentifierList ELIPSIS Type {;}
-	//| ELIPSIS Type {;}
 	;
 
 IdentifierList:
@@ -962,11 +964,11 @@ IdentifierList:
 		$$ = new Node("IdentifierList");
 		$$->add_non_terminal_children($1);
 		$$->add_terminal_children(string($3));
+        $$->current_type = $1->current_type;
+        $$->current_node_data = $1->current_node_data;
         ($1->last_current_node_data())->next_data = new NodeData(string($3));
         ($1->last_current_type())->next_type = (st->get_type(string($3)))?(st->get_type(string($3))):(new BasicType("undefined"));
 
-        $$->current_type = $1->current_type;
-        $$->current_node_data = $1->current_node_data;
 	}
 	| IDENTIFIER {
 		$$ = new Node("IdentifierList");
@@ -1102,7 +1104,12 @@ LiteralValue:
 	}
 	;
 SliceType:
-	LEFTSQUARE RIGHTSQUARE Type {;}
+	LEFTSQUARE RIGHTSQUARE Type {
+		$$ = new Node("LiteralValue");
+		$$->add_non_terminal_children($3);
+		$$->current_type = new SliceType($3->current_type);
+        $$->current_node_data = new NodeData($$->current_type->getDataType());
+		;}
 	;
 
 ElementList:
@@ -1141,6 +1148,7 @@ KeyedElement:
 		curr->add_non_terminal_children($1);
 		curr->add_non_terminal_children($3);
 		$$ = curr;
+
 	}
 	;
 
@@ -1173,6 +1181,7 @@ Element:
 		$$ = curr;
 	}
 	;
+
 // remaining
 ReturnStmt:
 	RETURN {
@@ -1207,7 +1216,6 @@ BreakStmt:
 	;
 
 
-// remaining (label:data->child)
 ContinueStmt:
 	CONTINUE {
 		Node* curr = new Node("ContinueStmt");
@@ -1219,7 +1227,7 @@ ContinueStmt:
 		curr->add_terminal_children(string($2));
 		curr->current_node_data = new NodeData(string($1));
 		// check this reason
-		// curr->current_node_data->node_child = $2->current_node_data;
+		curr->current_node_data->node_child =  new NodeData(string($2));
 		$$ = curr;
 	}
 	;
@@ -1230,7 +1238,7 @@ GotoStmt:
 		curr->add_terminal_children(string($2));
 		curr->current_node_data = new NodeData(string($1));
 		// still remaining
-		// curr->current_node_data->node_child = $2->current_node_data;
+		curr->current_node_data->node_child = new NodeData(string($2));
 		$$ = curr;
 	}
 	;
