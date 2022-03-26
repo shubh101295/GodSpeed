@@ -10,9 +10,10 @@ all:
 	# python3 src/graph.py parser.output
 
 clean:
-	rm src/parser.tab.c		
+	rm src/parser.tab.c
 	rm src/parser.tab.h
 	rm src/lex.yy.c
 	rm bin/parser
 	rm parser.output
 	rm bin/*.out
+	rm ast.node ast.edge ast.dot *.png

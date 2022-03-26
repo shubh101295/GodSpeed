@@ -3,9 +3,8 @@ package main
 import "fmt"
 
 func main() {
-	
-	fmt.Println("v")
-	// a := 2+4
-	// var a int =3 
-}
 
+	// fmt.Println("v")
+	// var a int =3
+	a := 2+4
+}
