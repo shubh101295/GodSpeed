@@ -40,7 +40,7 @@
 %token <sval> LEFTPARAN LEFTBRACE LEFTSQUARE COLON DOT COMMA RAW_STRING INTERPRETED_STRING BYTE_VAL IDENTIFIER
 %token <sval> ASSGN_OP 
 
-%type <nt> SourceFile Expression
+%type <nt> SourceFile Expression forMarker forMarkerEnd EmptyExpr Empty
 %type <nt> Block StatementList Statement SimpleStmt EmptyStmt ExpressionStmt IncDecStmt MapType
 %type <nt> Assignment ShortVarDecl Declaration VarSpec PackageName
 %type <nt> Signature Result Parameters ParameterList ParameterDecl 
@@ -481,6 +481,12 @@ EmptyStmt:{
 	}
 	;
 
+EmptyExpr : {   // For infinite looping
+		$$ = new Node("EmptyExpr");
+		$$->current_node_data = new NodeData("true");
+		$$->current_type = new BasicType("bool");
+	}
+;
 ExpressionStmt:
 	Expression {
 		cout<<"ExpressionStmt: Expression\n";
@@ -1281,34 +1287,234 @@ FallthroughStmt:
 	;
 
 IfStmt:
-	IF Expression Block {
-		
+	IF OpenBlock Expression Block CloseBlock {
+		$$ = new Node("IfStmt");
+		$$->add_non_terminal_children($3);
+		$$->add_non_terminal_children($4);
+		$$ -> current_node_data =new NodeData("If");
+		NodeData* it = $$->current_node_data;
+		it->node_child = new NodeData("Condition");
+		it = it->node_child;
+		it->node_child = $3->current_node_data;
+		it->next_data = new NodeData("IfBody");
+		it=it->next_data;
+		it->node_child = $4->current_node_data;
+
+		if($3->current_type->getDataType() != "bool"){
+			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$3->current_type->getDataType()<<endl;
+			exit(1);
+		}
 	}
-	|IF SimpleStmt SCOLON Expression Block {;}
-	|IF Expression Block ELSE IfStmt {;}
-	|IF Expression Block ELSE Block {;}
-	|IF SimpleStmt SCOLON Expression Block ELSE IfStmt {;}
-	|IF SimpleStmt SCOLON Expression Block ELSE Block {;}
+	|IF OpenBlock SimpleStmt SCOLON Expression Block CloseBlock {
+		$$ = new Node("IfStmt");
+		$$->add_non_terminal_children($3);
+		$$->add_non_terminal_children($5);
+		$$->add_non_terminal_children($6);
+		$$ -> current_node_data =new NodeData("If");
+		NodeData* it = $$->current_node_data;
+		it->node_child = new NodeData("SimpleStmt");
+		it = it->node_child;
+		it->node_child = $3->current_node_data;
+		it->next_data = new NodeData("Condition");
+		it=it->next_data;
+		it->node_child = $5->current_node_data;
+		it->next_data = new NodeData("IfBody");
+		it=it->next_data;
+		it->node_child = $6->current_node_data;
+
+		if($5->current_type->getDataType() != "bool"){
+			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$5->current_type->getDataType()<<endl;
+			exit(1);
+		}
+	}
+	|IF OpenBlock Expression Block ELSE IfStmt CloseBlock {
+		$$ = new NodeData("IfStmt");
+		$$->add_non_terminal_children($3);
+		$$->add_non_terminal_children($4);
+		$$->add_non_terminal_children($6);
+		$$ -> current_node_data = new NodeData("If");
+		NodeData* it = $$->current_node_data;
+		it->node_child = new NodeData("Condition");
+		it=it->node_child;
+		it->node_child = $3->current_node_data;
+		it->next_data = new NodeData("IfBody");
+		it=it->next_data;
+		it->node_child = $4->current_node_data;
+		it->next_data = new NodeData("Else");
+		it->next_data->node_child = $6->current_node_data;
+
+		if($3->current_type->getDataType() != "bool"){
+			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$3->current_type->getDataType()<<endl;
+			exit(1);
+		}
+
+	}	
+	|IF OpenBlock Expression Block ELSE Block CloseBlock {
+		$$ = new NodeData("IfStmt");
+		$$->add_non_terminal_children($3);
+		$$->add_non_terminal_children($4);
+		$$->add_non_terminal_children($6);
+		$$ -> current_node_data = new NodeData("If");
+		NodeData* it = $$->current_node_data;
+		it->node_child = new NodeData("Condition");
+		it=it->node_child;
+		it->node_child = $3->current_node_data;
+		it->next_data = new NodeData("IfBody");
+		it=it->next_data;
+		it->node_child = $4->current_node_data;
+		it->next_data = new NodeData("Else");
+		it->next_data->node_child = $6->current_node_data;
+
+		if($3->current_type->getDataType() != "bool"){
+			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$3->current_type->getDataType()<<endl;
+			exit(1);
+		}
+
+	}
+	|IF OpenBlock SimpleStmt SCOLON Expression Block ELSE IfStmt CloseBlock {
+		$$ = new NodeData("IfStmt");
+		$$->add_non_terminal_children($3);
+		$$->add_non_terminal_children($5);
+		$$->add_non_terminal_children($6);
+		$$->add_non_terminal_children($8);
+		$$ -> current_node_data = new NodeData("If");
+		NodeData* it = $$->current_node_data;
+		it->node_child = new NodeData("SimpleStmt");
+		it=it->node_child;
+		it->node_child = $3->current_node_data;
+		it->next_data = new NodeData("Condition");
+		it=it->next_data;
+		it->node_child = $5->current_node_data;
+		it->next_data = new NodeData("IfBody");
+		it=it->next_data;
+		it->node_child = $6->current_node_data;
+		it->next_data = new NodeData("Else");
+		it->next_data->node_child = $8->current_node_data;
+
+		//if($5->current_type->getDataType() != "bool"){
+		//	cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$5->current_type->getDataType()<<endl;
+		//	exit(1);
+		//}
+	}
+	|IF OpenBlock SimpleStmt SCOLON Expression Block ELSE Block CloseBlock {
+		$$ = new NodeData("IfStmt");
+		$$->add_non_terminal_children($3);
+		$$->add_non_terminal_children($5);
+		$$->add_non_terminal_children($6);
+		$$->add_non_terminal_children($8);
+		$$ -> current_node_data = new NodeData("If");
+		NodeData* it = $$->current_node_data;
+		it->node_child = new NodeData("SimpleStmt");
+		it=it->node_child;
+		it->node_child = $3->current_node_data;
+		it->next_data = new NodeData("Condition");
+		it=it->next_data;
+		it->node_child = $5->current_node_data;
+		it->next_data = new NodeData("IfBody");
+		it=it->next_data;
+		it->node_child = $6->current_node_data;
+		it->next_data = new NodeData("Else");
+		it->next_data->node_child = $8->current_node_data;
+
+		//if($5->current_type->getDataType() != "bool"){
+		//	cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$5->current_type->getDataType()<<endl;
+		//	exit(1);
+		//}
+	}
 	;
 
 ForStmt:
-	FOR Block {;}
-	| FOR ForClause Block {;}
-	| FOR Condition Block {;}
-	| FOR RangeClause Block {;}
+	FOR forMarker Block forMarkerEnd
+	{
+		$$ = new Node("ForStmt");
+		$$->add_non_terminal_children($3);
+		$$->current_node_data = new NodeData("For");
+		NodeData* it = $$->current_node_data;
+		it->node_child = new NodeData("ForBody");
+		it=it->node_child;
+		it->node_child = $3->current_node_data;
+
+	}
+	| FOR OpenBlock SimpleStmt SCOLON forMarker EmptyExpr SCOLON SimpleStmt Block forMarkerEnd CloseBlock {
+		$$ = new Node("ForStmt");
+		$$->add_non_terminal_children($3);
+		$$->add_non_terminal_children($6);
+		$$->add_non_terminal_children($8);
+		$$->add_non_terminal_children($9);
+		$$->current_node_data = new NodeData("For");
+		NodeData* it = $$->current_node_data;
+		it->node_child = new NodeData("ForBody");
+		it->node_child->node_child = $9->current_node_data;
+
+	}
+	| FOR OpenBlock SimpleStmt SCOLON forMarker ExpressionStmt SCOLON SimpleStmt Block forMarkerEnd CloseBlock {
+		$$ = new Node("ForStmt");
+		$$->add_non_terminal_children($3);
+		$$->add_non_terminal_children($6);
+		$$->add_non_terminal_children($8);
+		$$->add_non_terminal_children($9);
+
+		$$ -> current_node_data = new NodeData("For");
+		NodeData* it= $$->current_node_data;
+		it->node_child = new NodeData("ForBody");
+		it->node_child->node_child = $9->current_node_data;
+	}
+	| FOR OpenBlock Condition forMarker Block forMarkerEnd CloseBlock {
+		$$ = new Node("ForStmt");
+		$$->add_non_terminal_children($3);
+		$$->add_non_terminal_children($5);
+		$$ -> current_node_data = new NodeData("For");
+		NodeData* it= $$->current_node_data;
+		it->node_child = new NodeData("Condition");
+		it=it->node_child;
+		it->node_child = $3->current_node_data;
+		it->next= new NodeData("ForBody");
+		it = it->next;
+		it->node_child= $5->current_node_data;
+	}
+	| FOR OpenBlock EmptyStmt Empty forMarker Expression Empty EmptyStmt Block forMarkerEnd CloseBlock {
+		$$ = new Node("ForStmt");
+		$$->add_non_terminal_children($3);
+		$$->add_non_terminal_children($6);
+		$$->add_non_terminal_children($8);
+		$$->add_non_terminal_children($9);
+
+		$$ -> current_node_data = new NodeData("For");
+		NodeData* it= $$->current_node_data;
+		it->node_child = new NodeData("ForBody");
+		it->node_child->node_child = $9->current_node_data;
+	}
 	;
 
-ForClause:
-	InitStmt SCOLON SCOLON PostStmt
-	| InitStmt SCOLON Condition SCOLON PostStmt
-	;
+//ForClause:
+//	InitStmt SCOLON SCOLON PostStmt {
 
-InitStmt:
-	SimpleStmt
-	;
+//	}
+//	| InitStmt SCOLON Condition SCOLON PostStmt {
 
-PostStmt:
-	SimpleStmt
+//	}
+//	;
+
+forMarker:
+	{
+		$$ = new Node("");
+		bl -> add_new_break_label();
+	}
+
+	;	
+
+forMarkerEnd: 
+	{
+		$$ = new Node("");
+		bl -> remove_last_break_label();
+	;
+	}
+	;
+Empty:
+	/* empty */
+	{
+
+	}
 	;
 
 // Might change, temporarily added
@@ -1347,85 +1553,547 @@ RangeClause:
 Expression:
 	Expression MUL Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = $1->current_type;
+
 		}
 	| Expression QUOT Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = $1->current_type;
 		}
 	| Expression MOD Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = $1->current_type;
 		}
 	| Expression SHL Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = $1->current_type;
 		}
 	| Expression SHR Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = $1->current_type;
 		}
 	| Expression AND Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_bitwise");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = $1->current_type;
 		}
 	| Expression ANDNOT Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_bitwise");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = $1->current_type;
 		}
 	| Expression ADD Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = $1->current_type;
 		}
 	| Expression SUB Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = $1->current_type;
 		}
 	| Expression OR Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_bitwise");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = $1->current_type;
+
 		}
 	| Expression XOR Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = $1->current_type;
 		}
 	| Expression LOGAND Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = new BasicType("bool");
+
 		}
 	| Expression LOGOR Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = new BasicType("bool");
 		}
 	| Expression ISEQ Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = new BasicType("bool");
 		}
 	| Expression NEQ Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = new BasicType("bool");
 		}
 	| Expression GRTEQ Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = new BasicType("bool");
 		}
 	| Expression GRT Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = new BasicType("bool");
 		}
 	| Expression LESSEQ Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = new BasicType("bool");
 		}
 	| Expression LESS Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->add_terminal_children(string($2));
+			$$->add_non_terminal_children($3);
+
+
+			$$->current_node_data = new NodeData(string($2) + "binary_op");
+			$$->current_node_data -> node_child = $1->current_node_data;
+			$$->current_node_data->last_next_child()->next_data = $3->current_node_data;
+
+			if(!$1->current_type || !$3->current_type){
+				cout<<"Something's wrong, type info not available for node!"<<endl;
+				exit(1);
+			}
+
+			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
+				// Might handle more cases on completion
+				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+				exit(1);
+			}
+
+			string temp = string($2);
+			$$->current_type = new BasicType("bool");
 		}
 	| UnaryExpr {
-		cout<<"Unary Expr begins from expression" <<endl;
+			$$ = new Node("Expression");
+			$$->add_non_terminal_children($1);
+			$$->current_type = $1->current_type;
+			$$->current_node_data = $1->current_node_data;
 		}
 	;
 
 UnaryExpr:
-	MUL UnaryExpr { 
+	MUL PrimaryExpr { 
 		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
+		$$ = new Node("UnaryExpr");
+		$$->add_terminal_children(string($1));
+		$$->add_non_terminal_children($2);
+		$$->current_node_data = new NodeData("*unary");
+		$$->current_node_data->node_child = $2->current_node_data;
+		if($2->current_type->current_data_type != _POINTER){
+			cout<<"Can not dereference a non-pointer! Exiting..."<<endl;
+			exit(1);
 		}
-	| AND UnaryExpr { 
-		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
+		$$->current_type = dynamic_cast<PointerType*>($2->current_type)->type_of_address_pointing_to->copyClass();
+	}
+	| AND PrimaryExpr { 
+			$$ = new Node("UnaryExpr");
+			$$->add_terminal_children(string($1));
+			$$->add_non_terminal_children($2);
+			$$->current_node_data = new NodeData("&unary");
+			$$->current_node_data->node_child = $2->current_node_data;
+			$$->current_type = new PointerType($2->current_type);
 		}
-	| ADD UnaryExpr { 
-		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
+	| ADD PrimaryExpr { 
+			$$ = new Node("UnaryExpr");
+			$$->add_terminal_children(string($1));
+			$$->add_non_terminal_children($2);
+			$$->current_node_data = new NodeData("+unary");
+			$$->current_node_data->node_child = $2->current_node_data;
+			$$->current_type = $2->current_type->copyClass();
 		}
-	| SUB UnaryExpr { 
-		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
+	| SUB PrimaryExpr { 
+			$$ = new Node("UnaryExpr");
+			$$->add_terminal_children(string($1));
+			$$->add_non_terminal_children($2);
+			$$->current_node_data = new NodeData("-unary");
+			$$->current_node_data->node_child = $2->current_node_data;
+			$$->current_type = $2->current_type->copyClass();	
 		}
-	| NOT UnaryExpr { 
-		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
+	| NOT PrimaryExpr { 
+			$$ = new Node("UnaryExpr");
+			$$->add_terminal_children(string($1));
+			$$->add_non_terminal_children($2);
+			$$->current_node_data = new NodeData("!unary");
+			$$->current_node_data->node_child = $2->current_node_data;
+			$$->current_type = $2->current_type->copyClass();
 		}
 	| PrimaryExpr {
-		cout<<"Primary begins from unary\n";
-		}
+		$$ = new Node("UnaryExpr");
+		$$->add_non_terminal_children($1);
+		$$->current_type = $1->current_type;
+		$$->current_node_data = $1->current_node_data;
+	}
  	
  	;
 
