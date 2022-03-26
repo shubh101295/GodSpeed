@@ -69,10 +69,6 @@
 
 
 SourceFile:
-	//PackageClause SCOLON {
-	//	;}
- //   | PackageClause SCOLON ImportDeclList {;}
-	//| PackageClause SCOLON TopLevelDeclList {;}
 	PackageClause SCOLON ImportDeclList TopLevelDeclList {
 			 Node* curr = new Node("SourceFile");
 			 curr->add_non_terminal_children($1);
