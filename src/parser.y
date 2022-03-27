@@ -2519,14 +2519,41 @@ BaseType:
 		$$ = curr;
 	}
 	;
-// Remaining
+// remaining: Please check if this is correct, TK and SA
 ArrayType:
 	LEFTSQUARE Expression RIGHTSQUARE Type {
 		 Node* curr = new Node("ArrayType");
 		 curr->add_non_terminal_children($2);
 		 curr->add_non_terminal_children($4);
-		 if($2->current_type->getDataType() == "int"){
-//			 curr->current_type = new ArrayType
+
+		 bool is_basic = false;
+		 int val_stored = 0;
+		 if($2->current_type->getDataType() == "int")
+		 {
+			 Node* iter = $2;
+			 while(iter != NULL && iter->current_node_children.size() == 1)
+			 {
+				 if(iter->node_name == "BasicLit")
+				 {
+					 is_basic = true;
+					 val_stored = stoi(iter->current_node_data->data_name);
+					 break;
+				 }
+				 iter = iter->current_node_children[0].non_terminal_node;
+			 }
+			 if(is_basic)
+			 {
+				 DataType* tp = $4->current_type->copyClass();
+				 curr->current_type = new ArrayType(tp, val_stored);
+			 }
+			 else
+			 {
+				 cout<<"the array indices are not literals\n";
+			 }
+		 }
+		 else
+		 {
+			 cout<<"The array indices is not an integer";
 		 }
 		 $$ = curr;
 		 }
