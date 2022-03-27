@@ -50,14 +50,14 @@
 %type <nt> FunctionBody ForStmt RangeClause
 %type <nt> FunctionDecl SwitchStmt ExprSwitchCase ExprSwitchStmt
 %type <nt> Condition  UnaryExpr PrimaryExpr
-%type <nt> Selector Index Slice TypeDecl TypeSpecList TypeSpec VarDecl
+%type <nt> Selector Index Slice TypeDecl TypeSpec VarDecl
 %type <nt> TypeAssertion Arguments ExpressionList ArrayType CompositeLit
 %type <nt> String ImportPath SliceType LiteralType
 %type <nt> LiteralValue ElementList KeyedElement Key Element
 %type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt ExprCaseClauseList
 %type <nt> PackageClause ImportDeclList ImportDecl ImportSpecList TopLevelDeclList
 %type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type BaseType
-%type <nt> PointerType IdentifierList AliasDecl TypeDef
+%type <nt> PointerType IdentifierList TypeDef
 %type <nt> VarSpecList TypeList ExprCaseClause
 %left LOGOR
 %left LOGAND
@@ -2344,7 +2344,7 @@ ExpressionList:
 	;
 // remaining
 TypeDecl:
-	TYPE LEFTPARAN TypeSpecList RIGHTPARAN {
+	TYPE LEFTPARAN TypeSpec SCOLON RIGHTPARAN {
 		$$ = new Node("TypeDecl");
 		$$->add_non_terminal_children($3);
 	}
@@ -2354,7 +2354,7 @@ TypeDecl:
 	}
 	;
 // remaining
-TypeSpecList:
+/* TypeSpecList:
 	TypeSpecList TypeSpec SCOLON {
 		$$ = new Node("TypeSpecList");
 		$$ -> add_non_terminal_children($1);
@@ -2364,25 +2364,26 @@ TypeSpecList:
 		$$ = new Node("TypeSpecList");
 		$$->add_non_terminal_children($1);
 	}
-	;
+	; */
 // remaining
 TypeSpec:
-	AliasDecl {
+	/* AliasDecl {
 		$$ = new Node("TypeSpec");
 		$$->add_non_terminal_children($1);
 	}
-	| TypeDef {
+	| */
+	TypeDef {
 		$$ = new Node("TypeSpec");
 		$$->add_non_terminal_children($1);
 	}
 	;
 // remaining
-AliasDecl:
+/* AliasDecl:
 	IDENTIFIER ASSGN_OP Type {
 		$$ = new Node("AliasDecl");
 		$$ -> add_non_terminal_children($3);
 	}
-	;
+	; */
 // remaining
 TypeDef:
 	IDENTIFIER Type {
