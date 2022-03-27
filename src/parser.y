@@ -2247,7 +2247,6 @@ Slice:
 	}
 	 ;
 
-// remaining (child)
 MakeExpr:
 	MAKE LEFTPARAN Type COMMA Expression COMMA Expression RIGHTPARAN {
 		Node* curr = new Node("MakeExpr");
@@ -2257,6 +2256,10 @@ MakeExpr:
 
 		curr->current_type = $3->current_type;
 		curr->current_node_data = new NodeData("Make");
+
+		curr->current_node_data->node_child = $5->current_node_data;
+		curr->current_node_data->node_child->next_data = $7->current_node_data;
+
 		$$ = curr;
 	}
 	| MAKE LEFTPARAN Type COMMA Expression RIGHTPARAN {
@@ -2266,6 +2269,8 @@ MakeExpr:
 
 		curr->current_type = $3->current_type;
 		curr->current_node_data = new NodeData("Make");
+
+		curr->current_node_data->node_child = $5->current_node_data;
 		$$ = curr;
 	}
 	| MAKE LEFTPARAN Type RIGHTPARAN {
