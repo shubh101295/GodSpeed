@@ -2144,12 +2144,16 @@ UnaryExpr:
 		// curr->add_non_terminal_children($2);
 		$$ = curr;
 	}
- 	| OperandName StructLiteral {cout<<"PrimaryExpr:StructLiteral\n";}
+ 	| OperandName StructLiteral {
+		Node* curr = new Node("PrimaryExpr");
+		curr->add_non_terminal_children($1);
+		curr->add_non_terminal_children($2);
+		$$ = curr;
+	}
 	| PrimaryExpr TypeAssertion {
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children($1);
-		// still remaining
-		// curr->add_non_terminal_children($2);
+		curr->add_non_terminal_children($2);
 		$$ = curr;
 	}
  	;
