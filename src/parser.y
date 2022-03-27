@@ -2376,20 +2376,6 @@ TypeSpec:
 		$$->add_non_terminal_children($1);
 	}
 	;
-// remaining
-AliasDecl:
-	IDENTIFIER ASSGN_OP Type {
-		$$ = new Node("AliasDecl");
-		$$ -> add_non_terminal_children($3);
-	}
-	;
-// remaining
-TypeDef:
-	IDENTIFIER Type {
-		$$ =  new Node("TypeDef");
-		$$ ->add_non_terminal_children($2);
-	}
-	;
 
 MapType:
 	MAP LEFTSQUARE Type RIGHTSQUARE Type {
