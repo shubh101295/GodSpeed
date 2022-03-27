@@ -54,4 +54,22 @@ public:
 	void           remove_last_break_label();
 };
 
+struct CaseLabel{
+	bool is_default;
+	string case_name;
+	bool has_fallthrough;
+
+	CaseLabel(bool _is_default,string _case_name, bool _has_fallthrough): is_default(_is_default),case_name(_case_name),has_fallthrough(_has_fallthrough) {};
+};
+
+class SwitchCaseList{
+	vector<CaseLabel *> case_label_list;
+	bool has_default;
+
+public:
+	SwitchCaseList(): has_default(false) {}; 
+	void              add_case_label(bool _is_default,bool _has_fallthrough);
+
+};
+
 #endif

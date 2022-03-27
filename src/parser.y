@@ -20,7 +20,13 @@
 	SymbolTable* st = new SymbolTable();
 	TypesTable* tt = new TypesTable();
 	BreakLabels* bl = new BreakLabels();
+	SwitchCaseList* scl= NULL;
 
+	// for switch statements
+	bool is_inside_case = false;
+	// bool is_last_statement = false;
+	int fallthrough_expression_count = 0;
+	bool has_default_statement = false;
 %}
 
 %define parse.error verbose
@@ -254,6 +260,7 @@ Condition:
 
 StatementList:
 	StatementList Statement SCOLON {
+
 		cout<<"StatementList: 	StatementList Statement SCOLON\n";
 		Node* curr = new Node("StatementList");
 		curr->add_non_terminal_children($1);
@@ -261,6 +268,15 @@ StatementList:
 		$$ = curr;
 		$$->current_node_data = $1->current_node_data;
 		($$->current_node_data->last_next_child())->next_data = $2->current_node_data;
+		
+		// for checking if the fallthrough statement is the last one
+		if (fallthrough_expression_count>=2)
+		{
+			cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
+			exit(1);
+			// fallthrough_expression_count+=1;
+		}
+	
 	}
 	| Statement SCOLON {
 		cout<<"Statement SCOLON\n";
@@ -340,7 +356,6 @@ Statement:
 	| FallthroughStmt {
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
-		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		$$ = curr;
 	}
@@ -1248,14 +1263,18 @@ SwitchStmt:
 	;
 
 ExprSwitchStmt:
-	SWITCH LEFTBRACE RIGHTBRACE {;}
-	| SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE {;}
-	| SWITCH Expression LEFTBRACE RIGHTBRACE { ;}
-	| SWITCH SimpleStmt SCOLON Expression LEFTBRACE RIGHTBRACE {;}
-	| SWITCH LEFTBRACE ExprCaseClauseList RIGHTBRACE{;}
-	| SWITCH SimpleStmt SCOLON LEFTBRACE ExprCaseClauseList RIGHTBRACE{;}
-	| SWITCH Expression LEFTBRACE ExprCaseClauseList RIGHTBRACE {;}
-	| SWITCH SimpleStmt SCOLON Expression LEFTBRACE ExprCaseClauseList RIGHTBRACE {;}
+
+	// empty switches
+	// SWITCH LEFTBRACE RIGHTBRACE {;}
+	// | SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE {;}
+	// | SWITCH Expression LEFTBRACE RIGHTBRACE { ;}
+	// | SWITCH SimpleStmt SCOLON Expression LEFTBRACE RIGHTBRACE {;}
+	// |
+
+	 SWITCH LEFTBRACE  { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE{;}
+	| SWITCH SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE{;}
+	| SWITCH Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE {;}
+	| SWITCH SimpleStmt SCOLON Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE {;}
 	;
 
 ExprCaseClauseList:
@@ -1269,11 +1288,22 @@ ExprCaseClauseList:
 		$$->add_non_terminal_children($1);
 	}
 	;
+
 ExprCaseClause:
 	ExprSwitchCase COLON StatementList {
+
 		$$ = new Node("ExprCaseClause");
 		$$ -> add_non_terminal_children($1);
 		$$ -> add_non_terminal_children($3);
+		scl->add_case_label(has_default_statement,fallthrough_expression_count==2);
+		if(fallthrough_expression_count>2)
+		{
+			cout<<"[Error in parser.y] ExprCaseClause->ExprSwitchCase COLON StatementList (fallthrough_expression_count>2)==true\n";
+			exit(1);
+		}
+		has_default_statement=false;
+		is_inside_case = false;
+		fallthrough_expression_count=0;
 	}
 	;
 
@@ -1281,16 +1311,33 @@ ExprSwitchCase:
 	CASE ExpressionList {
 		$$ = new Node("ExprSwitchCase");
 		$$ -> add_non_terminal_children($2);
+
+		is_inside_case = true;
 	}
 	| DEFAULT {
 		$$ = new Node("ExprSwitchCase");
+		is_inside_case = true;
+		has_default_statement = true;
+		
 	}
 	;
 
 FallthroughStmt:
 	FALLTHROUGH {
+		if (is_inside_case==false){
+			cout<<"[FALLTHROUGH] fallthrough can only be used inside switch cases\n";
+			exit(1); 
+		}
+		// if(is_last_statement==false)
+		// {
+		// 	cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
+		// 	exit(1); 
+		// }
+		fallthrough_expression_count= 1;
 		$$ = new Node("FallthroughStmt");
+		$$->current_node_data = new NodeData("FallThorugh");
 	}
+
 	;
 
 IfStmt:

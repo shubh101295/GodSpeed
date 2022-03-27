@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.7.6.  */
+/* A Bison parser, made by GNU Bison 3.5.1.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2020 Free Software Foundation,
    Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -31,9 +31,8 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
-   especially those whose name start with YY_ or yy_.  They are
-   private implementation details that can be changed or removed.  */
+/* Undocumented macros, especially those whose name start with YY_,
+   are private implementation details.  Do not rely on them.  */
 
 #ifndef YY_YY_PARSER_TAB_H_INCLUDED
 # define YY_YY_PARSER_TAB_H_INCLUDED
@@ -45,102 +44,97 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 27 "src/parser.y"
+#line 33 "src/parser.y"
 
 	#include "node.hpp"
 
-#line 53 "parser.tab.h"
+#line 52 "parser.tab.h"
 
-/* Token kinds.  */
+/* Token type.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    YYEMPTY = -2,
-    YYEOF = 0,                     /* "end of file"  */
-    YYerror = 256,                 /* error  */
-    YYUNDEF = 257,                 /* "invalid token"  */
-    INTEGER_VAL = 258,             /* INTEGER_VAL  */
-    FLOAT_VAL = 259,               /* FLOAT_VAL  */
-    TRUE = 260,                    /* TRUE  */
-    FALSE = 261,                   /* FALSE  */
-    NULLPOINTER = 262,             /* NULLPOINTER  */
-    BREAK = 263,                   /* BREAK  */
-    CONTINUE = 264,                /* CONTINUE  */
-    RETURN = 265,                  /* RETURN  */
-    SCOLON = 266,                  /* SCOLON  */
-    FUNC = 267,                    /* FUNC  */
-    STRUCT = 268,                  /* STRUCT  */
-    ELSE = 269,                    /* ELSE  */
-    PACKAGE = 270,                 /* PACKAGE  */
-    IF = 271,                      /* IF  */
-    FOR = 272,                     /* FOR  */
-    RANGE = 273,                   /* RANGE  */
-    IMPORT = 274,                  /* IMPORT  */
-    VAR = 275,                     /* VAR  */
-    SWITCH = 276,                  /* SWITCH  */
-    CASE = 277,                    /* CASE  */
-    NEW = 278,                     /* NEW  */
-    CONST = 279,                   /* CONST  */
-    MAP = 280,                     /* MAP  */
-    DEFAULT = 281,                 /* DEFAULT  */
-    MAKE = 282,                    /* MAKE  */
-    GOTO = 283,                    /* GOTO  */
-    FALLTHROUGH = 284,             /* FALLTHROUGH  */
-    TYPE = 285,                    /* TYPE  */
-    PLUSPLUS = 286,                /* PLUSPLUS  */
-    MINUSMINUS = 287,              /* MINUSMINUS  */
-    ANDNOT = 288,                  /* ANDNOT  */
-    ELIPSIS = 289,                 /* ELIPSIS  */
-    ADD = 290,                     /* ADD  */
-    SUB = 291,                     /* SUB  */
-    NOT = 292,                     /* NOT  */
-    XOR = 293,                     /* XOR  */
-    MUL = 294,                     /* MUL  */
-    AND = 295,                     /* AND  */
-    OR = 296,                      /* OR  */
-    LOGOR = 297,                   /* LOGOR  */
-    LOGAND = 298,                  /* LOGAND  */
-    ISEQ = 299,                    /* ISEQ  */
-    NEQ = 300,                     /* NEQ  */
-    LESSEQ = 301,                  /* LESSEQ  */
-    GRTEQ = 302,                   /* GRTEQ  */
-    GRT = 303,                     /* GRT  */
-    LESS = 304,                    /* LESS  */
-    MOD = 305,                     /* MOD  */
-    QUOT = 306,                    /* QUOT  */
-    SHL = 307,                     /* SHL  */
-    SHR = 308,                     /* SHR  */
-    EQ = 309,                      /* EQ  */
-    INFER_EQ = 310,                /* INFER_EQ  */
-    RIGHTPARAN = 311,              /* RIGHTPARAN  */
-    RIGHTBRACE = 312,              /* RIGHTBRACE  */
-    RIGHTSQUARE = 313,             /* RIGHTSQUARE  */
-    LEFTPARAN = 314,               /* LEFTPARAN  */
-    LEFTBRACE = 315,               /* LEFTBRACE  */
-    LEFTSQUARE = 316,              /* LEFTSQUARE  */
-    COLON = 317,                   /* COLON  */
-    DOT = 318,                     /* DOT  */
-    COMMA = 319,                   /* COMMA  */
-    RAW_STRING = 320,              /* RAW_STRING  */
-    INTERPRETED_STRING = 321,      /* INTERPRETED_STRING  */
-    BYTE_VAL = 322,                /* BYTE_VAL  */
-    IDENTIFIER = 323,              /* IDENTIFIER  */
-    ASSGN_OP = 324                 /* ASSGN_OP  */
+    INTEGER_VAL = 258,
+    FLOAT_VAL = 259,
+    TRUE = 260,
+    FALSE = 261,
+    NULLPOINTER = 262,
+    BREAK = 263,
+    CONTINUE = 264,
+    RETURN = 265,
+    SCOLON = 266,
+    FUNC = 267,
+    STRUCT = 268,
+    ELSE = 269,
+    PACKAGE = 270,
+    IF = 271,
+    FOR = 272,
+    RANGE = 273,
+    IMPORT = 274,
+    VAR = 275,
+    SWITCH = 276,
+    CASE = 277,
+    NEW = 278,
+    CONST = 279,
+    MAP = 280,
+    DEFAULT = 281,
+    MAKE = 282,
+    GOTO = 283,
+    FALLTHROUGH = 284,
+    TYPE = 285,
+    PLUSPLUS = 286,
+    MINUSMINUS = 287,
+    ANDNOT = 288,
+    ELIPSIS = 289,
+    ADD = 290,
+    SUB = 291,
+    NOT = 292,
+    XOR = 293,
+    MUL = 294,
+    AND = 295,
+    OR = 296,
+    LOGOR = 297,
+    LOGAND = 298,
+    ISEQ = 299,
+    NEQ = 300,
+    LESSEQ = 301,
+    GRTEQ = 302,
+    GRT = 303,
+    LESS = 304,
+    MOD = 305,
+    QUOT = 306,
+    SHL = 307,
+    SHR = 308,
+    EQ = 309,
+    INFER_EQ = 310,
+    RIGHTPARAN = 311,
+    RIGHTBRACE = 312,
+    RIGHTSQUARE = 313,
+    LEFTPARAN = 314,
+    LEFTBRACE = 315,
+    LEFTSQUARE = 316,
+    COLON = 317,
+    DOT = 318,
+    COMMA = 319,
+    RAW_STRING = 320,
+    INTERPRETED_STRING = 321,
+    BYTE_VAL = 322,
+    IDENTIFIER = 323,
+    ASSGN_OP = 324
   };
-  typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 31 "src/parser.y"
+#line 37 "src/parser.y"
 
 	Node* nt;
 	char* sval;
 
-#line 144 "parser.tab.h"
+#line 138 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
