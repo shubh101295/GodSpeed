@@ -137,3 +137,15 @@ bool BreakLabels::is_empty(){
 void BreakLabels::remove_last_break_label(){
 	break_labels_list_position-=1;
 }
+
+void SwitchCaseList::add_case_label(bool _is_default,bool _has_fallthrough){
+	if(_is_default && has_default) {
+		cout<<"HAS MORE THAN 1 DEFAULT CASES\n";
+		exit(1);
+	}
+	string current_case_label_string = "Case "+to_string(case_label_list.size());
+	has_default = has_default || _is_default;
+	CaseLabel* current_case_label = new CaseLabel(_is_default,current_case_label_string,_has_fallthrough);
+	case_label_list.pb(current_case_label);
+	// current_position+=1;
+}
