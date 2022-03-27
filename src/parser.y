@@ -2344,13 +2344,17 @@ ExpressionList:
 	;
 // remaining
 TypeDecl:
-	TYPE LEFTPARAN TypeSpec SCOLON RIGHTPARAN {
+	/* TYPE LEFTPARAN TypeSpec SCOLON RIGHTPARAN {
 		$$ = new Node("TypeDecl");
 		$$->add_non_terminal_children($3);
 	}
-	| TYPE TypeSpec {
+	| */
+	TYPE TypeSpec {
 		$$ = new Node("TypeDecl");
 		$$->add_non_terminal_children($2);
+
+		$$->current_node_data = $2->current_node_data;
+		$$->current_type = $2->current_type;
 	}
 	;
 // remaining
@@ -2365,7 +2369,6 @@ TypeDecl:
 		$$->add_non_terminal_children($1);
 	}
 	; */
-// remaining
 TypeSpec:
 	/* AliasDecl {
 		$$ = new Node("TypeSpec");
@@ -2384,11 +2387,12 @@ TypeSpec:
 		$$ -> add_non_terminal_children($3);
 	}
 	; */
-// remaining
 TypeDef:
 	IDENTIFIER Type {
 		$$ =  new Node("TypeDef");
-		$$ ->add_non_terminal_children($2);
+		$$->add_non_terminal_children($2);
+		tt->add_in_type_table(string($1), $2->current_type);
+		$$->current_node_data = new NodeData("TypeDef");
 	}
 	;
 
