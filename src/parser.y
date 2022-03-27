@@ -65,6 +65,7 @@
 %type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type BaseType
 %type <nt> PointerType IdentifierList TypeDef
 %type <nt> VarSpecList TypeList ExprCaseClause
+%type <nt> FakeTrue
 %left LOGOR
 %left LOGAND
 %left ISEQ NEQ GRTEQ GRT LESSEQ LESS
@@ -311,14 +312,17 @@ Statement:
 		$$ = curr;
 	}
 	| SimpleStmt {
+		// cout<<"Statement:	SimpleStmt\n";
 		Node* curr = new Node("Statement");
-		cout<<"Statement:	SimpleStmt\n";
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
+		
 		curr->current_node_data = $1->current_node_data;
+		cout<<"Statement:	SimpleStmt "<<($1->current_node_data==NULL)<<"\n";
 		$$ = curr;
 	}
 	| ReturnStmt{
+		cout<<"Statement:	ReturnStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -326,6 +330,7 @@ Statement:
 		$$ = curr;
 	}
 	| BreakStmt {
+		cout<<"Statement:	BreakStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -333,6 +338,7 @@ Statement:
 		$$ = curr;
 	}
 	| ContinueStmt {
+		cout<<"Statement:	ContinueStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -340,6 +346,7 @@ Statement:
 		$$ = curr;
 	}
 	| GotoStmt {
+		cout<<"Statement:	GotoStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -347,6 +354,7 @@ Statement:
 		$$ = curr;
 	}
 	| SwitchStmt {
+		cout<<"Statement:	SwitchStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -354,12 +362,14 @@ Statement:
 		$$ = curr;
 	}
 	| FallthroughStmt {
+		cout<<"Statement:	FallthroughStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_node_data = $1->current_node_data;
 		$$ = curr;
 	}
 	| Block {
+		cout<<"Statement:	Block\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -367,6 +377,7 @@ Statement:
 		$$ = curr;
 	}
 	| IfStmt {
+		cout<<"Statement:	IfStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -374,6 +385,7 @@ Statement:
 		$$ = curr;
 	}
 	| ForStmt {
+		cout<<"Statement:	ForStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -486,6 +498,7 @@ SimpleStmt:
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
+		cout<<"SimpleStmt: Assignment "<<($$->current_node_data==NULL)<<"\n";
 	}
 	| ShortVarDecl {
 		$$ = new Node("SimpleStmt");
@@ -590,7 +603,9 @@ Assignment:
 		parRight->node_child = $3->current_node_data;
 		parLeft->next_data = parRight;
 		$$->current_node_data = new NodeData(string($2));
+		
 		$$->current_node_data->node_child = parLeft;
+		cout<<"Assignment: ExpressionList ASSGN_OP ExpressionList "<<($$->current_node_data==NULL)<<"\n";
 	}
 	;
 
@@ -1259,7 +1274,12 @@ GotoStmt:
 	;
 
 SwitchStmt:
-	ExprSwitchStmt
+	ExprSwitchStmt{
+		$$ = new Node("SwitchStmt");
+		$$ -> add_non_terminal_children($1);
+		$$ -> current_type = $1->current_type;
+		$$ -> current_node_data = $1->current_node_data;
+	}
 	;
 
 ExprSwitchStmt:
@@ -1271,10 +1291,53 @@ ExprSwitchStmt:
 	// | SWITCH SimpleStmt SCOLON Expression LEFTBRACE RIGHTBRACE {;}
 	// |
 
-	 SWITCH LEFTBRACE  { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE{;}
-	| SWITCH SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE{;}
-	| SWITCH Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE {;}
-	| SWITCH SimpleStmt SCOLON Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE {;}
+	 SWITCH FakeTrue LEFTBRACE  { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE{
+	 	$$ = new Node("ExprSwitchStmt");
+		$$->add_non_terminal_children($2);
+		$$->add_non_terminal_children($5);
+		$$ -> current_node_data = new NodeData("SWITCH");
+		NodeData* it = $$->current_node_data;
+		it->node_child = new NodeData("MatchCondition");
+		it=it->node_child;
+		it->node_child = $2->current_node_data;
+		it->next_data = new NodeData("SwitchCases");
+		it=it->next_data;
+		it->node_child = $5->current_node_data;
+	 	scl = NULL;
+	 }
+	| SWITCH SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); }
+	 	ExprCaseClauseList RIGHTBRACE {
+	 	cout<<"SWITCH SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
+
+	 	$$ = new Node("ExprSwitchStmt");
+		$$->add_non_terminal_children($2);
+		$$->add_non_terminal_children($6);
+		$$ -> current_node_data = new NodeData("SWITCH");
+		NodeData* it = $$->current_node_data;
+		it->node_child = new NodeData("MatchCondition");
+		it=it->node_child;
+		it->node_child = $2->current_node_data;
+		it->next_data = new NodeData("SwitchCases");
+		it=it->next_data;
+		it->node_child = $6->current_node_data;
+	 	scl = NULL;
+	}
+	| SWITCH Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE {
+		cout<<"SWITCH Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
+		$$ = new Node("ExprSwitchStmt");
+		$$->add_non_terminal_children($2);
+		$$->add_non_terminal_children($5);
+		$$ -> current_node_data = new NodeData("SWITCH");
+		NodeData* it = $$->current_node_data;
+		it->node_child = new NodeData("MatchCondition");
+		it=it->node_child;
+		it->node_child = $2->current_node_data;
+		it->next_data = new NodeData("SwitchCases");
+		it=it->next_data;
+		it->node_child = $5->current_node_data;
+	 	scl = NULL;
+	}
+	// | SWITCH SimpleStmt SCOLON Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE {;}
 	;
 
 ExprCaseClauseList:
@@ -1282,16 +1345,19 @@ ExprCaseClauseList:
 		$$ = new Node("ExprCaseClauseList");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
+		$$->current_node_data = $1->current_node_data;
+		($$->current_node_data->last_next_child())->next_data = $2->current_node_data;
 	}
 	| ExprCaseClause {
 		$$ = new Node("ExprCaseClauseList");
 		$$->add_non_terminal_children($1);
+		$$->current_node_data = $1->current_node_data;
+		$$->current_type = $1->current_type;
 	}
 	;
 
 ExprCaseClause:
 	ExprSwitchCase COLON StatementList {
-
 		$$ = new Node("ExprCaseClause");
 		$$ -> add_non_terminal_children($1);
 		$$ -> add_non_terminal_children($3);
@@ -1304,21 +1370,46 @@ ExprCaseClause:
 		has_default_statement=false;
 		is_inside_case = false;
 		fallthrough_expression_count=0;
-	}
+
+		$$->current_node_data = $1->current_node_data;
+		$$->current_type = $1->current_type;
+		$$->current_node_data->next_data = $3->current_node_data;
+    }
 	;
+
+
+FakeTrue:
+	{
+		 Node* curr = new Node("BasicLit");
+		 curr->add_terminal_children("true");
+		 curr->current_node_data = new NodeData("true");
+		 curr->current_type = new BasicType("bool");
+		 $$ = curr;
+	}
 
 ExprSwitchCase:
 	CASE ExpressionList {
+		cout<<"ExprSwitchCase:  CASE ExpressionList\n";
 		$$ = new Node("ExprSwitchCase");
 		$$ -> add_non_terminal_children($2);
-
 		is_inside_case = true;
+		$$->current_node_data = $2->current_node_data;
+		$$->current_type = $2->current_type;
+
 	}
-	| DEFAULT {
+	| DEFAULT FakeTrue {
+		/* a fake true as expression list*/
+		// Node* child_curr = new Node("BasicLit");
+		//  child_curr->add_terminal_children("true");
+		//  child_curr->current_node_data = new NodeData("true");
+		//  child_curr->current_type = new BasicType("bool");
+		//  // $$ = curr;
+
 		$$ = new Node("ExprSwitchCase");
 		is_inside_case = true;
 		has_default_statement = true;
-		
+		$$->current_node_data = $2->current_node_data;
+		$$->current_type = $2->current_type;	
 	}
 	;
 
@@ -2089,6 +2180,7 @@ Expression:
 			$$->current_type = new BasicType("bool");
 		}
 	| UnaryExpr {
+		cout<<"Expression: UnaryExpr\n";
 			$$ = new Node("Expression");
 			$$->add_non_terminal_children($1);
 			$$->current_type = $1->current_type;
@@ -2143,6 +2235,7 @@ UnaryExpr:
 			$$->current_type = $2->current_type->copyClass();
 		}
 	| PrimaryExpr {
+		cout<<"UnaryExpr: PrimaryExpr\n";
 		$$ = new Node("UnaryExpr");
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
@@ -2370,6 +2463,7 @@ Arguments:
 // remaining
 ExpressionList:
 	Expression {
+		cout<<"ExpressionList: Expression\n";
 		Node* curr = new Node("ExpressionList");
 		curr->add_non_terminal_children($1);
 
