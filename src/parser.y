@@ -2320,7 +2320,7 @@ Arguments:
 	}
 	;
 
-// remaining
+// remaining: Check if this last usage is correct: Note to TK.
 ExpressionList:
 	Expression {
 		Node* curr = new Node("ExpressionList");
@@ -2337,7 +2337,9 @@ ExpressionList:
 		curr->add_non_terminal_children($3);
 
 		curr->current_node_data = $3->current_node_data;
+		($$->last_current_node_data())->next_data = $3->current_node_data;
 		curr->current_type = $3->current_type;
+		($$->last_current_type())->next_type = $3->current_type;
 
 		$$ = curr;
 	}
