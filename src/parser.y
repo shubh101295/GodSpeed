@@ -2499,7 +2499,6 @@ PointerType:
 
 		curr->current_type = $2->current_type;
 		curr->current_node_data = $2->current_node_data;
-		// remaining: please check if undefinied exists in types. SA says only TK knows.
 		if($2->current_type->getDataType() == "undefined")
 		{
 			$2->current_type = new BasicType($2->current_node_data->data_name);
