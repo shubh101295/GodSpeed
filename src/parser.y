@@ -1237,7 +1237,6 @@ GotoStmt:
 		Node* curr = new Node("GotoStmt");
 		curr->add_terminal_children(string($2));
 		curr->current_node_data = new NodeData(string($1));
-		// still remaining
 		curr->current_node_data->node_child = new NodeData(string($2));
 		$$ = curr;
 	}
@@ -2475,7 +2474,6 @@ FieldDeclList:
 	}
 	;
 
-// Remaining
 FieldDecl:
 	IdentifierList Type String {
 		Node* curr = new Node("FieldDecl");
@@ -2484,15 +2482,39 @@ FieldDecl:
 		curr->add_non_terminal_children($3);
 
 		DataType* tp = $2->current_type;
-//		tp->next = NULL;
+		tp->next_type = NULL;
 
-		NodeData* lp = $1->current_node_data;
+		
+		map< string, DataType*> m;
 
+		for(NodeData* lp = $1->current_node_data; lp != NULL; lp = lp->next_data){
+			string key = lp->data_name;
+			DataType* value = tp->copyClass();
+			m[key] = value;
+		}
 
-
+		curr->current_type = new StructType(m);
 		$$ = curr;
 		}
-	| IdentifierList Type
+	| IdentifierList Type {
+		Node* curr = new Node("FieldDecl");
+		curr->add_non_terminal_children($1);
+		curr->add_non_terminal_children($2);
+
+		DataType* tp = $2->current_type;
+		tp->next_type = NULL;
+
+		map< string, DataType*> m;
+
+		for(NodeData* lp = $1->current_node_data; lp != NULL; lp = lp->next_data){
+			string key = lp->data_name;
+			DataType* value = tp->copyClass();
+			m[key] = value;
+		}
+
+		curr->current_type = new StructType(m);
+		$$ = curr;
+		}
 	;
 
 PointerType:
@@ -2572,7 +2594,7 @@ Literal:
 		 curr->current_type = $1->current_type;
 		 $$ = curr;
 		 }
-    |	 CompositeLit{
+    |CompositeLit{
 		 Node* curr =new Node("Literal");
 		 curr->add_non_terminal_children($1);
 		 curr->current_node_data = $1->current_node_data;
