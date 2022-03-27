@@ -2472,7 +2472,7 @@ FieldDeclList:
 	;
 
 // Remaining
- FieldDecl:
+FieldDecl:
 	IdentifierList Type String {
 		Node* curr = new Node("FieldDecl");
 		curr->add_non_terminal_children($1);
@@ -2491,7 +2491,6 @@ FieldDeclList:
 	| IdentifierList Type
 	;
 
-// remaining (data->name)
 PointerType:
 	MUL BaseType {
 		Node* curr = new Node("PointerType");
@@ -2500,8 +2499,12 @@ PointerType:
 
 		curr->current_type = $2->current_type;
 		curr->current_node_data = $2->current_node_data;
-
-
+		// remaining: please check if undefinied exists in types. SA says only TK knows.
+		if($2->current_type->getDataType() == "undefined")
+		{
+			$2->current_type = new BasicType($2->current_node_data->data_name);
+		}
+		curr-> current_type = new PointerType($2->current_type->copyClass());
 		$$ = curr;
 	}
 	;
