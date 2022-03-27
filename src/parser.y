@@ -2284,12 +2284,16 @@ UnaryExpr:
 		// curr->add_non_terminal_children($2);
 		$$ = curr;
 	}
- 	| OperandName StructLiteral {cout<<"PrimaryExpr:StructLiteral\n";}
+ 	| OperandName StructLiteral {
+		Node* curr = new Node("PrimaryExpr");
+		curr->add_non_terminal_children($1);
+		curr->add_non_terminal_children($2);
+		$$ = curr;
+	}
 	| PrimaryExpr TypeAssertion {
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children($1);
-		// still remaining
-		// curr->add_non_terminal_children($2);
+		curr->add_non_terminal_children($2);
 		$$ = curr;
 	}
  	;
@@ -2387,7 +2391,6 @@ Slice:
 	}
 	 ;
 
-// remaining (child)
 MakeExpr:
 	MAKE LEFTPARAN Type COMMA Expression COMMA Expression RIGHTPARAN {
 		Node* curr = new Node("MakeExpr");
@@ -2397,6 +2400,10 @@ MakeExpr:
 
 		curr->current_type = $3->current_type;
 		curr->current_node_data = new NodeData("Make");
+
+		curr->current_node_data->node_child = $5->current_node_data;
+		curr->current_node_data->node_child->next_data = $7->current_node_data;
+
 		$$ = curr;
 	}
 	| MAKE LEFTPARAN Type COMMA Expression RIGHTPARAN {
@@ -2406,6 +2413,8 @@ MakeExpr:
 
 		curr->current_type = $3->current_type;
 		curr->current_node_data = new NodeData("Make");
+
+		curr->current_node_data->node_child = $5->current_node_data;
 		$$ = curr;
 	}
 	| MAKE LEFTPARAN Type RIGHTPARAN {
@@ -2460,7 +2469,7 @@ Arguments:
 	}
 	;
 
-// remaining
+// remaining: Check if this last usage is correct: Note to TK.
 ExpressionList:
 	Expression {
 		cout<<"ExpressionList: Expression\n";
@@ -2478,7 +2487,9 @@ ExpressionList:
 		curr->add_non_terminal_children($3);
 
 		curr->current_node_data = $3->current_node_data;
+		($$->last_current_node_data())->next_data = $3->current_node_data;
 		curr->current_type = $3->current_type;
+		($$->last_current_type())->next_type = $3->current_type;
 
 		$$ = curr;
 	}
@@ -2606,7 +2617,7 @@ FieldDeclList:
 	;
 
 // Remaining
- FieldDecl:
+FieldDecl:
 	IdentifierList Type String {
 		Node* curr = new Node("FieldDecl");
 		curr->add_non_terminal_children($1);
@@ -2625,7 +2636,6 @@ FieldDeclList:
 	| IdentifierList Type
 	;
 
-// remaining (data->name)
 PointerType:
 	MUL BaseType {
 		Node* curr = new Node("PointerType");
@@ -2634,8 +2644,11 @@ PointerType:
 
 		curr->current_type = $2->current_type;
 		curr->current_node_data = $2->current_node_data;
-
-
+		if($2->current_type->getDataType() == "undefined")
+		{
+			$2->current_type = new BasicType($2->current_node_data->data_name);
+		}
+		curr-> current_type = new PointerType($2->current_type->copyClass());
 		$$ = curr;
 	}
 	;
@@ -2651,14 +2664,41 @@ BaseType:
 		$$ = curr;
 	}
 	;
-// Remaining
+// remaining: Please check if this is correct, TK and SA
 ArrayType:
 	LEFTSQUARE Expression RIGHTSQUARE Type {
 		 Node* curr = new Node("ArrayType");
 		 curr->add_non_terminal_children($2);
 		 curr->add_non_terminal_children($4);
-		 if($2->current_type->getDataType() == "int"){
-//			 curr->current_type = new ArrayType
+
+		 bool is_basic = false;
+		 int val_stored = 0;
+		 if($2->current_type->getDataType() == "int")
+		 {
+			 Node* iter = $2;
+			 while(iter != NULL && iter->current_node_children.size() == 1)
+			 {
+				 if(iter->node_name == "BasicLit")
+				 {
+					 is_basic = true;
+					 val_stored = stoi(iter->current_node_data->data_name);
+					 break;
+				 }
+				 iter = iter->current_node_children[0].non_terminal_node;
+			 }
+			 if(is_basic)
+			 {
+				 DataType* tp = $4->current_type->copyClass();
+				 curr->current_type = new ArrayType(tp, val_stored);
+			 }
+			 else
+			 {
+				 cout<<"the array indices are not literals\n";
+			 }
+		 }
+		 else
+		 {
+			 cout<<"The array indices is not an integer";
 		 }
 		 $$ = curr;
 		 }
