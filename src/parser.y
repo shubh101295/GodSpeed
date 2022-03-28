@@ -53,7 +53,7 @@
 %type <nt> Signature Result Parameters ParameterList ParameterDecl
 %type <nt> MethodDecl Receiver TopLevelDecl LabeledStmt
 %type <nt> ReturnStmt BreakStmt ContinueStmt GotoStmt FallthroughStmt StructType
-%type <nt> FunctionBody ForStmt RangeClause
+%type <nt> FunctionBody ForStmt
 %type <nt> FunctionDecl SwitchStmt ExprSwitchCase ExprSwitchStmt
 %type <nt> Condition  UnaryExpr PrimaryExpr
 %type <nt> Selector Index Slice TypeDecl TypeSpec VarDecl
@@ -1006,6 +1006,7 @@ Parameters:
 
 ParameterList:
 	ParameterDecl {
+		cout<<"ParameterList: ParameterDecl"<<endl;
 		$$ = new Node("ParameterList");
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
@@ -1084,7 +1085,56 @@ CompositeLit:
 	LiteralType LiteralValue {
 		cout<<"CompositeLit: LiteralType LiteralValue"<<endl;
         $$ = new Node("CompositeLit");
-
+        $$->add_non_terminal_children($1);
+        $$->add_non_terminal_children($2);
+        int num;
+        DataType *iter;
+        ArrayType* array;
+        SliceType* slice;
+        switch ($1->current_type->current_data_type) {
+            case _ARRAY:
+                array = dynamic_cast<ArrayType*>($1->current_type);
+                num = 0;
+                iter = $2->current_type;
+                while (iter != NULL) {
+                    if (iter->getDataType() != array->array_index_type->getDataType()) {
+                        cout<<"Element of wrong datatype in array declaration" << iter->getDataType();
+                        exit(1);
+                    }
+                    num++;
+                    iter = iter->next_type;
+                }
+                if (num > array->array_size) {
+                	cout<<"Number of elements more than size: Expected [ "<<array->array_size<<" ]"<<endl;
+                	exit(1);
+                }
+                $$->current_node_data = new NodeData("ArrayLiteral");
+                $$->current_node_data->node_child = new NodeData("Type");
+                $$->current_node_data->node_child->next_data = new NodeData("Value");
+                $$->current_node_data->node_child = $1->current_node_data;
+                $$->current_node_data->node_child->next_data->node_child = $2->current_node_data;
+                $$->current_type = $1->current_type->copyClass();
+                break;
+            case _SLICE:
+                slice = dynamic_cast<SliceType*>($1->current_type);
+                iter = $2->current_type;
+                while (iter != NULL) {
+                    if (iter->getDataType() != slice->slice_base->getDataType()) {
+                        cout<<"Element of wrong datatype in slice declaration" << iter->getDataType();
+                        exit(1);
+                    }
+                    iter = iter->next_type;
+                }
+                $$->current_node_data = new NodeData("SliceLiteral");
+                $$->current_node_data->node_child = new NodeData("Type");
+                $$->current_node_data->node_child->next_data = new NodeData("Value");
+                $$->current_node_data->node_child = $1->current_node_data;
+                $$->current_node_data->node_child->next_data->node_child = $2->current_node_data;
+                $$->current_type = $1->current_type->copyClass();
+            default:
+                cerr << "Composite type not yet supported" << endl;
+                exit(1);
+        }
     }
 	;
 
@@ -1757,38 +1807,38 @@ forMarkerEnd:
 	//;
 
 // Might change, temporarily added
-RangeClause:
-	RANGE Expression {
-		$$ = new Node("RangeClause");
-		$$->add_non_terminal_children($2);
-		$$ -> current_node_data = new NodeData("RangeClause");
-		$$ -> current_node_data -> node_child = new NodeData("Expression");
-		$$ -> current_node_data ->node_child->node_child = $2->current_node_data;
-	}
-	| IdentifierList INFER_EQ RANGE Expression {
-		$$ = new Node("RangeClause");
-		$$->add_non_terminal_children($1);
-		$$->add_non_terminal_children($4);
-		$$ -> current_node_data = new NodeData("RangeClause");
-		$$ -> current_node_data -> node_child = new NodeData("IdentifierList");
-		$$ -> current_node_data -> node_child -> node_child = $1->current_node_data;
-		NodeData* it = $$->current_node_data -> node_child;
-		it->next = new NodeData("RangeExpression");
-		it->next->node_child = $4->current_node_data;
-	}
-	| ExpressionList ASSGN_OP RANGE Expression {
-		$$ = new Node("RangeClause");
-		$$->add_non_terminal_children($1);
-		$$->add_non_terminal_children($4);
-		$$ -> current_node_data = new NodeData("RangeClause");
-		$$ -> current_node_data -> node_child = new NodeData("ExpressionList");
-		$$ -> current_node_data -> node_child -> node_child = $1->current_node_data;
-		NodeData* it = $$->current_node_data -> node_child;
-		it->next = new NodeData("RangeExpression");
-		it->next->node_child = $4->current_node_data;
+//RangeClause:
+//	RANGE Expression {
+//		$$ = new Node("RangeClause");
+//		$$->add_non_terminal_children($2);
+//		$$ -> current_node_data = new NodeData("RangeClause");
+//		$$ -> current_node_data -> node_child = new NodeData("Expression");
+//		$$ -> current_node_data ->node_child->node_child = $2->current_node_data;
+//	}
+//	| IdentifierList INFER_EQ RANGE Expression {
+//		$$ = new Node("RangeClause");
+//		$$->add_non_terminal_children($1);
+//		$$->add_non_terminal_children($4);
+//		$$ -> current_node_data = new NodeData("RangeClause");
+//		$$ -> current_node_data -> node_child = new NodeData("IdentifierList");
+//		$$ -> current_node_data -> node_child -> node_child = $1->current_node_data;
+//		NodeData* it = $$->current_node_data -> node_child;
+//		it->next = new NodeData("RangeExpression");
+//		it->next->node_child = $4->current_node_data;
+//	}
+//	| ExpressionList ASSGN_OP RANGE Expression {
+//		$$ = new Node("RangeClause");
+//		$$->add_non_terminal_children($1);
+//		$$->add_non_terminal_children($4);
+//		$$ -> current_node_data = new NodeData("RangeClause");
+//		$$ -> current_node_data -> node_child = new NodeData("ExpressionList");
+//		$$ -> current_node_data -> node_child -> node_child = $1->current_node_data;
+//		NodeData* it = $$->current_node_data -> node_child;
+//		it->next = new NodeData("RangeExpression");
+//		it->next->node_child = $4->current_node_data;
 
-	}
-	;
+//	}
+//	;
 Expression:
 	Expression MUL Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
@@ -2489,11 +2539,44 @@ UnaryExpr:
 		$$ = curr;
 	}
  	| PrimaryExpr Arguments {
-		Node* curr = new Node("PrimaryExpr");
-		curr->add_non_terminal_children($1);
-		// still remaining
-		// curr->add_non_terminal_children($2);
-		$$ = curr;
+		$$ = new Node("PrimaryExpr");
+		$$->add_non_terminal_children($1);
+		$$->add_non_terminal_children($2);
+		$$->current_node_data = new NodeData("FunctionCall");
+		$$->current_node_data->node_child = $1->current_node_data;
+		$$->current_node_data->node_child->next_data = $2->current_node_data;
+		if($1->current_type->current_data_type != _FUNCTION){
+			cout<<$1->current_type->getDataType()<<" is not a function\n";
+			exit(1);
+		}
+		int pos=1;
+		auto fxn = dynamic_cast<FunctionType *>($1->current_type);
+		DataType* argType = $2->current_type;
+		for(auto req_arg_type: fxn->argument_types){
+			cout<<req_arg_type->getDataType()<<endl;
+			if(argType == NULL){
+				cout<<"Insufficient number of arguments for function "<<endl;
+				exit(1);
+			}
+			if(argType->getDataType()!= req_arg_type->getDataType()){
+				cout<<"[Type Mismatch] at position: " << pos<<". Expected arg type: "<<req_arg_type->getDataType()<<" . Found Type: "<<argType->getDataType()<<endl;
+				exit(1);
+			}
+			argType = argType -> next_type;
+			pos++;
+		}
+		if(argType){
+			cout<<"Extra arguments provided to function"<<endl;
+			exit(1);
+		}
+
+		DataType* head = new BasicType("");
+		DataType* temp = head;
+		for(auto x: fxn->return_type){
+			head -> next_type = x;
+			head = head->next_type; 
+		}
+		$$->current_type = temp->next_type;
 	}
  	| OperandName StructLiteral {
 		Node* curr = new Node("PrimaryExpr");
