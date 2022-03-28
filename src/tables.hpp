@@ -31,6 +31,7 @@ public:
 	map<pair<string,string>, DataType*>         get_symbol_table_data();
 	DataType*      get_value_from_key(string _variable_name);
 	DataType*      get_type(string variable_name);
+	
 
 };
 

@@ -17,6 +17,7 @@ string SymbolTable::get_current_scope() {
 }
 
 void SymbolTable::enter_new_scope() {
+	cout<<"Inside SymbolTable::enter_new_scope\n";
 	current_block_inside_count+=1;
 	if(current_block_inside_count>=current_block_numbers.size())
 	{
@@ -37,6 +38,7 @@ void SymbolTable::enter_new_scope() {
 void SymbolTable::exit_latest_scope(){
 	// delete all from current scope left
 	current_block_inside_count-=1;
+	cout<<"EXit SymbolTable::enter_new_scope\n";
 	update_current_scope();
 }
 
@@ -60,6 +62,8 @@ bool SymbolTable::add_in_symbol_table(pair<string,string> new_key,DataType* new_
 		symbol_table[new_key] = new_datatype;
 		return true;
 	}
+	cout<<"[Redeclation of Variable]  " <<new_key.second<<" "<<"Is already declared in the scope \n";
+	exit(1);
 	// was already present in the scope
 	return false;
 }

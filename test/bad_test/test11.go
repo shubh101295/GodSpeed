@@ -12,6 +12,7 @@ func main() {
 	var a,b int
 	a= 1
 	b= 2
+	// var a int
 	// continue
 	break
 	for i := 0; i < 4; i++{

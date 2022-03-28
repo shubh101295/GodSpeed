@@ -29,17 +29,34 @@ DataType *BasicType::copyClass() {
 
 string FunctionType::getDataType(){
 	string current_type = " func(";
-	for(int i=0;i<argument_types.size()-1;i++)
+		// cout<<current_type<<"\n";
+		// cout<<argument_types.size()<<" "<<return_type.size()<<"\n";
+		// cout<<((argument_types.size()-1))<<(0<(argument_types.size()-1))<<"\n";
+	if(argument_types.size())
 	{
-		current_type+=argument_types[i]->getDataType()+", ";
+		for(int i=0;i<(argument_types.size()-1);i++)
+		{
+			cout<<"A "<<i<<"\n";
+			current_type+=argument_types[i]->getDataType()+", ";
+		}
+		// cout<<current_type<<"\n";
+
+		// if(argument_types.size()) 
+		current_type+=argument_types[argument_types.size()-1]->getDataType();
+
 	}
-	if(argument_types.size()) current_type+=argument_types[argument_types.size()-1]->getDataType();
 	current_type+=") (";
-	for(int i=0;i<return_type.size()-1;i++)
+	// cout<<current_type<<"\n";
+	if(return_type.size())
 	{
-		current_type+=return_type[i]->getDataType()+", ";
+		for(int i=0;i<return_type.size()-1;i++)
+		{
+			current_type+=return_type[i]->getDataType()+", ";
+		}
+		// if(return_type.size()) 
+			current_type+=return_type[return_type.size()-1]->getDataType();
+
 	}
-	if(return_type.size()) current_type+=return_type[return_type.size()-1]->getDataType();
 	return current_type+")";
 }
 
