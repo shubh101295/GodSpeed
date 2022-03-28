@@ -87,6 +87,8 @@ SourceFile:
 			 dump_dot_file("ast.dot", $$);
 			 auto val = st->get_symbol_table_data();
 			 int x=0;
+			 string yoyyo = "ghasgtvdegd";
+			 // cout<<string
 			 for (auto temp:val)
 			 {
 			 	cout<<temp.first.first<<" - "<<temp.first.second<<" -  \n";
@@ -442,26 +444,33 @@ Declaration:
 
 // might change
 FunctionDecl:
-	FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock {
+	FUNC IDENTIFIER OpenBlock Signature FunctionBody 
+	{
+		st->add_in_symbol_table({"0;",string($2)},$4->current_type); 
+		st->output_csv_for_function(string($2),st->get_current_scope());
+	} CloseBlock {
 		cout<<"FunctionDecl: FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock \n";
 		Node* curr = new Node("FunctionDecl");
 		curr->add_terminal_children(string($2));
 		curr->add_non_terminal_children($4);
 		curr->add_non_terminal_children($5);
 		$$ = curr;
-		st->add_in_symbol_table({st->get_current_scope(),string($2)},$4->current_type);
+		// st->add_in_symbol_table({st->get_current_scope(),string($2)},$4->current_type);
 		// cout<<($4->current_type->copyClass())->getDataType()<<"\n";
 		// exit(1);
 		$$-> current_node_data = new NodeData("Function-" + string($2));
 		$$-> current_node_data->node_child = $5->current_node_data;
 
 	}
-	| FUNC IDENTIFIER OpenBlock Signature CloseBlock  {
+	| FUNC IDENTIFIER OpenBlock Signature {
+		st->add_in_symbol_table({"0;",string($2)},$4->current_type);	
+		st->output_csv_for_function(string($2),st->get_current_scope());
+	} CloseBlock  {
 		Node* curr = new Node("FunctionDecl");
 		curr->add_terminal_children(string($2));
 		curr->add_non_terminal_children($4);
 		$$ = curr;
-		st->add_in_symbol_table({st->get_current_scope(),string($2)},$4->current_type);
+		// st->add_in_symbol_table({st->get_current_scope(),string($2)},$4->current_type);
 		$$->current_node_data = new NodeData("Function-"+ string($2));
 	}
 	;

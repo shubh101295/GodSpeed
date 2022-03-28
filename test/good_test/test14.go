@@ -1,7 +1,9 @@
+package main
+
 import "fmt"
 
 func area(length, width int)int{
-	
+	var z string
 	Ar := length* width
 	return Ar
 }
@@ -17,6 +19,7 @@ func main() {
 		var c int
 		a+=1
 		b+=1
+		j:=0
 		if a==1{
 			break
 		} else {

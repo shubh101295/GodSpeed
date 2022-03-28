@@ -42,11 +42,41 @@ void SymbolTable::exit_latest_scope(){
 	update_current_scope();
 }
 
-void SymbolTable::output_csv_for_functions(string name_of_csv_file){
-	ofstream my_function_dump(name_of_csv_file);
+bool isPrefix(string s1,string s2)
+{
+	for(int i=0;i<s1.size();i++)
+	{
+		if(s1[i]!=s2[i]) return false;
+	}
+	return true;
+}
+
+void SymbolTable::output_csv_for_function(string name_of_function, string prefix){
+	ofstream my_function_dump("./bin/"+name_of_function+".csv");
+	cout<<"A FORM output_csv_for_function\n";
 	my_function_dump<<"Scope,    variable_name,    variable_type\n";
+	// cout<<symbol_table[{"0;",name_of_function}]<<"\n";
+	my_function_dump<<"0;,    "<<name_of_function<<",    "<<symbol_table[{"0;",name_of_function}]->getDataType()<<"\n";
+	// for(auto val:)
+	cout<<"In output_csv_for_function \n";
+	for (auto temp:symbol_table)
+	{
+		if(isPrefix(prefix,temp.first.first))
+		{
+			cout<<temp.first.first<<",    "<<temp.first.second<<",    \n";
+			cout<<temp.second->getDataType()<<"\n";
+		 	my_function_dump<<temp.first.first<<",    "<<temp.first.second<<",    "<<temp.second->getDataType()<<"\n";
+			// my_function_dump	
+		}
+	 	// cout<<temp.second<<"\n";
+	 	// cout<<temp.second->getDataType()<<"\n";
+	 	// x+=1;
+	}
+}
 
-
+// for functions
+void SymbolTable::erase_in_symbol_table(pair<string,string> old_key){
+	symbol_table.erase(old_key);
 }
 
 
