@@ -4,19 +4,22 @@ import "fmt"
 
 func main() {
 
-	for j:=0;j<=50;j++{
+	j:=0
+	for j<=50 {
+       j+=1
 	   if(j>=20){
-			for i:=0;i<7;i++ {
+			i:=0
+			for 1 {
 				i+=1
 				if(i==5){
-					i = 0
 					break;
 				}
 			}
-		} else if (j <= 15){
+		} else{
 			j += 3
 		}
+
 	}
-	
 }
+
 
