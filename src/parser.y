@@ -562,18 +562,21 @@ IncDecStmt:
 
 Assignment:
 	ExpressionList ASSGN_OP ExpressionList {
-		cout<<"Assignment: ExpressionList ASSGN_OP ExpressionList "<<($$->current_node_data==NULL)<<"\n";
+		cout<<"Assignment: ExpressionList ASSGN_OP ExpressionList "<<"\n";
 
 		$$ = new Node("Assignment");
 		$$->add_non_terminal_children($1);
 		$$->add_terminal_children(string($2));
 		$$->add_non_terminal_children($3);
+		cout<<($1)<<" "<<($3)<<"\n";
 		DataType* left_type = $1->current_type;
 		DataType* right_type = $3->current_type;
 
 		NodeData* left_data = $1->current_node_data;
 		NodeData* right_data = $3->current_node_data;
-		cout<<left_data->value<<" "<<right_data->value<<endl;
+		// cout<<"A  AAA \n";
+		// cout<<left_data->value<<" "<<right_data->value<<endl;
+		cout<<"A  AAA \n";
 		while(left_data || right_type){
 			cout<<"ENTERED!"<<endl;
 			if(left_data){
@@ -2252,8 +2255,10 @@ Expression:
 			$$->add_non_terminal_children($1);
 			$$->current_type = $1->current_type;
 			$$->current_node_data = $1->current_node_data;
-			cout<<"Unary value"<<endl;
-			cout<<$$->current_node_data->value<<endl;
+			cout<<$1->current_node_data<<"\n";
+			// cout<<"Unary value"<<endl;
+			// // cout<<$$->current_node_data->value<<endl;
+			// cout<<"Unary value"<<endl;
 		}
 	;
 
@@ -2347,14 +2352,7 @@ UnaryExpr:
 			cout<<($1->current_node_data->data_name)<<" has not been declared in the current scope\n";
 			exit(1);
 		}
-// _ARRAY,
-// 	_BASIC,
-// 	_FUNCTION,
-// 	_MAP,
-// 	_NULL, 
-// 	_POINTER,
-// 	_SLICE,
-// 	_STRUCT
+		cout<<"A\n";
 		if($1->current_type->current_data_type == _POINTER)
 		{
 			if((dynamic_cast<PointerType *>(temp_type))->type_of_address_pointing_to->current_data_type == _BASIC)
@@ -2362,10 +2360,19 @@ UnaryExpr:
 				temp_type = (dynamic_cast<PointerType *>(temp_type))->type_of_address_pointing_to;
 			}
 		}
+		cout<<"A\n";
 
 		if (temp_type->current_data_type == _BASIC) {
+        	cout<<"D\n";
+        	cout<<temp_type->getDataType()<<"\n";
+        	for(auto valval:tt->get_type_table_data())
+        	{
+        		cout<<valval.first<<" -> "<<valval.second<<"\n";
+        	}
         	temp_type = (tt->get_type_table_data())[temp_type->getDataType()]->copyClass() ;
+    		cout<<"E\n";
     	}
+		cout<<"A\n";
 
     	if (temp_type->current_data_type != _STRUCT &&
 	        (temp_type->current_data_type != _POINTER ||
@@ -2373,12 +2380,15 @@ UnaryExpr:
 	        cout <<"[Type mismatch] Expected a struct type or pointer to struct type but got "	<< $1->current_node_data->data_name <<" which is "<<temp_type->getDataType() << "\n";
 	        exit(1);
 	    }
+		cout<<"A\n";
 
 	    if(temp_type->current_data_type==_STRUCT)
 	    {
+	    	cout<<"B\n";
 	    	auto temp = (dynamic_cast<StructType *>(temp_type))->data_of_struct;
 	    	// auto temp2 = *temp;
-	    	if(temp.find($2->current_node_data->data_name) == temp.end())
+	   	    	cout<<"B\n";
+		 	if(temp.find($2->current_node_data->data_name) == temp.end())
 	    	{
 	    		cout<<"[Invalid Member Access] Expected a access for type "<<temp_type->getDataType()<<" but found "<<$2->current_node_data->data_name<<"\n";
 	    		exit(1);
@@ -2386,13 +2396,17 @@ UnaryExpr:
 		    $$->current_type =  temp[$2->current_node_data->data_name];
 	    }
 	    else{
-	    	auto temp = (dynamic_cast<StructType *>((dynamic_cast<PointerType *>(temp_type))->type_of_address_pointing_to))->data_of_struct;
+	    	    	cout<<"C\n";
+			auto temp = (dynamic_cast<StructType *>((dynamic_cast<PointerType *>(temp_type))->type_of_address_pointing_to))->data_of_struct;
 	    	// auto temp = *temp;
+	    		    	cout<<"C\n";
+
 	    	if(temp.find($2->current_node_data->data_name) == temp.end())
 	    	{
 	    		cout<<"[Invalid Member Access] Expected a access for type "<<temp_type->getDataType()<<" but found "<<$2->current_node_data->data_name<<"\n";
 	    		exit(1);
 	    	}
+	    	cout<<"C\n";
 		    $$->current_type =  temp[$2->current_node_data->data_name];
 	    }
 	    $$->current_node_data = new NodeData("Access");
@@ -2987,14 +3001,16 @@ String:
 
 int main (int argc, char **argv) {
 
+	// tt->add_in_type_table("void", new BasicType("void"));
+ //    tt->add_in_type_table("int", new BasicType("int"));
+ //    tt->add_in_type_table("bool", new BasicType("bool"));
+ //    tt->add_in_type_table("byte", new BasicType("byte"));
+ //    tt->add_in_type_table("float", new BasicType("float"));
+ //    tt->add_in_type_table("string", new BasicType("string"));
+	// tt->add
+	
 	yyin = fopen(argv[1], "r");	//taking input as argument
 	yyparse ( );
-	tt->add_in_type_table("void", new BasicType("void"));
-    tt->add_in_type_table("int", new BasicType("int"));
-    tt->add_in_type_table("bool", new BasicType("bool"));
-    tt->add_in_type_table("byte", new BasicType("byte"));
-    tt->add_in_type_table("float", new BasicType("float"));
-    tt->add_in_type_table("string", new BasicType("string"));
 	cout<<"THE GIVEN FILE WAS PARSABLE \n";
 
 }
