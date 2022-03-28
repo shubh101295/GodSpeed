@@ -565,6 +565,7 @@ Assignment:
 
 		NodeData* left_data = $1->current_node_data;
 		NodeData* right_data = $3->current_node_data;
+		cout<<left_data->value<<" "<<right_data->value<<endl;
 		while(left_data || right_type){
 			cout<<"ENTERED!"<<endl;
 			if(left_data){
@@ -1094,6 +1095,7 @@ Operand:
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
+		cout<<"Operand Value "<<$$->current_node_data->value<<endl;
 	}
 	| OperandName {
 		cout<<"Operand: OperandName";
@@ -2197,6 +2199,8 @@ Expression:
 			$$->add_non_terminal_children($1);
 			$$->current_type = $1->current_type;
 			$$->current_node_data = $1->current_node_data;
+			cout<<"Unary value"<<endl;
+			cout<<$$->current_node_data->value<<endl;
 		}
 	;
 
@@ -2252,6 +2256,7 @@ UnaryExpr:
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
+		cout<<"Primary Value: "<<$$->current_node_data->value<<" "<<$1->current_node_data->value<< endl;
 
 	}
 
@@ -2266,6 +2271,7 @@ UnaryExpr:
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
 		$$ = curr;
+		cout<<"Operand Value:"<<$$->current_node_data->value<<endl;
 	}
  	| MakeExpr {
 		Node* curr = new Node("PrimaryExpr");
@@ -2283,6 +2289,7 @@ UnaryExpr:
 		$$->current_node_data->node_child = $1->current_node_data;
 		$$->current_node_data->node_child->next_data = $2->current_node_data;
 		$$->current_node_data->value = true;
+		cout<<"Primary Expr Value Selector: "<<$$->current_node_data->value<<endl;
 		// still remaining
 		// curr->current_type = isValidMemberon($1->current_type)
 		$$ = curr;
@@ -2794,6 +2801,7 @@ BasicLit:
 		 curr->current_node_data = $1->current_node_data;
 		 curr->current_type = new BasicType("string");
 		 $$ = curr;
+		 cout<<"String Value: "<<$$->current_node_data->value<<endl;
 		 }
 	| TRUE      {
 		 Node* curr = new Node("BasicLit");
