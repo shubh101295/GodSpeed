@@ -23,16 +23,16 @@ type Transaction struct {
 
 func main() {
 	var in Input
-	in.TransactzionId = "13457"
-	// in.Index = 0
-	// in.Signature = "abcd"
+	in.TransactionId = "13457"
+	in.Index = 0
+	in.Signature = "abcd"
 
 	var out Output
-	// out.Recipient = "XYZ"
-	// out.Amount = 1000
+	out.Recipient = "XYZ"
+	out.Amount = 1000
 
 	var txn Transaction
-	// txn.Id = "68102"
+	txn.Id = "68102"
 	// txn.Inputs[0] = in
 	// txn.Outputs[0] = out
 

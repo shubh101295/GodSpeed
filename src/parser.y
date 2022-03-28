@@ -615,6 +615,7 @@ Assignment:
 			}
 			else{
 				cout<<"HERE 8\n";
+				cout<<(left_type==NULL)<<" "<<(right_type==NULL)<<"\n";
 				cout<<left_type->getDataType()<<"\n";
 				cout<<right_type->getDataType()<<"\n";
 								
@@ -2312,7 +2313,6 @@ UnaryExpr:
 
  	;
 
-// remaining isValidMemberon()
  PrimaryExpr:
  	Operand  {
  		cout<<" PrimaryExpr: Operand \n";
@@ -2341,8 +2341,65 @@ UnaryExpr:
 		$$->current_node_data->node_child->next_data = $2->current_node_data;
 		$$->current_node_data->value = true;
 		cout<<"Primary Expr Value Selector: "<<$$->current_node_data->value<<endl;
-		// still remaining
-		// curr->current_type = isValidMemberon($1->current_type)
+		auto temp_type = $1->current_type;
+		if(temp_type==NULL) {
+			cout<<($1->current_node_data->data_name)<<" has not been declared in the current scope\n";
+			exit(1);
+		}
+// _ARRAY,
+// 	_BASIC,
+// 	_FUNCTION,
+// 	_MAP,
+// 	_NULL, 
+// 	_POINTER,
+// 	_SLICE,
+// 	_STRUCT
+		if($1->current_type->current_data_type == _POINTER)
+		{
+			if((dynamic_cast<PointerType *>(temp_type))->type_of_address_pointing_to->current_data_type == _BASIC)
+			{
+				temp_type = (dynamic_cast<PointerType *>(temp_type))->type_of_address_pointing_to;
+			}
+		}
+
+		if (temp_type->current_data_type == _BASIC) {
+        	temp_type = (tt->get_type_table_data())[temp_type->getDataType()]->copyClass() ;
+    	}
+
+    	if (temp_type->current_data_type != _STRUCT &&
+	        (temp_type->current_data_type != _POINTER ||
+	         ((dynamic_cast<PointerType *>(temp_type))->type_of_address_pointing_to->current_data_type !=_STRUCT))) {
+	        cout <<"[Type mismatch] Expected a struct type or pointer to struct type but got "	<< $1->current_node_data->data_name <<" which is "<<temp_type->getDataType() << "\n";
+	        exit(1);
+	    }
+
+	    if(temp_type->current_data_type==_STRUCT)
+	    {
+	    	auto temp = (dynamic_cast<StructType *>(temp_type))->data_of_struct;
+	    	// auto temp2 = *temp;
+	    	if(temp.find($2->current_node_data->data_name) == temp.end())
+	    	{
+	    		cout<<"[Invalid Member Access] Expected a access for type "<<temp_type->getDataType()<<" but found "<<$2->current_node_data->data_name<<"\n";
+	    		exit(1);
+	    	}
+		    $$->current_type =  temp[$2->current_node_data->data_name];
+	    }
+	    else{
+	    	auto temp = (dynamic_cast<StructType *>((dynamic_cast<PointerType *>(temp_type))->type_of_address_pointing_to))->data_of_struct;
+	    	// auto temp = *temp;
+	    	if(temp.find($2->current_node_data->data_name) == temp.end())
+	    	{
+	    		cout<<"[Invalid Member Access] Expected a access for type "<<temp_type->getDataType()<<" but found "<<$2->current_node_data->data_name<<"\n";
+	    		exit(1);
+	    	}
+		    $$->current_type =  temp[$2->current_node_data->data_name];
+	    }
+	    $$->current_node_data = new NodeData("Access");
+	    $$->current_node_data->node_child = $1->current_node_data;
+        $$->current_node_data->node_child->next_data = $2->current_node_data;
+        $$->current_node_data->value = true;
+
+
 	}
  	| PrimaryExpr Index {
  		$$ = new Node("PrimaryExpr");
@@ -2557,7 +2614,7 @@ ExpressionList:
 
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
-
+		// cout<<
 		$$ = curr;
 	}
 	| ExpressionList COMMA Expression {
@@ -2806,11 +2863,13 @@ ArrayType:
 
 Literal:
 	BasicLit {
+		cout<<"Literal:BasicLit\n";
 		 Node* curr = new Node("Literal");
 		 curr->add_non_terminal_children($1);
 		 curr->current_node_data = $1->current_node_data;
 		 curr->current_type = $1->current_type;
 		 $$ = curr;
+		 cout<<($$->current_type)<<"\n";
 		 }
     |CompositeLit{
 		 Node* curr =new Node("Literal");
@@ -2849,7 +2908,9 @@ BasicLit:
 		 curr->current_node_data = $1->current_node_data;
 		 curr->current_type = new BasicType("string");
 		 $$ = curr;
-		 cout<<"String Value: "<<$$->current_node_data->value<<endl;
+		cout<<"BasicLit:String ";
+		 cout<<($$->current_type)<<"\n";
+		 // cout<<"String Value: "<<$$->current_node_data->value<<endl;
 		 }
 	| TRUE      {
 		 Node* curr = new Node("BasicLit");
@@ -2877,6 +2938,7 @@ String:
 			 Node* curr = new Node("String");
 			 curr->add_terminal_children(string($1));
 			 curr->current_node_data = new NodeData($1);
+
 			 $$ = curr;
 			}
 	;
