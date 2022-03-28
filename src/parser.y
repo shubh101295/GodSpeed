@@ -960,6 +960,7 @@ Result:
 
 TypeList:
     TypeList COMMA Type {
+    	cout<<"TypeList: TypeList COMMA Type"<<endl;
         $$ = new Node("TypeList");
         $$->add_non_terminal_children($1);
         $$->add_non_terminal_children($3);
@@ -969,6 +970,7 @@ TypeList:
         $$->current_type->next_type = $3->current_type;
     }
     | Type {
+    	cout<<"TypeList: TypeList COMMA Type"<<endl;
         $$ = new Node("TypeList");
         $$->add_non_terminal_children($1);
         $$->current_type = $1->current_type;
@@ -984,6 +986,7 @@ Parameters:
 		$$-> current_type = NULL;
 	}
 	| LEFTPARAN ParameterList RIGHTPARAN {
+		cout<<"Parameters: LEFTPARAN ParameterList RIGHTPARAN"<<endl;
 		$$ = new Node("Parameters");
 		$$->add_non_terminal_children($2);
 		$$->current_node_data = $2->current_node_data;
@@ -1006,18 +1009,22 @@ ParameterList:
 		$$-> current_type = $1->current_type;
 	}
 	| ParameterList COMMA ParameterDecl{
+		cout<<"ParameterList: ParameterList COMMA ParameterDecl"<<endl;
 		$$ = new Node("Parameters");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($3);
 		$$->current_node_data = $1->current_node_data;
 		$$-> current_type = $1->current_type;
+		cout<<"Here"<<endl;
 		($$->last_current_node_data())->next_data = $3->current_node_data;
 		($$->last_current_type())->next_type = $3->current_type;
+		cout<<"Here1"<<endl;
 	}
 	;
 
 ParameterDecl:
 	IdentifierList Type {
+		cout<<"ParameterDecl: IdentifierList Type"<<endl;
 		$$ = new Node("ParameterDecl");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
@@ -1027,6 +1034,7 @@ ParameterDecl:
 		$$->current_node_data = data;
 
 		while(data){
+			cout<<"HERE"<<endl;
 			if(!st->scope_level(data->data_name)){
 				cout<<data->data_name<<" is already declared in this scope";
 				exit(1);
@@ -1052,6 +1060,7 @@ IdentifierList:
 
 	}
 	| IDENTIFIER {
+		cout<<"Identifier"<<endl;
 		$$ = new Node("IdentifierList");
 		$$ -> add_terminal_children(string($1));
 		$$->current_node_data = new NodeData(string($1));
@@ -1068,6 +1077,7 @@ Receiver:
 
 CompositeLit:
 	LiteralType LiteralValue {
+		cout<<"CompositeLit: LiteralType LiteralValue"<<endl;
         $$ = new Node("CompositeLit");
 
     }
@@ -1081,6 +1091,7 @@ LiteralType:
 		$$->current_type = $1->current_type;
 	}
 	| ArrayType {
+		cout<<"LiteralType: ArrayType"<<endl;
 		$$ = new Node("LiteralType");
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
@@ -1113,12 +1124,14 @@ LiteralType:
 
 Type:
 	LiteralType {
+		cout<<"Type: LiteralType"<<endl;
 		$$ = new Node("Type");
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
 		$$->current_node_data = new NodeData($$->current_type->getDataType());
 	}
 	| OperandName {
+		cout<<"Type:OperandName"<<endl;
 		$$ = new Node("Type");
 		$$->add_non_terminal_children($1);
 		$$->current_type = new BasicType(string($1 -> current_node_data -> data_name));
@@ -2417,6 +2430,7 @@ UnaryExpr:
 
 	}
  	| PrimaryExpr Index {
+ 		cout<<"PrimaryExpr Index"<<endl;
  		$$ = new Node("PrimaryExpr");
  		$$->add_non_terminal_children($1);
  		$$->add_non_terminal_children($2);

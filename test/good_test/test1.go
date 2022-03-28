@@ -4,11 +4,11 @@ import (
 	"fmt"
 )
 
-// type Input struct {
-// 	TransactionId string
-// 	Index         int
-// 	Signature     string
-// }
+type Input struct {
+	TransactionId string
+	Index         int
+	Signature     string
+}
 
 // type Output struct {
 // 	Recipient string
@@ -17,15 +17,15 @@ import (
 
 type Transaction struct {
 	Id      string
-	Inputs  [1]Input
+	Inputs  Input
 	Outputs [1]Output
 }
 
 func main() {
-	// var in Input
-	// in.TransactionId = "13457"
-	// in.Index = 0
-	// in.Signature = "abcd"
+	var in Input
+	in.TransactionId = "13457"
+	in.Index = 0
+	in.Signature = "abcd"
 
 	// var out Output
 	// out.Recipient = "XYZ"
@@ -33,7 +33,7 @@ func main() {
 
 	var txn Transaction
 	// txn.Id = "68102"
-	txn.Inputs[0] = in
+	txn.Inputs.TransactionId = "#4s"
 	// txn.Outputs[0] = out
 
 	// fmt.Println("Transaction ID: ", txn.Id)
