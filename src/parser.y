@@ -272,20 +272,20 @@ StatementList:
 		$$ = curr;
 		$$->current_node_data = $1->current_node_data;
 		($$->current_node_data->last_next_child())->next_data = $2->current_node_data;
-		
+
 		// for checking if the fallthrough statement is the last one
 		if(fallthrough_expression_count){
 			cout<<"INC fallthrough_expression_count\n";
 			fallthrough_expression_count+=1;
 
-		} 
+		}
 		if (fallthrough_expression_count>2)
 		{
 			cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
 			exit(1);
 			// fallthrough_expression_count+=1;
 		}
-	
+
 	}
 	| Statement SCOLON {
 		cout<<"Statement SCOLON\n";
@@ -301,7 +301,7 @@ StatementList:
 		cout<<"HERE\n";
 		$$->current_node_data->node_child = $1->current_node_data;
 		cout<<"HERE\n";
-	
+
 	}
 	;
 
@@ -327,7 +327,7 @@ Statement:
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
-		
+
 		curr->current_node_data = $1->current_node_data;
 		cout<<"Statement:	SimpleStmt "<<($1->current_node_data==NULL)<<"\n";
 		$$ = curr;
@@ -605,7 +605,7 @@ Assignment:
 				cout<<"HERE 2\n";
 				name = (temp_left_data->node_child)? temp_left_data->node_child->data_name:temp_left_data->data_name;
 				if(name==j) cout<<"UNCHANGED!\n";
-			}	
+			}
 
 				cout<<name<<" "<<"HERE 4\n";
 			if(right_type && right_type->getDataType() == "undefined"){
@@ -613,10 +613,10 @@ Assignment:
 				exit(1);
 			}
 					cout<<"HERE 4\n";
-		
+
 			if(!st->get_type(name)){
 						cout<<"HERE 16\n";
-		
+
 				cout<<"[Undeclared Identifier] "<<name<<" not declared yet!";
 				exit(1);
 			}
@@ -625,9 +625,9 @@ Assignment:
 				cout<<(left_type==NULL)<<" "<<(right_type==NULL)<<"\n";
 				cout<<left_type->getDataType()<<"\n";
 				cout<<right_type->getDataType()<<"\n";
-								
+
 				if(left_type->getDataType() != right_type->getDataType()){
-				
+
 					cout<<"[Type Mismatch]"<<name<<" Expected type ( " <<left_type->getDataType()<<" ) whereas found ( "<<right_type->getDataType()<<" ) \n";
 					exit(1);
 				}
@@ -647,7 +647,7 @@ Assignment:
 		cout<<string($2)<<"------\n";
 		// printf("%sSHUBH\n",string($2));
 		NodeData * temp_node_data = new NodeData(string($2));
-		
+
 		cout<<"temp_node_data "<<(temp_node_data==NULL) <<"    "<<(temp_node_data!=NULL)<<"\n";
 		$$->current_node_data = temp_node_data;
 
@@ -1379,7 +1379,7 @@ ContinueStmt:
 			cout<<"[INVALID CONTINUE] Tried to continue when not inside a loop!";
 			exit(1);
 		}
-		
+
 	}
 	// | CONTINUE IDENTIFIER {
 	// 	Node* curr = new Node("ContinueStmt");
@@ -1480,7 +1480,7 @@ ExprCaseClauseList:
 		cout<<(($$->current_node_data->last_next_child())==NULL)<<"\n";
 		($$->current_node_data->last_next_child())->next_data = $2->current_node_data;
 		cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
-		
+
 	}
 	| ExprCaseClause {
 		cout<<"ExprCaseClauseList: ExprCaseClause\n";
@@ -1546,7 +1546,7 @@ ExprSwitchCase:
 		is_inside_case = true;
 		has_default_statement = true;
 		$$->current_node_data = $2->current_node_data;
-		$$->current_type = $2->current_type;	
+		$$->current_type = $2->current_type;
 	}
 	;
 
@@ -1554,12 +1554,12 @@ FallthroughStmt:
 	FALLTHROUGH {
 		if (is_inside_case==false){
 			cout<<"[FALLTHROUGH] fallthrough can only be used inside switch cases\n";
-			exit(1); 
+			exit(1);
 		}
 		// if(is_last_statement==false)
 		// {
 		// 	cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
-		// 	exit(1); 
+		// 	exit(1);
 		// }
 		cout<<"SET fallthrough_expression_count ==1\n";
 		if (fallthrough_expression_count)
@@ -2513,7 +2513,7 @@ UnaryExpr:
 	 			if($2->current_type->getDataType() != "int"){
 	 				cout<<"Index can not be integer. Exiting.."<<endl;
 	 				exit(1);
-	 			}	
+	 			}
  			}
  			else if(t->current_data_type == _MAP){
  				MapType *tp = (MapType *)t;
@@ -2528,7 +2528,7 @@ UnaryExpr:
  			}
 
  			$$->current_node_data = $1->current_node_data;
- 			$$->current_node_data->value = true; 
+ 			$$->current_node_data->value = true;
  		}
 
  	}
@@ -2574,7 +2574,7 @@ UnaryExpr:
 		DataType* temp = head;
 		for(auto x: fxn->return_type){
 			head -> next_type = x;
-			head = head->next_type; 
+			head = head->next_type;
 		}
 		$$->current_type = temp->next_type;
 	}
@@ -2916,7 +2916,7 @@ FieldDecl:
 		DataType* tp = $2->current_type;
 		tp->next_type = NULL;
 
-		
+
 		map< string, DataType*> m;
 
 		for(NodeData* lp = $1->current_node_data; lp != NULL; lp = lp->next_data){
@@ -3116,7 +3116,7 @@ int main (int argc, char **argv) {
  //    tt->add_in_type_table("float", new BasicType("float"));
  //    tt->add_in_type_table("string", new BasicType("string"));
 	// tt->add
-	
+
 	yyin = fopen(argv[1], "r");	//taking input as argument
 	yyparse ( );
 	cout<<"THE GIVEN FILE WAS PARSABLE \n";
