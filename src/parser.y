@@ -2556,13 +2556,7 @@ TypeSpec:
 		$$->current_type = $1->current_type;
 	}
 	;
-// remaining
-/* AliasDecl:
-	IDENTIFIER ASSGN_OP Type {
-		$$ = new Node("AliasDecl");
-		$$ -> add_non_terminal_children($3);
-	}
-	; */
+
 TypeDef:
 	IDENTIFIER Type {
 		$$ =  new Node("TypeDef");
