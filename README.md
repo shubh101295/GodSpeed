@@ -11,3 +11,12 @@ Steps to run the parser
 
 
 Note: make itself creates the dot file named as "parser.dot".
+
+Steps to run AST part
+```
+	make
+	./bin/parser <path to go file>
+```
+
+Csv for symbolTable of each function is generated in ```bin``` folder.
+
