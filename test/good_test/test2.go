@@ -5,7 +5,7 @@ import (
 )
 
 func main(){
-	var n,c int
+	var n,c,b,a int
 	// var c int
 	// fmt.Scanln(&n)
 
@@ -19,8 +19,8 @@ func main(){
 			c=a
 			fallthrough
 		case 1:
-			c = e % f
-			
+			c = b % a
+
 		case 2:
 			c = a ^ b
 		case 4:
