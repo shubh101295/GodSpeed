@@ -271,7 +271,12 @@ StatementList:
 		($$->current_node_data->last_next_child())->next_data = $2->current_node_data;
 		
 		// for checking if the fallthrough statement is the last one
-		if (fallthrough_expression_count>=2)
+		if(fallthrough_expression_count){
+			cout<<"INC fallthrough_expression_count\n";
+			fallthrough_expression_count+=1;
+
+		} 
+		if (fallthrough_expression_count>2)
 		{
 			cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
 			exit(1);
@@ -1281,7 +1286,8 @@ GotoStmt:
 	;
 
 SwitchStmt:
-	ExprSwitchStmt{
+	ExprSwitchStmt {
+		cout<<"SwitchStmt: ExprSwitchStmt\n";
 		$$ = new Node("SwitchStmt");
 		$$ -> add_non_terminal_children($1);
 		$$ -> current_type = $1->current_type;
@@ -1298,50 +1304,50 @@ ExprSwitchStmt:
 	// | SWITCH SimpleStmt SCOLON Expression LEFTBRACE RIGHTBRACE {;}
 	// |
 
-	 SWITCH FakeTrue LEFTBRACE  { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE{
+	 SWITCH OpenBlock FakeTrue LEFTBRACE  { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE CloseBlock {
 	 	$$ = new Node("ExprSwitchStmt");
-		$$->add_non_terminal_children($2);
-		$$->add_non_terminal_children($5);
-		$$ -> current_node_data = new NodeData("SWITCH");
-		NodeData* it = $$->current_node_data;
-		it->node_child = new NodeData("MatchCondition");
-		it=it->node_child;
-		it->node_child = $2->current_node_data;
-		it->next_data = new NodeData("SwitchCases");
-		it=it->next_data;
-		it->node_child = $5->current_node_data;
-	 	scl = NULL;
-	 }
-	| SWITCH SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); }
-	 	ExprCaseClauseList RIGHTBRACE {
-	 	cout<<"SWITCH SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
-
-	 	$$ = new Node("ExprSwitchStmt");
-		$$->add_non_terminal_children($2);
+		$$->add_non_terminal_children($3);
 		$$->add_non_terminal_children($6);
 		$$ -> current_node_data = new NodeData("SWITCH");
 		NodeData* it = $$->current_node_data;
 		it->node_child = new NodeData("MatchCondition");
 		it=it->node_child;
-		it->node_child = $2->current_node_data;
+		it->node_child = $3->current_node_data;
 		it->next_data = new NodeData("SwitchCases");
 		it=it->next_data;
 		it->node_child = $6->current_node_data;
 	 	scl = NULL;
-	}
-	| SWITCH Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE {
-		cout<<"SWITCH Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
-		$$ = new Node("ExprSwitchStmt");
-		$$->add_non_terminal_children($2);
-		$$->add_non_terminal_children($5);
+	 }
+	| SWITCH OpenBlock SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); }
+	 	ExprCaseClauseList RIGHTBRACE CloseBlock {
+	 	cout<<"SWITCH SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
+
+	 	$$ = new Node("ExprSwitchStmt");
+		$$->add_non_terminal_children($3);
+		$$->add_non_terminal_children($7);
 		$$ -> current_node_data = new NodeData("SWITCH");
 		NodeData* it = $$->current_node_data;
 		it->node_child = new NodeData("MatchCondition");
 		it=it->node_child;
-		it->node_child = $2->current_node_data;
+		it->node_child = $3->current_node_data;
 		it->next_data = new NodeData("SwitchCases");
 		it=it->next_data;
-		it->node_child = $5->current_node_data;
+		it->node_child = $7->current_node_data;
+	 	scl = NULL;
+	}
+	| SWITCH OpenBlock Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE CloseBlock {
+		cout<<"SWITCH Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
+		$$ = new Node("ExprSwitchStmt");
+		$$->add_non_terminal_children($3);
+		$$->add_non_terminal_children($6);
+		$$ -> current_node_data = new NodeData("SWITCH");
+		NodeData* it = $$->current_node_data;
+		it->node_child = new NodeData("MatchCondition");
+		it=it->node_child;
+		it->node_child = $3->current_node_data;
+		it->next_data = new NodeData("SwitchCases");
+		it=it->next_data;
+		it->node_child = $6->current_node_data;
 	 	scl = NULL;
 	}
 	// | SWITCH SimpleStmt SCOLON Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE {;}
@@ -1349,22 +1355,30 @@ ExprSwitchStmt:
 
 ExprCaseClauseList:
 	ExprCaseClauseList ExprCaseClause {
+		cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
 		$$ = new Node("ExprCaseClauseList");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
 		$$->current_node_data = $1->current_node_data;
+		cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause \n";
+		cout<<(($$->current_node_data->last_next_child())==NULL)<<"\n";
 		($$->current_node_data->last_next_child())->next_data = $2->current_node_data;
+		cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
+		
 	}
 	| ExprCaseClause {
+		cout<<"ExprCaseClauseList: ExprCaseClause\n";
 		$$ = new Node("ExprCaseClauseList");
 		$$->add_non_terminal_children($1);
-		$$->current_node_data = $1->current_node_data;
-		$$->current_type = $1->current_type;
+		$$->current_node_data = new NodeData("list");
+		$$->current_node_data->node_child = $1->current_node_data;
+		// $$->current_type = $1->current_type;
 	}
 	;
 
 ExprCaseClause:
 	ExprSwitchCase COLON StatementList {
+		cout<<"ExprCaseCause:	ExprSwitchCase COLON StatementList\n";
 		$$ = new Node("ExprCaseClause");
 		$$ -> add_non_terminal_children($1);
 		$$ -> add_non_terminal_children($3);
@@ -1431,6 +1445,13 @@ FallthroughStmt:
 		// 	cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
 		// 	exit(1); 
 		// }
+		cout<<"SET fallthrough_expression_count ==1\n";
+		if (fallthrough_expression_count)
+		{
+			cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
+			exit(1);
+			// fallthrough_expression_count+=1;
+		}
 		fallthrough_expression_count= 1;
 		$$ = new Node("FallthroughStmt");
 		$$->current_node_data = new NodeData("FallThorugh");

@@ -34,10 +34,16 @@ DataType* Node::last_current_type(){
 }
 
 NodeData* NodeData::last_next_child(){
+	cout<<"A\n";
 	NodeData* temp = node_child;
+	cout<<"A\n";
+	cout<<(temp==NULL)<<"\n";
 	while(temp->next_data!=NULL)
 	{
+		cout<<"A\n";
 		temp = temp->next_data;
 	}
+	cout<<"A\n";
+
 	return temp;
 }
