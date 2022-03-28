@@ -15,6 +15,7 @@ func main() {
 	// continue
 	// break
 	for i := 0; i < 4; i++{
+		var c int
 		a+=1
 		b+=1
 		if a==1{

@@ -85,7 +85,16 @@ SourceFile:
 			 curr->current_node_data->node_child = $4->current_node_data;
 			 $$ = curr;
 			 dump_dot_file("ast.dot", $$);
-			}
+			 auto val = st->get_symbol_table_data();
+			 int x=0;
+			 for (auto temp:val)
+			 {
+			 	cout<<temp.first.first<<" - "<<temp.first.second<<" -  \n";
+			 	cout<<temp.second<<"\n";
+			 	cout<<temp.second->getDataType()<<"\n";
+			 	x+=1;
+			 }
+		}
     ;
 
 OpenBlock:
@@ -441,6 +450,8 @@ FunctionDecl:
 		curr->add_non_terminal_children($5);
 		$$ = curr;
 		st->add_in_symbol_table({st->get_current_scope(),string($2)},$4->current_type);
+		// cout<<($4->current_type->copyClass())->getDataType()<<"\n";
+		// exit(1);
 		$$-> current_node_data = new NodeData("Function-" + string($2));
 		$$-> current_node_data->node_child = $5->current_node_data;
 
@@ -705,6 +716,7 @@ ShortVarDecl:
 			}
 			else{
 				newVar = true;
+				cout<<"ADDING IN INFER_EQ mode \n\n\n\n";
 				st->add_in_symbol_table({st->get_current_scope(),name}, right_type);
 			}
 
@@ -773,6 +785,11 @@ VarSpec:
 				exit(1);
 			}
 			st->add_in_symbol_table({st->get_current_scope(),curr->data_name},$2->current_type);
+			cout<<curr->data_name<<"    "<< $2->current_type<<"   "<<$2->current_type->getDataType()<<"\n";
+			DataType * temp = $2->current_type->copyClass();
+			cout<<temp<<" "<<temp->getDataType()<<"  " <<temp->getDataType()<<"\n";
+			cout<<"VarSpec:	IdentifierList Type \n ";
+			// exit(1);
 			$$->current_type = $2->current_type;
 			curr = curr->next_data;
 		}
@@ -985,7 +1002,7 @@ Parameters:
 	LEFTPARAN RIGHTPARAN {
 		cout<<"Parameters: LEFTPARAN RIGHTPARAN \n";
 		$$ = new Node("Parameters");
-		$$->current_node_data = NULL;
+		$$->current_node_data = new NodeData("Empty Params");
 		$$-> current_type = NULL;
 	}
 	| LEFTPARAN ParameterList RIGHTPARAN {
@@ -1045,7 +1062,20 @@ ParameterDecl:
 				cout<<data->data_name<<" is already declared in this scope";
 				exit(1);
 			}
+			cout<<"add_in_symbol_table from ParameterDecl\n";
 			st->add_in_symbol_table({st->get_current_scope(),data->data_name}, $2->current_type);
+			auto val = st->get_symbol_table_data();
+			 int x=0;
+			 for (auto temp:val)
+			 {
+
+			 	cout<<temp.first.first<<" - "<<temp.first.second<<" -  \n";
+			 	cout<<temp.second<<"\n";
+			 	if(x) cout<<temp.second->getDataType()<<"\n";
+			 	x+=1;
+			 }
+			 cout<<"\n\n\n\n\n\n";
+			// exit(1);
 			type->next_type = (data->next_data)? type->copyClass(): NULL;
 			type = type->next_type;
 			data = data->next_data;

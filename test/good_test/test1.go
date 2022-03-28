@@ -18,7 +18,7 @@ type Input struct {
 type Transaction struct {
 	Id      string
 	Inputs  Input
-	Outputs [1]Output
+//	Outputs [1]Output
 }
 
 func main() {

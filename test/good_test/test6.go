@@ -7,7 +7,8 @@ func main() {
 	// fmt.Println("v")
 	
 	var a int
-	a = e & f
+	a = 2 & 3
+	
 
 }
 
