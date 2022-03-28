@@ -290,7 +290,10 @@ StatementList:
 			cout<<"NO AST found here! Exiting........";
 			exit(1);
 		}
+		cout<<"HERE\n";
 		$$->current_node_data->node_child = $1->current_node_data;
+		cout<<"HERE\n";
+	
 	}
 	;
 
@@ -602,8 +605,13 @@ Assignment:
 		parLeft->node_child = $1->current_node_data;
 		parRight->node_child = $3->current_node_data;
 		parLeft->next_data = parRight;
-		$$->current_node_data = new NodeData(string($2));
+		cout<<string($2)<<"------\n";
+		// printf("%sSHUBH\n",string($2));
+		NodeData * temp_node_data = new NodeData(string($2));
 		
+		cout<<"temp_node_data "<<(temp_node_data==NULL) <<"    "<<(temp_node_data!=NULL)<<"\n";
+		$$->current_node_data = temp_node_data;
+
 		$$->current_node_data->node_child = parLeft;
 		cout<<"Assignment: ExpressionList ASSGN_OP ExpressionList "<<($$->current_node_data==NULL)<<"\n";
 	}
@@ -1101,16 +1109,16 @@ OperandName:
 	IDENTIFIER {
 		cout<<"OperandName:	IDENTIFIER - "<<string($1)<<"\n";
 		$$ = new Node("OperandName");
-		cout<<"OperandName2:	IDENTIFIER - "<<string($1)<<"\n";
+		// cout<<"OperandName2:	IDENTIFIER - "<<string($1)<<"\n";
 		$$->add_terminal_children(string($1));
-		cout<<"OperandName3:	IDENTIFIER - "<<string($1)<<"\n";
+		// cout<<"OperandName3:	IDENTIFIER - "<<string($1)<<"\n";
 
 		$$->current_node_data = new NodeData(string($1));
 		$$->current_node_data->value = true;
-		cout<<"OperandName4:	IDENTIFIER - "<<string($1)<<"\n";
+		// cout<<"OperandName4:	IDENTIFIER - "<<string($1)<<"\n";
 
 		$$->current_type = st->get_type(string($1))?st->get_type(string($1)):new BasicType("undefined");
-		cout<<"OperandName5:	IDENTIFIER - "<<string($1)<<"\n";
+		// cout<<"OperandName5:	IDENTIFIER - "<<string($1)<<"\n";
 
 	}
 	;

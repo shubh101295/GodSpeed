@@ -18,7 +18,7 @@ struct NodeData {
 	NodeData *node_child;
 	bool value;
 
-	NodeData(string _data_name): data_name(_data_name), next_data(NULL), value(false) {};
+	NodeData(string _data_name): data_name(_data_name), next_data(NULL), value(false) { cout<<"NodeData "<<_data_name<<"\n";};
 	NodeData* last_next_child();
 };
 
