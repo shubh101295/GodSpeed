@@ -7,10 +7,11 @@ import (
 func main(){
 	
 	for i:=0;i<5;i++ {
-		fmt.Println("%d",i);
+		var a int;
 	}
 	for true {
-		fmt.Println(5)
+
+		var b int
 	}
 	a:= 2+
 
