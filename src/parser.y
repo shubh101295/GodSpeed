@@ -637,6 +637,7 @@ Assignment:
 
 ShortVarDecl:
 	IdentifierList INFER_EQ ExpressionList {
+		cout<<"ShortVarDecl : IdentifierList INFER_EQ ExpressionList"<<endl;
 		$$ = new Node("ShortVarDecl");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($3);
@@ -650,6 +651,12 @@ ShortVarDecl:
 		bool newVar = false;
 
 		while(left_data || right_type){
+			if(left_data){
+				cout<<"LEFT :"<<left_data->data_name<<endl;
+			}
+			if(right_type){
+				cout<<"Right: "<<right_type->getDataType()<<endl;
+			}
 			if(!left_data || !right_type){
 				cout<<"[unpacking error], '=' operator expected same number of operands on LHS and RHS";
 				exit(1);
@@ -1017,13 +1024,14 @@ ParameterDecl:
 
 IdentifierList:
 	IdentifierList COMMA IDENTIFIER {
+		cout<<"IdentifierList COMMA IDENTIFIER"<<endl;
 		$$ = new Node("IdentifierList");
 		$$->add_non_terminal_children($1);
 		$$->add_terminal_children(string($3));
         $$->current_type = $1->current_type;
         $$->current_node_data = $1->current_node_data;
-        ($1->last_current_node_data())->next_data = new NodeData(string($3));
-        ($1->last_current_type())->next_type = (st->get_type(string($3)))?(st->get_type(string($3))):(new BasicType("undefined"));
+        ($$->last_current_node_data())->next_data = new NodeData(string($3));
+        ($$->last_current_type())->next_type = (st->get_type(string($3)))?(st->get_type(string($3))):(new BasicType("undefined"));
 
 	}
 	| IDENTIFIER {
@@ -2540,16 +2548,14 @@ ExpressionList:
 		$$ = curr;
 	}
 	| ExpressionList COMMA Expression {
-		Node* curr = new Node("ExpressionList");
-		curr->add_non_terminal_children($1);
-		curr->add_non_terminal_children($3);
-
-		curr->current_node_data = $3->current_node_data;
+		$$ = new Node("ExpressionList");
+		$$->add_non_terminal_children($1);
+		$$->add_non_terminal_children($3);
+		$$->current_node_data = $1->current_node_data;
 		($$->last_current_node_data())->next_data = $3->current_node_data;
-		curr->current_type = $3->current_type;
+		$$->current_type = $1->current_type;
 		($$->last_current_type())->next_type = $3->current_type;
 
-		$$ = curr;
 	}
 	;
 // remaining

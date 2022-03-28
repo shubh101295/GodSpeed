@@ -25,7 +25,7 @@ State 110 conflicts: 1 shift/reduce
 State 144 conflicts: 1 shift/reduce
 State 145 conflicts: 1 shift/reduce, 1 reduce/reduce
 State 242 conflicts: 1 reduce/reduce
-State 292 conflicts: 1 reduce/reduce
+State 316 conflicts: 1 reduce/reduce
 
 
 Grammar
@@ -201,15 +201,15 @@ Grammar
 
   113 $@1: %empty
 
-  114 ExprSwitchStmt: SWITCH FakeTrue LEFTBRACE $@1 ExprCaseClauseList RIGHTBRACE
+  114 ExprSwitchStmt: SWITCH OpenBlock FakeTrue LEFTBRACE $@1 ExprCaseClauseList RIGHTBRACE CloseBlock
 
   115 $@2: %empty
 
-  116 ExprSwitchStmt: SWITCH SimpleStmt SCOLON LEFTBRACE $@2 ExprCaseClauseList RIGHTBRACE
+  116 ExprSwitchStmt: SWITCH OpenBlock SimpleStmt SCOLON LEFTBRACE $@2 ExprCaseClauseList RIGHTBRACE CloseBlock
 
   117 $@3: %empty
 
-  118 ExprSwitchStmt: SWITCH Expression LEFTBRACE $@3 ExprCaseClauseList RIGHTBRACE
+  118 ExprSwitchStmt: SWITCH OpenBlock Expression LEFTBRACE $@3 ExprCaseClauseList RIGHTBRACE CloseBlock
 
   119 ExprCaseClauseList: ExprCaseClauseList ExprCaseClause
   120                   | ExprCaseClause
@@ -425,10 +425,10 @@ Nonterminals, with rules where they appear
         on right: 0
     OpenBlock (72)
         on left: 2
-        on right: 22 40 41 126 127 128 129 130 131 133 134 135
+        on right: 22 40 41 114 116 118 126 127 128 129 130 131 133 134 135
     CloseBlock (73)
         on left: 3
-        on right: 22 40 41 126 127 128 129 130 131 133 134 135
+        on right: 22 40 41 114 116 118 126 127 128 129 130 131 133 134 135
     PackageClause <nt> (74)
         on left: 4
         on right: 1
@@ -4996,65 +4996,20 @@ State 238
 
 State 239
 
-  114 ExprSwitchStmt: SWITCH . FakeTrue LEFTBRACE $@1 ExprCaseClauseList RIGHTBRACE
-  116               | SWITCH . SimpleStmt SCOLON LEFTBRACE $@2 ExprCaseClauseList RIGHTBRACE
-  118               | SWITCH . Expression LEFTBRACE $@3 ExprCaseClauseList RIGHTBRACE
+  114 ExprSwitchStmt: SWITCH . OpenBlock FakeTrue LEFTBRACE $@1 ExprCaseClauseList RIGHTBRACE CloseBlock
+  116               | SWITCH . OpenBlock SimpleStmt SCOLON LEFTBRACE $@2 ExprCaseClauseList RIGHTBRACE CloseBlock
+  118               | SWITCH . OpenBlock Expression LEFTBRACE $@3 ExprCaseClauseList RIGHTBRACE CloseBlock
 
-    INTEGER_VAL         shift, and go to state 92
-    FLOAT_VAL           shift, and go to state 93
-    TRUE                shift, and go to state 94
-    FALSE               shift, and go to state 95
-    STRUCT              shift, and go to state 61
-    NEW                 shift, and go to state 96
-    MAP                 shift, and go to state 62
-    MAKE                shift, and go to state 97
-    ADD                 shift, and go to state 99
-    SUB                 shift, and go to state 100
-    NOT                 shift, and go to state 101
-    MUL                 shift, and go to state 102
-    AND                 shift, and go to state 103
-    LEFTPARAN           shift, and go to state 105
-    LEFTSQUARE          shift, and go to state 64
-    RAW_STRING          shift, and go to state 13
-    INTERPRETED_STRING  shift, and go to state 14
-    BYTE_VAL            shift, and go to state 106
-    IDENTIFIER          shift, and go to state 292
+    $default  reduce using rule 2 (OpenBlock)
 
-    LEFTBRACE  reduce using rule 122 (FakeTrue)
-    $default   reduce using rule 50 (EmptyStmt)
-
-    SimpleStmt      go to state 293
-    EmptyStmt       go to state 249
-    ExpressionStmt  go to state 250
-    IncDecStmt      go to state 251
-    Assignment      go to state 252
-    ShortVarDecl    go to state 253
-    IdentifierList  go to state 254
-    CompositeLit    go to state 107
-    LiteralType     go to state 108
-    Operand         go to state 109
-    OperandName     go to state 110
-    SliceType       go to state 71
-    FakeTrue        go to state 294
-    Expression      go to state 295
-    UnaryExpr       go to state 112
-    PrimaryExpr     go to state 113
-    MakeExpr        go to state 114
-    ExpressionList  go to state 265
-    MapType         go to state 72
-    StructType      go to state 73
-    PointerType     go to state 74
-    ArrayType       go to state 75
-    Literal         go to state 115
-    BasicLit        go to state 116
-    String          go to state 117
+    OpenBlock  go to state 292
 
 
 State 240
 
   111 GotoStmt: GOTO . IDENTIFIER
 
-    IDENTIFIER  shift, and go to state 296
+    IDENTIFIER  shift, and go to state 293
 
 
 State 241
@@ -5070,7 +5025,7 @@ State 242
    78 IdentifierList: IDENTIFIER .
    92 OperandName: IDENTIFIER .
 
-    COLON  shift, and go to state 297
+    COLON  shift, and go to state 294
 
     INFER_EQ  reduce using rule 78 (IdentifierList)
     COMMA     reduce using rule 78 (IdentifierList)
@@ -5124,9 +5079,9 @@ State 244
     SCOLON    reduce using rule 50 (EmptyStmt)
     $default  reduce using rule 3 (CloseBlock)
 
-    CloseBlock       go to state 298
+    CloseBlock       go to state 295
     Block            go to state 243
-    Statement        go to state 299
+    Statement        go to state 296
     Declaration      go to state 246
     LabeledStmt      go to state 247
     SimpleStmt       go to state 248
@@ -5170,7 +5125,7 @@ State 245
 
    25 StatementList: Statement . SCOLON
 
-    SCOLON  shift, and go to state 300
+    SCOLON  shift, and go to state 297
 
 
 State 246
@@ -5234,7 +5189,7 @@ State 254
    56 ShortVarDecl: IdentifierList . INFER_EQ ExpressionList
    77 IdentifierList: IdentifierList . COMMA IDENTIFIER
 
-    INFER_EQ  shift, and go to state 301
+    INFER_EQ  shift, and go to state 298
     COMMA     shift, and go to state 65
 
 
@@ -5327,8 +5282,8 @@ State 264
   156           | Expression . LESS Expression
   191 ExpressionList: Expression .
 
-    PLUSPLUS    shift, and go to state 302
-    MINUSMINUS  shift, and go to state 303
+    PLUSPLUS    shift, and go to state 299
+    MINUSMINUS  shift, and go to state 300
     ANDNOT      shift, and go to state 154
     ADD         shift, and go to state 155
     SUB         shift, and go to state 156
@@ -5360,7 +5315,7 @@ State 265
   192 ExpressionList: ExpressionList . COMMA Expression
 
     COMMA     shift, and go to state 182
-    ASSGN_OP  shift, and go to state 304
+    ASSGN_OP  shift, and go to state 301
 
 
 State 266
@@ -5381,7 +5336,7 @@ State 267
     IDENTIFIER  shift, and go to state 66
 
     LiteralType  go to state 68
-    Type         go to state 305
+    Type         go to state 302
     OperandName  go to state 70
     SliceType    go to state 71
     MapType      go to state 72
@@ -5455,7 +5410,7 @@ State 273
     Operand       go to state 109
     OperandName   go to state 110
     SliceType     go to state 71
-    Expression    go to state 306
+    Expression    go to state 303
     UnaryExpr     go to state 112
     PrimaryExpr   go to state 113
     MakeExpr      go to state 114
@@ -5493,7 +5448,7 @@ State 275
     NOT                 shift, and go to state 101
     MUL                 shift, and go to state 102
     AND                 shift, and go to state 103
-    RIGHTBRACE          shift, and go to state 307
+    RIGHTBRACE          shift, and go to state 304
     LEFTPARAN           shift, and go to state 105
     LEFTBRACE           shift, and go to state 150
     LEFTSQUARE          shift, and go to state 64
@@ -5508,7 +5463,7 @@ State 275
     OperandName   go to state 110
     LiteralValue  go to state 199
     SliceType     go to state 71
-    KeyedElement  go to state 308
+    KeyedElement  go to state 305
     Key           go to state 202
     Element       go to state 203
     Expression    go to state 204
@@ -5553,10 +5508,10 @@ State 276
     LiteralType   go to state 108
     Operand       go to state 109
     OperandName   go to state 110
-    LiteralValue  go to state 309
+    LiteralValue  go to state 306
     SliceType     go to state 71
-    Element       go to state 310
-    Expression    go to state 311
+    Element       go to state 307
+    Expression    go to state 308
     UnaryExpr     go to state 112
     PrimaryExpr   go to state 113
     MakeExpr      go to state 114
@@ -5599,7 +5554,7 @@ State 277
     Operand       go to state 109
     OperandName   go to state 110
     SliceType     go to state 71
-    Expression    go to state 312
+    Expression    go to state 309
     UnaryExpr     go to state 112
     PrimaryExpr   go to state 113
     MakeExpr      go to state 114
@@ -5623,7 +5578,7 @@ State 279
 
   190 Arguments: LEFTPARAN ExpressionList ELIPSIS . RIGHTPARAN
 
-    RIGHTPARAN  shift, and go to state 313
+    RIGHTPARAN  shift, and go to state 310
 
 
 State 280
@@ -5683,8 +5638,8 @@ State 282
     QUOT         shift, and go to state 170
     SHL          shift, and go to state 171
     SHR          shift, and go to state 172
-    RIGHTSQUARE  shift, and go to state 314
-    COLON        shift, and go to state 315
+    RIGHTSQUARE  shift, and go to state 311
+    COLON        shift, and go to state 312
 
 
 State 283
@@ -5713,7 +5668,7 @@ State 284
     NOT                 shift, and go to state 101
     MUL                 shift, and go to state 102
     AND                 shift, and go to state 103
-    RIGHTSQUARE         shift, and go to state 316
+    RIGHTSQUARE         shift, and go to state 313
     LEFTPARAN           shift, and go to state 105
     LEFTSQUARE          shift, and go to state 64
     RAW_STRING          shift, and go to state 13
@@ -5726,7 +5681,7 @@ State 284
     Operand       go to state 109
     OperandName   go to state 110
     SliceType     go to state 71
-    Expression    go to state 317
+    Expression    go to state 314
     UnaryExpr     go to state 112
     PrimaryExpr   go to state 113
     MakeExpr      go to state 114
@@ -5743,7 +5698,7 @@ State 285
 
   187 TypeAssertion: DOT LEFTPARAN Type . RIGHTPARAN
 
-    RIGHTPARAN  shift, and go to state 318
+    RIGHTPARAN  shift, and go to state 315
 
 
 State 286
@@ -5797,11 +5752,11 @@ State 289
     RAW_STRING          shift, and go to state 13
     INTERPRETED_STRING  shift, and go to state 14
     BYTE_VAL            shift, and go to state 106
-    IDENTIFIER          shift, and go to state 292
+    IDENTIFIER          shift, and go to state 316
 
     $default  reduce using rule 50 (EmptyStmt)
 
-    SimpleStmt      go to state 319
+    SimpleStmt      go to state 317
     EmptyStmt       go to state 249
     ExpressionStmt  go to state 250
     IncDecStmt      go to state 251
@@ -5813,7 +5768,7 @@ State 289
     Operand         go to state 109
     OperandName     go to state 110
     SliceType       go to state 71
-    Expression      go to state 320
+    Expression      go to state 318
     UnaryExpr       go to state 112
     PrimaryExpr     go to state 113
     MakeExpr        go to state 114
@@ -5851,12 +5806,12 @@ State 290
     RAW_STRING          shift, and go to state 13
     INTERPRETED_STRING  shift, and go to state 14
     BYTE_VAL            shift, and go to state 106
-    IDENTIFIER          shift, and go to state 292
+    IDENTIFIER          shift, and go to state 316
 
     $default  reduce using rule 50 (EmptyStmt)
 
-    Condition       go to state 321
-    SimpleStmt      go to state 322
+    Condition       go to state 319
+    SimpleStmt      go to state 320
     EmptyStmt       go to state 249
     ExpressionStmt  go to state 250
     IncDecStmt      go to state 251
@@ -5868,7 +5823,7 @@ State 290
     Operand         go to state 109
     OperandName     go to state 110
     SliceType       go to state 71
-    Expression      go to state 323
+    Expression      go to state 321
     UnaryExpr       go to state 112
     PrimaryExpr     go to state 113
     MakeExpr        go to state 114
@@ -5888,96 +5843,73 @@ State 291
 
     LEFTBRACE  shift, and go to state 124
 
-    Block  go to state 324
+    Block  go to state 322
 
 
 State 292
 
-   78 IdentifierList: IDENTIFIER .
-   92 OperandName: IDENTIFIER .
+  114 ExprSwitchStmt: SWITCH OpenBlock . FakeTrue LEFTBRACE $@1 ExprCaseClauseList RIGHTBRACE CloseBlock
+  116               | SWITCH OpenBlock . SimpleStmt SCOLON LEFTBRACE $@2 ExprCaseClauseList RIGHTBRACE CloseBlock
+  118               | SWITCH OpenBlock . Expression LEFTBRACE $@3 ExprCaseClauseList RIGHTBRACE CloseBlock
 
-    INFER_EQ  reduce using rule 78 (IdentifierList)
-    COMMA     reduce using rule 78 (IdentifierList)
-    COMMA     [reduce using rule 92 (OperandName)]
-    $default  reduce using rule 92 (OperandName)
+    INTEGER_VAL         shift, and go to state 92
+    FLOAT_VAL           shift, and go to state 93
+    TRUE                shift, and go to state 94
+    FALSE               shift, and go to state 95
+    STRUCT              shift, and go to state 61
+    NEW                 shift, and go to state 96
+    MAP                 shift, and go to state 62
+    MAKE                shift, and go to state 97
+    ADD                 shift, and go to state 99
+    SUB                 shift, and go to state 100
+    NOT                 shift, and go to state 101
+    MUL                 shift, and go to state 102
+    AND                 shift, and go to state 103
+    LEFTPARAN           shift, and go to state 105
+    LEFTSQUARE          shift, and go to state 64
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 106
+    IDENTIFIER          shift, and go to state 316
+
+    LEFTBRACE  reduce using rule 122 (FakeTrue)
+    $default   reduce using rule 50 (EmptyStmt)
+
+    SimpleStmt      go to state 323
+    EmptyStmt       go to state 249
+    ExpressionStmt  go to state 250
+    IncDecStmt      go to state 251
+    Assignment      go to state 252
+    ShortVarDecl    go to state 253
+    IdentifierList  go to state 254
+    CompositeLit    go to state 107
+    LiteralType     go to state 108
+    Operand         go to state 109
+    OperandName     go to state 110
+    SliceType       go to state 71
+    FakeTrue        go to state 324
+    Expression      go to state 325
+    UnaryExpr       go to state 112
+    PrimaryExpr     go to state 113
+    MakeExpr        go to state 114
+    ExpressionList  go to state 265
+    MapType         go to state 72
+    StructType      go to state 73
+    PointerType     go to state 74
+    ArrayType       go to state 75
+    Literal         go to state 115
+    BasicLit        go to state 116
+    String          go to state 117
 
 
 State 293
-
-  116 ExprSwitchStmt: SWITCH SimpleStmt . SCOLON LEFTBRACE $@2 ExprCaseClauseList RIGHTBRACE
-
-    SCOLON  shift, and go to state 325
-
-
-State 294
-
-  114 ExprSwitchStmt: SWITCH FakeTrue . LEFTBRACE $@1 ExprCaseClauseList RIGHTBRACE
-
-    LEFTBRACE  shift, and go to state 326
-
-
-State 295
-
-   52 ExpressionStmt: Expression .
-   53 IncDecStmt: Expression . PLUSPLUS
-   54           | Expression . MINUSMINUS
-  118 ExprSwitchStmt: SWITCH Expression . LEFTBRACE $@3 ExprCaseClauseList RIGHTBRACE
-  138 Expression: Expression . MUL Expression
-  139           | Expression . QUOT Expression
-  140           | Expression . MOD Expression
-  141           | Expression . SHL Expression
-  142           | Expression . SHR Expression
-  143           | Expression . AND Expression
-  144           | Expression . ANDNOT Expression
-  145           | Expression . ADD Expression
-  146           | Expression . SUB Expression
-  147           | Expression . OR Expression
-  148           | Expression . XOR Expression
-  149           | Expression . LOGAND Expression
-  150           | Expression . LOGOR Expression
-  151           | Expression . ISEQ Expression
-  152           | Expression . NEQ Expression
-  153           | Expression . GRTEQ Expression
-  154           | Expression . GRT Expression
-  155           | Expression . LESSEQ Expression
-  156           | Expression . LESS Expression
-  191 ExpressionList: Expression .
-
-    PLUSPLUS    shift, and go to state 302
-    MINUSMINUS  shift, and go to state 303
-    ANDNOT      shift, and go to state 154
-    ADD         shift, and go to state 155
-    SUB         shift, and go to state 156
-    XOR         shift, and go to state 157
-    MUL         shift, and go to state 158
-    AND         shift, and go to state 159
-    OR          shift, and go to state 160
-    LOGOR       shift, and go to state 161
-    LOGAND      shift, and go to state 162
-    ISEQ        shift, and go to state 163
-    NEQ         shift, and go to state 164
-    LESSEQ      shift, and go to state 165
-    GRTEQ       shift, and go to state 166
-    GRT         shift, and go to state 167
-    LESS        shift, and go to state 168
-    MOD         shift, and go to state 169
-    QUOT        shift, and go to state 170
-    SHL         shift, and go to state 171
-    SHR         shift, and go to state 172
-    LEFTBRACE   shift, and go to state 327
-
-    SCOLON    reduce using rule 52 (ExpressionStmt)
-    $default  reduce using rule 191 (ExpressionList)
-
-
-State 296
 
   111 GotoStmt: GOTO IDENTIFIER .
 
     $default  reduce using rule 111 (GotoStmt)
 
 
-State 297
+State 294
 
    44 LabeledStmt: IDENTIFIER COLON . Statement
 
@@ -6015,7 +5947,7 @@ State 297
     $default  reduce using rule 50 (EmptyStmt)
 
     Block            go to state 243
-    Statement        go to state 328
+    Statement        go to state 326
     Declaration      go to state 246
     LabeledStmt      go to state 247
     SimpleStmt       go to state 248
@@ -6055,28 +5987,28 @@ State 297
     String           go to state 117
 
 
-State 298
+State 295
 
    22 Block: LEFTBRACE OpenBlock StatementList CloseBlock . RIGHTBRACE
 
-    RIGHTBRACE  shift, and go to state 329
+    RIGHTBRACE  shift, and go to state 327
 
 
-State 299
+State 296
 
    24 StatementList: StatementList Statement . SCOLON
 
-    SCOLON  shift, and go to state 330
+    SCOLON  shift, and go to state 328
 
 
-State 300
+State 297
 
    25 StatementList: Statement SCOLON .
 
     $default  reduce using rule 25 (StatementList)
 
 
-State 301
+State 298
 
    56 ShortVarDecl: IdentifierList INFER_EQ . ExpressionList
 
@@ -6109,7 +6041,7 @@ State 301
     UnaryExpr       go to state 112
     PrimaryExpr     go to state 113
     MakeExpr        go to state 114
-    ExpressionList  go to state 331
+    ExpressionList  go to state 329
     MapType         go to state 72
     StructType      go to state 73
     PointerType     go to state 74
@@ -6119,21 +6051,21 @@ State 301
     String          go to state 117
 
 
-State 302
+State 299
 
    53 IncDecStmt: Expression PLUSPLUS .
 
     $default  reduce using rule 53 (IncDecStmt)
 
 
-State 303
+State 300
 
    54 IncDecStmt: Expression MINUSMINUS .
 
     $default  reduce using rule 54 (IncDecStmt)
 
 
-State 304
+State 301
 
    55 Assignment: ExpressionList ASSGN_OP . ExpressionList
 
@@ -6166,7 +6098,7 @@ State 304
     UnaryExpr       go to state 112
     PrimaryExpr     go to state 113
     MakeExpr        go to state 114
-    ExpressionList  go to state 332
+    ExpressionList  go to state 330
     MapType         go to state 72
     StructType      go to state 73
     PointerType     go to state 74
@@ -6176,14 +6108,14 @@ State 304
     String          go to state 117
 
 
-State 305
+State 302
 
    69 TypeList: TypeList COMMA Type .
 
     $default  reduce using rule 69 (TypeList)
 
 
-State 306
+State 303
 
   138 Expression: Expression . MUL Expression
   139           | Expression . QUOT Expression
@@ -6226,39 +6158,39 @@ State 306
     QUOT        shift, and go to state 170
     SHL         shift, and go to state 171
     SHR         shift, and go to state 172
-    RIGHTPARAN  shift, and go to state 333
-    COMMA       shift, and go to state 334
+    RIGHTPARAN  shift, and go to state 331
+    COMMA       shift, and go to state 332
 
 
-State 307
+State 304
 
    95 LiteralValue: LEFTBRACE ElementList COMMA RIGHTBRACE .
 
     $default  reduce using rule 95 (LiteralValue)
 
 
-State 308
+State 305
 
    98 ElementList: ElementList COMMA KeyedElement .
 
     $default  reduce using rule 98 (ElementList)
 
 
-State 309
+State 306
 
   104 Element: LiteralValue .
 
     $default  reduce using rule 104 (Element)
 
 
-State 310
+State 307
 
   100 KeyedElement: Key COLON Element .
 
     $default  reduce using rule 100 (KeyedElement)
 
 
-State 311
+State 308
 
   103 Element: Expression .
   138 Expression: Expression . MUL Expression
@@ -6304,7 +6236,7 @@ State 311
     $default  reduce using rule 103 (Element)
 
 
-State 312
+State 309
 
   138 Expression: Expression . MUL Expression
   139           | Expression . QUOT Expression
@@ -6347,26 +6279,26 @@ State 312
     QUOT    shift, and go to state 170
     SHL     shift, and go to state 171
     SHR     shift, and go to state 172
-    COMMA   shift, and go to state 335
+    COMMA   shift, and go to state 333
 
     $default  reduce using rule 173 (KeyValueList)
 
 
-State 313
+State 310
 
   190 Arguments: LEFTPARAN ExpressionList ELIPSIS RIGHTPARAN .
 
     $default  reduce using rule 190 (Arguments)
 
 
-State 314
+State 311
 
   177 Slice: LEFTSQUARE COLON Expression RIGHTSQUARE .
 
     $default  reduce using rule 177 (Slice)
 
 
-State 315
+State 312
 
   181 Slice: LEFTSQUARE COLON Expression COLON . Expression RIGHTSQUARE
 
@@ -6395,7 +6327,7 @@ State 315
     Operand       go to state 109
     OperandName   go to state 110
     SliceType     go to state 71
-    Expression    go to state 336
+    Expression    go to state 334
     UnaryExpr     go to state 112
     PrimaryExpr   go to state 113
     MakeExpr      go to state 114
@@ -6408,14 +6340,14 @@ State 315
     String        go to state 117
 
 
-State 316
+State 313
 
   179 Slice: LEFTSQUARE Expression COLON RIGHTSQUARE .
 
     $default  reduce using rule 179 (Slice)
 
 
-State 317
+State 314
 
   138 Expression: Expression . MUL Expression
   139           | Expression . QUOT Expression
@@ -6458,27 +6390,38 @@ State 317
     QUOT         shift, and go to state 170
     SHL          shift, and go to state 171
     SHR          shift, and go to state 172
-    RIGHTSQUARE  shift, and go to state 337
-    COLON        shift, and go to state 338
+    RIGHTSQUARE  shift, and go to state 335
+    COLON        shift, and go to state 336
 
 
-State 318
+State 315
 
   187 TypeAssertion: DOT LEFTPARAN Type RIGHTPARAN .
 
     $default  reduce using rule 187 (TypeAssertion)
 
 
-State 319
+State 316
+
+   78 IdentifierList: IDENTIFIER .
+   92 OperandName: IDENTIFIER .
+
+    INFER_EQ  reduce using rule 78 (IdentifierList)
+    COMMA     reduce using rule 78 (IdentifierList)
+    COMMA     [reduce using rule 92 (OperandName)]
+    $default  reduce using rule 92 (OperandName)
+
+
+State 317
 
   127 IfStmt: IF OpenBlock SimpleStmt . SCOLON Expression Block CloseBlock
   130       | IF OpenBlock SimpleStmt . SCOLON Expression Block ELSE IfStmt CloseBlock
   131       | IF OpenBlock SimpleStmt . SCOLON Expression Block ELSE Block CloseBlock
 
-    SCOLON  shift, and go to state 339
+    SCOLON  shift, and go to state 337
 
 
-State 320
+State 318
 
    52 ExpressionStmt: Expression .
    53 IncDecStmt: Expression . PLUSPLUS
@@ -6507,8 +6450,8 @@ State 320
   156           | Expression . LESS Expression
   191 ExpressionList: Expression .
 
-    PLUSPLUS    shift, and go to state 302
-    MINUSMINUS  shift, and go to state 303
+    PLUSPLUS    shift, and go to state 299
+    MINUSMINUS  shift, and go to state 300
     ANDNOT      shift, and go to state 154
     ADD         shift, and go to state 155
     SUB         shift, and go to state 156
@@ -6533,27 +6476,27 @@ State 320
     SCOLON    reduce using rule 52 (ExpressionStmt)
     $default  reduce using rule 191 (ExpressionList)
 
-    Block  go to state 340
+    Block  go to state 338
 
 
-State 321
+State 319
 
   135 ForStmt: FOR OpenBlock Condition . forMarker Block forMarkerEnd CloseBlock
 
     $default  reduce using rule 136 (forMarker)
 
-    forMarker  go to state 341
+    forMarker  go to state 339
 
 
-State 322
+State 320
 
   133 ForStmt: FOR OpenBlock SimpleStmt . SCOLON forMarker EmptyExpr SCOLON SimpleStmt Block forMarkerEnd CloseBlock
   134        | FOR OpenBlock SimpleStmt . SCOLON forMarker ExpressionStmt SCOLON SimpleStmt Block forMarkerEnd CloseBlock
 
-    SCOLON  shift, and go to state 342
+    SCOLON  shift, and go to state 340
 
 
-State 323
+State 321
 
    23 Condition: Expression .
    52 ExpressionStmt: Expression .
@@ -6580,8 +6523,8 @@ State 323
   156           | Expression . LESS Expression
   191 ExpressionList: Expression .
 
-    PLUSPLUS    shift, and go to state 302
-    MINUSMINUS  shift, and go to state 303
+    PLUSPLUS    shift, and go to state 299
+    MINUSMINUS  shift, and go to state 300
     ANDNOT      shift, and go to state 154
     ADD         shift, and go to state 155
     SUB         shift, and go to state 156
@@ -6607,62 +6550,105 @@ State 323
     $default   reduce using rule 191 (ExpressionList)
 
 
-State 324
+State 322
 
   132 ForStmt: FOR forMarker Block . forMarkerEnd
 
     $default  reduce using rule 137 (forMarkerEnd)
 
-    forMarkerEnd  go to state 343
+    forMarkerEnd  go to state 341
+
+
+State 323
+
+  116 ExprSwitchStmt: SWITCH OpenBlock SimpleStmt . SCOLON LEFTBRACE $@2 ExprCaseClauseList RIGHTBRACE CloseBlock
+
+    SCOLON  shift, and go to state 342
+
+
+State 324
+
+  114 ExprSwitchStmt: SWITCH OpenBlock FakeTrue . LEFTBRACE $@1 ExprCaseClauseList RIGHTBRACE CloseBlock
+
+    LEFTBRACE  shift, and go to state 343
 
 
 State 325
 
-  116 ExprSwitchStmt: SWITCH SimpleStmt SCOLON . LEFTBRACE $@2 ExprCaseClauseList RIGHTBRACE
+   52 ExpressionStmt: Expression .
+   53 IncDecStmt: Expression . PLUSPLUS
+   54           | Expression . MINUSMINUS
+  118 ExprSwitchStmt: SWITCH OpenBlock Expression . LEFTBRACE $@3 ExprCaseClauseList RIGHTBRACE CloseBlock
+  138 Expression: Expression . MUL Expression
+  139           | Expression . QUOT Expression
+  140           | Expression . MOD Expression
+  141           | Expression . SHL Expression
+  142           | Expression . SHR Expression
+  143           | Expression . AND Expression
+  144           | Expression . ANDNOT Expression
+  145           | Expression . ADD Expression
+  146           | Expression . SUB Expression
+  147           | Expression . OR Expression
+  148           | Expression . XOR Expression
+  149           | Expression . LOGAND Expression
+  150           | Expression . LOGOR Expression
+  151           | Expression . ISEQ Expression
+  152           | Expression . NEQ Expression
+  153           | Expression . GRTEQ Expression
+  154           | Expression . GRT Expression
+  155           | Expression . LESSEQ Expression
+  156           | Expression . LESS Expression
+  191 ExpressionList: Expression .
 
-    LEFTBRACE  shift, and go to state 344
+    PLUSPLUS    shift, and go to state 299
+    MINUSMINUS  shift, and go to state 300
+    ANDNOT      shift, and go to state 154
+    ADD         shift, and go to state 155
+    SUB         shift, and go to state 156
+    XOR         shift, and go to state 157
+    MUL         shift, and go to state 158
+    AND         shift, and go to state 159
+    OR          shift, and go to state 160
+    LOGOR       shift, and go to state 161
+    LOGAND      shift, and go to state 162
+    ISEQ        shift, and go to state 163
+    NEQ         shift, and go to state 164
+    LESSEQ      shift, and go to state 165
+    GRTEQ       shift, and go to state 166
+    GRT         shift, and go to state 167
+    LESS        shift, and go to state 168
+    MOD         shift, and go to state 169
+    QUOT        shift, and go to state 170
+    SHL         shift, and go to state 171
+    SHR         shift, and go to state 172
+    LEFTBRACE   shift, and go to state 344
+
+    SCOLON    reduce using rule 52 (ExpressionStmt)
+    $default  reduce using rule 191 (ExpressionList)
 
 
 State 326
-
-  114 ExprSwitchStmt: SWITCH FakeTrue LEFTBRACE . $@1 ExprCaseClauseList RIGHTBRACE
-
-    $default  reduce using rule 113 ($@1)
-
-    $@1  go to state 345
-
-
-State 327
-
-  118 ExprSwitchStmt: SWITCH Expression LEFTBRACE . $@3 ExprCaseClauseList RIGHTBRACE
-
-    $default  reduce using rule 117 ($@3)
-
-    $@3  go to state 346
-
-
-State 328
 
    44 LabeledStmt: IDENTIFIER COLON Statement .
 
     $default  reduce using rule 44 (LabeledStmt)
 
 
-State 329
+State 327
 
    22 Block: LEFTBRACE OpenBlock StatementList CloseBlock RIGHTBRACE .
 
     $default  reduce using rule 22 (Block)
 
 
-State 330
+State 328
 
    24 StatementList: StatementList Statement SCOLON .
 
     $default  reduce using rule 24 (StatementList)
 
 
-State 331
+State 329
 
    56 ShortVarDecl: IdentifierList INFER_EQ ExpressionList .
   192 ExpressionList: ExpressionList . COMMA Expression
@@ -6672,7 +6658,7 @@ State 331
     $default  reduce using rule 56 (ShortVarDecl)
 
 
-State 332
+State 330
 
    55 Assignment: ExpressionList ASSGN_OP ExpressionList .
   192 ExpressionList: ExpressionList . COMMA Expression
@@ -6682,14 +6668,14 @@ State 332
     $default  reduce using rule 55 (Assignment)
 
 
-State 333
+State 331
 
   184 MakeExpr: MAKE LEFTPARAN Type COMMA Expression RIGHTPARAN .
 
     $default  reduce using rule 184 (MakeExpr)
 
 
-State 334
+State 332
 
   183 MakeExpr: MAKE LEFTPARAN Type COMMA Expression COMMA . Expression RIGHTPARAN
 
@@ -6718,7 +6704,7 @@ State 334
     Operand       go to state 109
     OperandName   go to state 110
     SliceType     go to state 71
-    Expression    go to state 347
+    Expression    go to state 345
     UnaryExpr     go to state 112
     PrimaryExpr   go to state 113
     MakeExpr      go to state 114
@@ -6731,7 +6717,7 @@ State 334
     String        go to state 117
 
 
-State 335
+State 333
 
   174 KeyValueList: Expression COLON Expression COMMA . KeyValueList
 
@@ -6763,7 +6749,7 @@ State 335
     Expression    go to state 205
     UnaryExpr     go to state 112
     PrimaryExpr   go to state 113
-    KeyValueList  go to state 348
+    KeyValueList  go to state 346
     MakeExpr      go to state 114
     MapType       go to state 72
     StructType    go to state 73
@@ -6774,7 +6760,7 @@ State 335
     String        go to state 117
 
 
-State 336
+State 334
 
   138 Expression: Expression . MUL Expression
   139           | Expression . QUOT Expression
@@ -6816,17 +6802,17 @@ State 336
     QUOT         shift, and go to state 170
     SHL          shift, and go to state 171
     SHR          shift, and go to state 172
-    RIGHTSQUARE  shift, and go to state 349
+    RIGHTSQUARE  shift, and go to state 347
 
 
-State 337
+State 335
 
   180 Slice: LEFTSQUARE Expression COLON Expression RIGHTSQUARE .
 
     $default  reduce using rule 180 (Slice)
 
 
-State 338
+State 336
 
   182 Slice: LEFTSQUARE Expression COLON Expression COLON . Expression RIGHTSQUARE
 
@@ -6855,7 +6841,7 @@ State 338
     Operand       go to state 109
     OperandName   go to state 110
     SliceType     go to state 71
-    Expression    go to state 350
+    Expression    go to state 348
     UnaryExpr     go to state 112
     PrimaryExpr   go to state 113
     MakeExpr      go to state 114
@@ -6868,7 +6854,7 @@ State 338
     String        go to state 117
 
 
-State 339
+State 337
 
   127 IfStmt: IF OpenBlock SimpleStmt SCOLON . Expression Block CloseBlock
   130       | IF OpenBlock SimpleStmt SCOLON . Expression Block ELSE IfStmt CloseBlock
@@ -6899,7 +6885,7 @@ State 339
     Operand       go to state 109
     OperandName   go to state 110
     SliceType     go to state 71
-    Expression    go to state 351
+    Expression    go to state 349
     UnaryExpr     go to state 112
     PrimaryExpr   go to state 113
     MakeExpr      go to state 114
@@ -6912,79 +6898,71 @@ State 339
     String        go to state 117
 
 
-State 340
+State 338
 
   126 IfStmt: IF OpenBlock Expression Block . CloseBlock
   128       | IF OpenBlock Expression Block . ELSE IfStmt CloseBlock
   129       | IF OpenBlock Expression Block . ELSE Block CloseBlock
 
-    ELSE  shift, and go to state 352
+    ELSE  shift, and go to state 350
 
     $default  reduce using rule 3 (CloseBlock)
 
-    CloseBlock  go to state 353
+    CloseBlock  go to state 351
 
 
-State 341
+State 339
 
   135 ForStmt: FOR OpenBlock Condition forMarker . Block forMarkerEnd CloseBlock
 
     LEFTBRACE  shift, and go to state 124
 
-    Block  go to state 354
+    Block  go to state 352
 
 
-State 342
+State 340
 
   133 ForStmt: FOR OpenBlock SimpleStmt SCOLON . forMarker EmptyExpr SCOLON SimpleStmt Block forMarkerEnd CloseBlock
   134        | FOR OpenBlock SimpleStmt SCOLON . forMarker ExpressionStmt SCOLON SimpleStmt Block forMarkerEnd CloseBlock
 
     $default  reduce using rule 136 (forMarker)
 
-    forMarker  go to state 355
+    forMarker  go to state 353
 
 
-State 343
+State 341
 
   132 ForStmt: FOR forMarker Block forMarkerEnd .
 
     $default  reduce using rule 132 (ForStmt)
 
 
+State 342
+
+  116 ExprSwitchStmt: SWITCH OpenBlock SimpleStmt SCOLON . LEFTBRACE $@2 ExprCaseClauseList RIGHTBRACE CloseBlock
+
+    LEFTBRACE  shift, and go to state 354
+
+
+State 343
+
+  114 ExprSwitchStmt: SWITCH OpenBlock FakeTrue LEFTBRACE . $@1 ExprCaseClauseList RIGHTBRACE CloseBlock
+
+    $default  reduce using rule 113 ($@1)
+
+    $@1  go to state 355
+
+
 State 344
 
-  116 ExprSwitchStmt: SWITCH SimpleStmt SCOLON LEFTBRACE . $@2 ExprCaseClauseList RIGHTBRACE
+  118 ExprSwitchStmt: SWITCH OpenBlock Expression LEFTBRACE . $@3 ExprCaseClauseList RIGHTBRACE CloseBlock
 
-    $default  reduce using rule 115 ($@2)
+    $default  reduce using rule 117 ($@3)
 
-    $@2  go to state 356
+    $@3  go to state 356
 
 
 State 345
-
-  114 ExprSwitchStmt: SWITCH FakeTrue LEFTBRACE $@1 . ExprCaseClauseList RIGHTBRACE
-
-    CASE     shift, and go to state 357
-    DEFAULT  shift, and go to state 358
-
-    ExprCaseClauseList  go to state 359
-    ExprCaseClause      go to state 360
-    ExprSwitchCase      go to state 361
-
-
-State 346
-
-  118 ExprSwitchStmt: SWITCH Expression LEFTBRACE $@3 . ExprCaseClauseList RIGHTBRACE
-
-    CASE     shift, and go to state 357
-    DEFAULT  shift, and go to state 358
-
-    ExprCaseClauseList  go to state 362
-    ExprCaseClause      go to state 360
-    ExprSwitchCase      go to state 361
-
-
-State 347
 
   138 Expression: Expression . MUL Expression
   139           | Expression . QUOT Expression
@@ -7026,24 +7004,24 @@ State 347
     QUOT        shift, and go to state 170
     SHL         shift, and go to state 171
     SHR         shift, and go to state 172
-    RIGHTPARAN  shift, and go to state 363
+    RIGHTPARAN  shift, and go to state 357
 
 
-State 348
+State 346
 
   174 KeyValueList: Expression COLON Expression COMMA KeyValueList .
 
     $default  reduce using rule 174 (KeyValueList)
 
 
-State 349
+State 347
 
   181 Slice: LEFTSQUARE COLON Expression COLON Expression RIGHTSQUARE .
 
     $default  reduce using rule 181 (Slice)
 
 
-State 350
+State 348
 
   138 Expression: Expression . MUL Expression
   139           | Expression . QUOT Expression
@@ -7085,10 +7063,10 @@ State 350
     QUOT         shift, and go to state 170
     SHL          shift, and go to state 171
     SHR          shift, and go to state 172
-    RIGHTSQUARE  shift, and go to state 364
+    RIGHTSQUARE  shift, and go to state 358
 
 
-State 351
+State 349
 
   127 IfStmt: IF OpenBlock SimpleStmt SCOLON Expression . Block CloseBlock
   130       | IF OpenBlock SimpleStmt SCOLON Expression . Block ELSE IfStmt CloseBlock
@@ -7134,10 +7112,10 @@ State 351
     SHR        shift, and go to state 172
     LEFTBRACE  shift, and go to state 124
 
-    Block  go to state 365
+    Block  go to state 359
 
 
-State 352
+State 350
 
   128 IfStmt: IF OpenBlock Expression Block ELSE . IfStmt CloseBlock
   129       | IF OpenBlock Expression Block ELSE . Block CloseBlock
@@ -7145,27 +7123,27 @@ State 352
     IF         shift, and go to state 237
     LEFTBRACE  shift, and go to state 124
 
-    Block   go to state 366
-    IfStmt  go to state 367
+    Block   go to state 360
+    IfStmt  go to state 361
 
 
-State 353
+State 351
 
   126 IfStmt: IF OpenBlock Expression Block CloseBlock .
 
     $default  reduce using rule 126 (IfStmt)
 
 
-State 354
+State 352
 
   135 ForStmt: FOR OpenBlock Condition forMarker Block . forMarkerEnd CloseBlock
 
     $default  reduce using rule 137 (forMarkerEnd)
 
-    forMarkerEnd  go to state 368
+    forMarkerEnd  go to state 362
 
 
-State 355
+State 353
 
   133 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker . EmptyExpr SCOLON SimpleStmt Block forMarkerEnd CloseBlock
   134        | FOR OpenBlock SimpleStmt SCOLON forMarker . ExpressionStmt SCOLON SimpleStmt Block forMarkerEnd CloseBlock
@@ -7192,14 +7170,14 @@ State 355
 
     $default  reduce using rule 51 (EmptyExpr)
 
-    EmptyExpr       go to state 369
-    ExpressionStmt  go to state 370
+    EmptyExpr       go to state 363
+    ExpressionStmt  go to state 364
     CompositeLit    go to state 107
     LiteralType     go to state 108
     Operand         go to state 109
     OperandName     go to state 110
     SliceType       go to state 71
-    Expression      go to state 371
+    Expression      go to state 365
     UnaryExpr       go to state 112
     PrimaryExpr     go to state 113
     MakeExpr        go to state 114
@@ -7210,181 +7188,110 @@ State 355
     Literal         go to state 115
     BasicLit        go to state 116
     String          go to state 117
+
+
+State 354
+
+  116 ExprSwitchStmt: SWITCH OpenBlock SimpleStmt SCOLON LEFTBRACE . $@2 ExprCaseClauseList RIGHTBRACE CloseBlock
+
+    $default  reduce using rule 115 ($@2)
+
+    $@2  go to state 366
+
+
+State 355
+
+  114 ExprSwitchStmt: SWITCH OpenBlock FakeTrue LEFTBRACE $@1 . ExprCaseClauseList RIGHTBRACE CloseBlock
+
+    CASE     shift, and go to state 367
+    DEFAULT  shift, and go to state 368
+
+    ExprCaseClauseList  go to state 369
+    ExprCaseClause      go to state 370
+    ExprSwitchCase      go to state 371
 
 
 State 356
 
-  116 ExprSwitchStmt: SWITCH SimpleStmt SCOLON LEFTBRACE $@2 . ExprCaseClauseList RIGHTBRACE
+  118 ExprSwitchStmt: SWITCH OpenBlock Expression LEFTBRACE $@3 . ExprCaseClauseList RIGHTBRACE CloseBlock
 
-    CASE     shift, and go to state 357
-    DEFAULT  shift, and go to state 358
+    CASE     shift, and go to state 367
+    DEFAULT  shift, and go to state 368
 
     ExprCaseClauseList  go to state 372
-    ExprCaseClause      go to state 360
-    ExprSwitchCase      go to state 361
+    ExprCaseClause      go to state 370
+    ExprSwitchCase      go to state 371
 
 
 State 357
-
-  123 ExprSwitchCase: CASE . ExpressionList
-
-    INTEGER_VAL         shift, and go to state 92
-    FLOAT_VAL           shift, and go to state 93
-    TRUE                shift, and go to state 94
-    FALSE               shift, and go to state 95
-    STRUCT              shift, and go to state 61
-    NEW                 shift, and go to state 96
-    MAP                 shift, and go to state 62
-    MAKE                shift, and go to state 97
-    ADD                 shift, and go to state 99
-    SUB                 shift, and go to state 100
-    NOT                 shift, and go to state 101
-    MUL                 shift, and go to state 102
-    AND                 shift, and go to state 103
-    LEFTPARAN           shift, and go to state 105
-    LEFTSQUARE          shift, and go to state 64
-    RAW_STRING          shift, and go to state 13
-    INTERPRETED_STRING  shift, and go to state 14
-    BYTE_VAL            shift, and go to state 106
-    IDENTIFIER          shift, and go to state 66
-
-    CompositeLit    go to state 107
-    LiteralType     go to state 108
-    Operand         go to state 109
-    OperandName     go to state 110
-    SliceType       go to state 71
-    Expression      go to state 119
-    UnaryExpr       go to state 112
-    PrimaryExpr     go to state 113
-    MakeExpr        go to state 114
-    ExpressionList  go to state 373
-    MapType         go to state 72
-    StructType      go to state 73
-    PointerType     go to state 74
-    ArrayType       go to state 75
-    Literal         go to state 115
-    BasicLit        go to state 116
-    String          go to state 117
-
-
-State 358
-
-  124 ExprSwitchCase: DEFAULT . FakeTrue
-
-    $default  reduce using rule 122 (FakeTrue)
-
-    FakeTrue  go to state 374
-
-
-State 359
-
-  114 ExprSwitchStmt: SWITCH FakeTrue LEFTBRACE $@1 ExprCaseClauseList . RIGHTBRACE
-  119 ExprCaseClauseList: ExprCaseClauseList . ExprCaseClause
-
-    CASE        shift, and go to state 357
-    DEFAULT     shift, and go to state 358
-    RIGHTBRACE  shift, and go to state 375
-
-    ExprCaseClause  go to state 376
-    ExprSwitchCase  go to state 361
-
-
-State 360
-
-  120 ExprCaseClauseList: ExprCaseClause .
-
-    $default  reduce using rule 120 (ExprCaseClauseList)
-
-
-State 361
-
-  121 ExprCaseClause: ExprSwitchCase . COLON StatementList
-
-    COLON  shift, and go to state 377
-
-
-State 362
-
-  118 ExprSwitchStmt: SWITCH Expression LEFTBRACE $@3 ExprCaseClauseList . RIGHTBRACE
-  119 ExprCaseClauseList: ExprCaseClauseList . ExprCaseClause
-
-    CASE        shift, and go to state 357
-    DEFAULT     shift, and go to state 358
-    RIGHTBRACE  shift, and go to state 378
-
-    ExprCaseClause  go to state 376
-    ExprSwitchCase  go to state 361
-
-
-State 363
 
   183 MakeExpr: MAKE LEFTPARAN Type COMMA Expression COMMA Expression RIGHTPARAN .
 
     $default  reduce using rule 183 (MakeExpr)
 
 
-State 364
+State 358
 
   182 Slice: LEFTSQUARE Expression COLON Expression COLON Expression RIGHTSQUARE .
 
     $default  reduce using rule 182 (Slice)
 
 
-State 365
+State 359
 
   127 IfStmt: IF OpenBlock SimpleStmt SCOLON Expression Block . CloseBlock
   130       | IF OpenBlock SimpleStmt SCOLON Expression Block . ELSE IfStmt CloseBlock
   131       | IF OpenBlock SimpleStmt SCOLON Expression Block . ELSE Block CloseBlock
 
-    ELSE  shift, and go to state 379
+    ELSE  shift, and go to state 373
 
     $default  reduce using rule 3 (CloseBlock)
 
-    CloseBlock  go to state 380
+    CloseBlock  go to state 374
 
 
-State 366
+State 360
 
   129 IfStmt: IF OpenBlock Expression Block ELSE Block . CloseBlock
 
     $default  reduce using rule 3 (CloseBlock)
 
-    CloseBlock  go to state 381
+    CloseBlock  go to state 375
 
 
-State 367
+State 361
 
   128 IfStmt: IF OpenBlock Expression Block ELSE IfStmt . CloseBlock
 
     $default  reduce using rule 3 (CloseBlock)
 
-    CloseBlock  go to state 382
+    CloseBlock  go to state 376
 
 
-State 368
+State 362
 
   135 ForStmt: FOR OpenBlock Condition forMarker Block forMarkerEnd . CloseBlock
 
     $default  reduce using rule 3 (CloseBlock)
 
-    CloseBlock  go to state 383
+    CloseBlock  go to state 377
 
 
-State 369
+State 363
 
   133 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker EmptyExpr . SCOLON SimpleStmt Block forMarkerEnd CloseBlock
 
-    SCOLON  shift, and go to state 384
+    SCOLON  shift, and go to state 378
 
 
-State 370
+State 364
 
   134 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker ExpressionStmt . SCOLON SimpleStmt Block forMarkerEnd CloseBlock
 
-    SCOLON  shift, and go to state 385
+    SCOLON  shift, and go to state 379
 
 
-State 371
+State 365
 
    52 ExpressionStmt: Expression .
   138 Expression: Expression . MUL Expression
@@ -7430,20 +7337,268 @@ State 371
     $default  reduce using rule 52 (ExpressionStmt)
 
 
-State 372
+State 366
 
-  116 ExprSwitchStmt: SWITCH SimpleStmt SCOLON LEFTBRACE $@2 ExprCaseClauseList . RIGHTBRACE
+  116 ExprSwitchStmt: SWITCH OpenBlock SimpleStmt SCOLON LEFTBRACE $@2 . ExprCaseClauseList RIGHTBRACE CloseBlock
+
+    CASE     shift, and go to state 367
+    DEFAULT  shift, and go to state 368
+
+    ExprCaseClauseList  go to state 380
+    ExprCaseClause      go to state 370
+    ExprSwitchCase      go to state 371
+
+
+State 367
+
+  123 ExprSwitchCase: CASE . ExpressionList
+
+    INTEGER_VAL         shift, and go to state 92
+    FLOAT_VAL           shift, and go to state 93
+    TRUE                shift, and go to state 94
+    FALSE               shift, and go to state 95
+    STRUCT              shift, and go to state 61
+    NEW                 shift, and go to state 96
+    MAP                 shift, and go to state 62
+    MAKE                shift, and go to state 97
+    ADD                 shift, and go to state 99
+    SUB                 shift, and go to state 100
+    NOT                 shift, and go to state 101
+    MUL                 shift, and go to state 102
+    AND                 shift, and go to state 103
+    LEFTPARAN           shift, and go to state 105
+    LEFTSQUARE          shift, and go to state 64
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 106
+    IDENTIFIER          shift, and go to state 66
+
+    CompositeLit    go to state 107
+    LiteralType     go to state 108
+    Operand         go to state 109
+    OperandName     go to state 110
+    SliceType       go to state 71
+    Expression      go to state 119
+    UnaryExpr       go to state 112
+    PrimaryExpr     go to state 113
+    MakeExpr        go to state 114
+    ExpressionList  go to state 381
+    MapType         go to state 72
+    StructType      go to state 73
+    PointerType     go to state 74
+    ArrayType       go to state 75
+    Literal         go to state 115
+    BasicLit        go to state 116
+    String          go to state 117
+
+
+State 368
+
+  124 ExprSwitchCase: DEFAULT . FakeTrue
+
+    $default  reduce using rule 122 (FakeTrue)
+
+    FakeTrue  go to state 382
+
+
+State 369
+
+  114 ExprSwitchStmt: SWITCH OpenBlock FakeTrue LEFTBRACE $@1 ExprCaseClauseList . RIGHTBRACE CloseBlock
   119 ExprCaseClauseList: ExprCaseClauseList . ExprCaseClause
 
-    CASE        shift, and go to state 357
-    DEFAULT     shift, and go to state 358
+    CASE        shift, and go to state 367
+    DEFAULT     shift, and go to state 368
+    RIGHTBRACE  shift, and go to state 383
+
+    ExprCaseClause  go to state 384
+    ExprSwitchCase  go to state 371
+
+
+State 370
+
+  120 ExprCaseClauseList: ExprCaseClause .
+
+    $default  reduce using rule 120 (ExprCaseClauseList)
+
+
+State 371
+
+  121 ExprCaseClause: ExprSwitchCase . COLON StatementList
+
+    COLON  shift, and go to state 385
+
+
+State 372
+
+  118 ExprSwitchStmt: SWITCH OpenBlock Expression LEFTBRACE $@3 ExprCaseClauseList . RIGHTBRACE CloseBlock
+  119 ExprCaseClauseList: ExprCaseClauseList . ExprCaseClause
+
+    CASE        shift, and go to state 367
+    DEFAULT     shift, and go to state 368
     RIGHTBRACE  shift, and go to state 386
 
-    ExprCaseClause  go to state 376
-    ExprSwitchCase  go to state 361
+    ExprCaseClause  go to state 384
+    ExprSwitchCase  go to state 371
 
 
 State 373
+
+  130 IfStmt: IF OpenBlock SimpleStmt SCOLON Expression Block ELSE . IfStmt CloseBlock
+  131       | IF OpenBlock SimpleStmt SCOLON Expression Block ELSE . Block CloseBlock
+
+    IF         shift, and go to state 237
+    LEFTBRACE  shift, and go to state 124
+
+    Block   go to state 387
+    IfStmt  go to state 388
+
+
+State 374
+
+  127 IfStmt: IF OpenBlock SimpleStmt SCOLON Expression Block CloseBlock .
+
+    $default  reduce using rule 127 (IfStmt)
+
+
+State 375
+
+  129 IfStmt: IF OpenBlock Expression Block ELSE Block CloseBlock .
+
+    $default  reduce using rule 129 (IfStmt)
+
+
+State 376
+
+  128 IfStmt: IF OpenBlock Expression Block ELSE IfStmt CloseBlock .
+
+    $default  reduce using rule 128 (IfStmt)
+
+
+State 377
+
+  135 ForStmt: FOR OpenBlock Condition forMarker Block forMarkerEnd CloseBlock .
+
+    $default  reduce using rule 135 (ForStmt)
+
+
+State 378
+
+  133 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker EmptyExpr SCOLON . SimpleStmt Block forMarkerEnd CloseBlock
+
+    INTEGER_VAL         shift, and go to state 92
+    FLOAT_VAL           shift, and go to state 93
+    TRUE                shift, and go to state 94
+    FALSE               shift, and go to state 95
+    STRUCT              shift, and go to state 61
+    NEW                 shift, and go to state 96
+    MAP                 shift, and go to state 62
+    MAKE                shift, and go to state 97
+    ADD                 shift, and go to state 99
+    SUB                 shift, and go to state 100
+    NOT                 shift, and go to state 101
+    MUL                 shift, and go to state 102
+    AND                 shift, and go to state 103
+    LEFTPARAN           shift, and go to state 105
+    LEFTSQUARE          shift, and go to state 64
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 106
+    IDENTIFIER          shift, and go to state 316
+
+    $default  reduce using rule 50 (EmptyStmt)
+
+    SimpleStmt      go to state 389
+    EmptyStmt       go to state 249
+    ExpressionStmt  go to state 250
+    IncDecStmt      go to state 251
+    Assignment      go to state 252
+    ShortVarDecl    go to state 253
+    IdentifierList  go to state 254
+    CompositeLit    go to state 107
+    LiteralType     go to state 108
+    Operand         go to state 109
+    OperandName     go to state 110
+    SliceType       go to state 71
+    Expression      go to state 264
+    UnaryExpr       go to state 112
+    PrimaryExpr     go to state 113
+    MakeExpr        go to state 114
+    ExpressionList  go to state 265
+    MapType         go to state 72
+    StructType      go to state 73
+    PointerType     go to state 74
+    ArrayType       go to state 75
+    Literal         go to state 115
+    BasicLit        go to state 116
+    String          go to state 117
+
+
+State 379
+
+  134 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker ExpressionStmt SCOLON . SimpleStmt Block forMarkerEnd CloseBlock
+
+    INTEGER_VAL         shift, and go to state 92
+    FLOAT_VAL           shift, and go to state 93
+    TRUE                shift, and go to state 94
+    FALSE               shift, and go to state 95
+    STRUCT              shift, and go to state 61
+    NEW                 shift, and go to state 96
+    MAP                 shift, and go to state 62
+    MAKE                shift, and go to state 97
+    ADD                 shift, and go to state 99
+    SUB                 shift, and go to state 100
+    NOT                 shift, and go to state 101
+    MUL                 shift, and go to state 102
+    AND                 shift, and go to state 103
+    LEFTPARAN           shift, and go to state 105
+    LEFTSQUARE          shift, and go to state 64
+    RAW_STRING          shift, and go to state 13
+    INTERPRETED_STRING  shift, and go to state 14
+    BYTE_VAL            shift, and go to state 106
+    IDENTIFIER          shift, and go to state 316
+
+    $default  reduce using rule 50 (EmptyStmt)
+
+    SimpleStmt      go to state 390
+    EmptyStmt       go to state 249
+    ExpressionStmt  go to state 250
+    IncDecStmt      go to state 251
+    Assignment      go to state 252
+    ShortVarDecl    go to state 253
+    IdentifierList  go to state 254
+    CompositeLit    go to state 107
+    LiteralType     go to state 108
+    Operand         go to state 109
+    OperandName     go to state 110
+    SliceType       go to state 71
+    Expression      go to state 264
+    UnaryExpr       go to state 112
+    PrimaryExpr     go to state 113
+    MakeExpr        go to state 114
+    ExpressionList  go to state 265
+    MapType         go to state 72
+    StructType      go to state 73
+    PointerType     go to state 74
+    ArrayType       go to state 75
+    Literal         go to state 115
+    BasicLit        go to state 116
+    String          go to state 117
+
+
+State 380
+
+  116 ExprSwitchStmt: SWITCH OpenBlock SimpleStmt SCOLON LEFTBRACE $@2 ExprCaseClauseList . RIGHTBRACE CloseBlock
+  119 ExprCaseClauseList: ExprCaseClauseList . ExprCaseClause
+
+    CASE        shift, and go to state 367
+    DEFAULT     shift, and go to state 368
+    RIGHTBRACE  shift, and go to state 391
+
+    ExprCaseClause  go to state 384
+    ExprSwitchCase  go to state 371
+
+
+State 381
 
   123 ExprSwitchCase: CASE ExpressionList .
   192 ExpressionList: ExpressionList . COMMA Expression
@@ -7453,28 +7608,30 @@ State 373
     $default  reduce using rule 123 (ExprSwitchCase)
 
 
-State 374
+State 382
 
   124 ExprSwitchCase: DEFAULT FakeTrue .
 
     $default  reduce using rule 124 (ExprSwitchCase)
 
 
-State 375
+State 383
 
-  114 ExprSwitchStmt: SWITCH FakeTrue LEFTBRACE $@1 ExprCaseClauseList RIGHTBRACE .
+  114 ExprSwitchStmt: SWITCH OpenBlock FakeTrue LEFTBRACE $@1 ExprCaseClauseList RIGHTBRACE . CloseBlock
 
-    $default  reduce using rule 114 (ExprSwitchStmt)
+    $default  reduce using rule 3 (CloseBlock)
+
+    CloseBlock  go to state 392
 
 
-State 376
+State 384
 
   119 ExprCaseClauseList: ExprCaseClauseList ExprCaseClause .
 
     $default  reduce using rule 119 (ExprCaseClauseList)
 
 
-State 377
+State 385
 
   121 ExprCaseClause: ExprSwitchCase COLON . StatementList
 
@@ -7512,7 +7669,7 @@ State 377
     $default  reduce using rule 50 (EmptyStmt)
 
     Block            go to state 243
-    StatementList    go to state 387
+    StatementList    go to state 393
     Statement        go to state 245
     Declaration      go to state 246
     LabeledStmt      go to state 247
@@ -7553,165 +7710,68 @@ State 377
     String           go to state 117
 
 
-State 378
-
-  118 ExprSwitchStmt: SWITCH Expression LEFTBRACE $@3 ExprCaseClauseList RIGHTBRACE .
-
-    $default  reduce using rule 118 (ExprSwitchStmt)
-
-
-State 379
-
-  130 IfStmt: IF OpenBlock SimpleStmt SCOLON Expression Block ELSE . IfStmt CloseBlock
-  131       | IF OpenBlock SimpleStmt SCOLON Expression Block ELSE . Block CloseBlock
-
-    IF         shift, and go to state 237
-    LEFTBRACE  shift, and go to state 124
-
-    Block   go to state 388
-    IfStmt  go to state 389
-
-
-State 380
-
-  127 IfStmt: IF OpenBlock SimpleStmt SCOLON Expression Block CloseBlock .
-
-    $default  reduce using rule 127 (IfStmt)
-
-
-State 381
-
-  129 IfStmt: IF OpenBlock Expression Block ELSE Block CloseBlock .
-
-    $default  reduce using rule 129 (IfStmt)
-
-
-State 382
-
-  128 IfStmt: IF OpenBlock Expression Block ELSE IfStmt CloseBlock .
-
-    $default  reduce using rule 128 (IfStmt)
-
-
-State 383
-
-  135 ForStmt: FOR OpenBlock Condition forMarker Block forMarkerEnd CloseBlock .
-
-    $default  reduce using rule 135 (ForStmt)
-
-
-State 384
-
-  133 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker EmptyExpr SCOLON . SimpleStmt Block forMarkerEnd CloseBlock
-
-    INTEGER_VAL         shift, and go to state 92
-    FLOAT_VAL           shift, and go to state 93
-    TRUE                shift, and go to state 94
-    FALSE               shift, and go to state 95
-    STRUCT              shift, and go to state 61
-    NEW                 shift, and go to state 96
-    MAP                 shift, and go to state 62
-    MAKE                shift, and go to state 97
-    ADD                 shift, and go to state 99
-    SUB                 shift, and go to state 100
-    NOT                 shift, and go to state 101
-    MUL                 shift, and go to state 102
-    AND                 shift, and go to state 103
-    LEFTPARAN           shift, and go to state 105
-    LEFTSQUARE          shift, and go to state 64
-    RAW_STRING          shift, and go to state 13
-    INTERPRETED_STRING  shift, and go to state 14
-    BYTE_VAL            shift, and go to state 106
-    IDENTIFIER          shift, and go to state 292
-
-    $default  reduce using rule 50 (EmptyStmt)
-
-    SimpleStmt      go to state 390
-    EmptyStmt       go to state 249
-    ExpressionStmt  go to state 250
-    IncDecStmt      go to state 251
-    Assignment      go to state 252
-    ShortVarDecl    go to state 253
-    IdentifierList  go to state 254
-    CompositeLit    go to state 107
-    LiteralType     go to state 108
-    Operand         go to state 109
-    OperandName     go to state 110
-    SliceType       go to state 71
-    Expression      go to state 264
-    UnaryExpr       go to state 112
-    PrimaryExpr     go to state 113
-    MakeExpr        go to state 114
-    ExpressionList  go to state 265
-    MapType         go to state 72
-    StructType      go to state 73
-    PointerType     go to state 74
-    ArrayType       go to state 75
-    Literal         go to state 115
-    BasicLit        go to state 116
-    String          go to state 117
-
-
-State 385
-
-  134 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker ExpressionStmt SCOLON . SimpleStmt Block forMarkerEnd CloseBlock
-
-    INTEGER_VAL         shift, and go to state 92
-    FLOAT_VAL           shift, and go to state 93
-    TRUE                shift, and go to state 94
-    FALSE               shift, and go to state 95
-    STRUCT              shift, and go to state 61
-    NEW                 shift, and go to state 96
-    MAP                 shift, and go to state 62
-    MAKE                shift, and go to state 97
-    ADD                 shift, and go to state 99
-    SUB                 shift, and go to state 100
-    NOT                 shift, and go to state 101
-    MUL                 shift, and go to state 102
-    AND                 shift, and go to state 103
-    LEFTPARAN           shift, and go to state 105
-    LEFTSQUARE          shift, and go to state 64
-    RAW_STRING          shift, and go to state 13
-    INTERPRETED_STRING  shift, and go to state 14
-    BYTE_VAL            shift, and go to state 106
-    IDENTIFIER          shift, and go to state 292
-
-    $default  reduce using rule 50 (EmptyStmt)
-
-    SimpleStmt      go to state 391
-    EmptyStmt       go to state 249
-    ExpressionStmt  go to state 250
-    IncDecStmt      go to state 251
-    Assignment      go to state 252
-    ShortVarDecl    go to state 253
-    IdentifierList  go to state 254
-    CompositeLit    go to state 107
-    LiteralType     go to state 108
-    Operand         go to state 109
-    OperandName     go to state 110
-    SliceType       go to state 71
-    Expression      go to state 264
-    UnaryExpr       go to state 112
-    PrimaryExpr     go to state 113
-    MakeExpr        go to state 114
-    ExpressionList  go to state 265
-    MapType         go to state 72
-    StructType      go to state 73
-    PointerType     go to state 74
-    ArrayType       go to state 75
-    Literal         go to state 115
-    BasicLit        go to state 116
-    String          go to state 117
-
-
 State 386
 
-  116 ExprSwitchStmt: SWITCH SimpleStmt SCOLON LEFTBRACE $@2 ExprCaseClauseList RIGHTBRACE .
+  118 ExprSwitchStmt: SWITCH OpenBlock Expression LEFTBRACE $@3 ExprCaseClauseList RIGHTBRACE . CloseBlock
 
-    $default  reduce using rule 116 (ExprSwitchStmt)
+    $default  reduce using rule 3 (CloseBlock)
+
+    CloseBlock  go to state 394
 
 
 State 387
+
+  131 IfStmt: IF OpenBlock SimpleStmt SCOLON Expression Block ELSE Block . CloseBlock
+
+    $default  reduce using rule 3 (CloseBlock)
+
+    CloseBlock  go to state 395
+
+
+State 388
+
+  130 IfStmt: IF OpenBlock SimpleStmt SCOLON Expression Block ELSE IfStmt . CloseBlock
+
+    $default  reduce using rule 3 (CloseBlock)
+
+    CloseBlock  go to state 396
+
+
+State 389
+
+  133 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker EmptyExpr SCOLON SimpleStmt . Block forMarkerEnd CloseBlock
+
+    LEFTBRACE  shift, and go to state 124
+
+    Block  go to state 397
+
+
+State 390
+
+  134 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker ExpressionStmt SCOLON SimpleStmt . Block forMarkerEnd CloseBlock
+
+    LEFTBRACE  shift, and go to state 124
+
+    Block  go to state 398
+
+
+State 391
+
+  116 ExprSwitchStmt: SWITCH OpenBlock SimpleStmt SCOLON LEFTBRACE $@2 ExprCaseClauseList RIGHTBRACE . CloseBlock
+
+    $default  reduce using rule 3 (CloseBlock)
+
+    CloseBlock  go to state 399
+
+
+State 392
+
+  114 ExprSwitchStmt: SWITCH OpenBlock FakeTrue LEFTBRACE $@1 ExprCaseClauseList RIGHTBRACE CloseBlock .
+
+    $default  reduce using rule 114 (ExprSwitchStmt)
+
+
+State 393
 
    24 StatementList: StatementList . Statement SCOLON
   121 ExprCaseClause: ExprSwitchCase COLON StatementList .
@@ -7751,7 +7811,7 @@ State 387
     $default  reduce using rule 121 (ExprCaseClause)
 
     Block            go to state 243
-    Statement        go to state 299
+    Statement        go to state 296
     Declaration      go to state 246
     LabeledStmt      go to state 247
     SimpleStmt       go to state 248
@@ -7791,100 +7851,78 @@ State 387
     String           go to state 117
 
 
-State 388
+State 394
 
-  131 IfStmt: IF OpenBlock SimpleStmt SCOLON Expression Block ELSE Block . CloseBlock
+  118 ExprSwitchStmt: SWITCH OpenBlock Expression LEFTBRACE $@3 ExprCaseClauseList RIGHTBRACE CloseBlock .
 
-    $default  reduce using rule 3 (CloseBlock)
-
-    CloseBlock  go to state 392
+    $default  reduce using rule 118 (ExprSwitchStmt)
 
 
-State 389
-
-  130 IfStmt: IF OpenBlock SimpleStmt SCOLON Expression Block ELSE IfStmt . CloseBlock
-
-    $default  reduce using rule 3 (CloseBlock)
-
-    CloseBlock  go to state 393
-
-
-State 390
-
-  133 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker EmptyExpr SCOLON SimpleStmt . Block forMarkerEnd CloseBlock
-
-    LEFTBRACE  shift, and go to state 124
-
-    Block  go to state 394
-
-
-State 391
-
-  134 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker ExpressionStmt SCOLON SimpleStmt . Block forMarkerEnd CloseBlock
-
-    LEFTBRACE  shift, and go to state 124
-
-    Block  go to state 395
-
-
-State 392
+State 395
 
   131 IfStmt: IF OpenBlock SimpleStmt SCOLON Expression Block ELSE Block CloseBlock .
 
     $default  reduce using rule 131 (IfStmt)
 
 
-State 393
+State 396
 
   130 IfStmt: IF OpenBlock SimpleStmt SCOLON Expression Block ELSE IfStmt CloseBlock .
 
     $default  reduce using rule 130 (IfStmt)
 
 
-State 394
+State 397
 
   133 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker EmptyExpr SCOLON SimpleStmt Block . forMarkerEnd CloseBlock
 
     $default  reduce using rule 137 (forMarkerEnd)
 
-    forMarkerEnd  go to state 396
+    forMarkerEnd  go to state 400
 
 
-State 395
+State 398
 
   134 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker ExpressionStmt SCOLON SimpleStmt Block . forMarkerEnd CloseBlock
 
     $default  reduce using rule 137 (forMarkerEnd)
 
-    forMarkerEnd  go to state 397
+    forMarkerEnd  go to state 401
 
 
-State 396
+State 399
+
+  116 ExprSwitchStmt: SWITCH OpenBlock SimpleStmt SCOLON LEFTBRACE $@2 ExprCaseClauseList RIGHTBRACE CloseBlock .
+
+    $default  reduce using rule 116 (ExprSwitchStmt)
+
+
+State 400
 
   133 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker EmptyExpr SCOLON SimpleStmt Block forMarkerEnd . CloseBlock
 
     $default  reduce using rule 3 (CloseBlock)
 
-    CloseBlock  go to state 398
+    CloseBlock  go to state 402
 
 
-State 397
+State 401
 
   134 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker ExpressionStmt SCOLON SimpleStmt Block forMarkerEnd . CloseBlock
 
     $default  reduce using rule 3 (CloseBlock)
 
-    CloseBlock  go to state 399
+    CloseBlock  go to state 403
 
 
-State 398
+State 402
 
   133 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker EmptyExpr SCOLON SimpleStmt Block forMarkerEnd CloseBlock .
 
     $default  reduce using rule 133 (ForStmt)
 
 
-State 399
+State 403
 
   134 ForStmt: FOR OpenBlock SimpleStmt SCOLON forMarker ExpressionStmt SCOLON SimpleStmt Block forMarkerEnd CloseBlock .
 
