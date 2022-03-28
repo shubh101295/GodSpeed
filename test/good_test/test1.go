@@ -33,10 +33,12 @@ func main() {
 
 	var txn Transaction
 	// txn.Id = "68102"
-	txn.Inputs.TransactionId = "#4s"
+	// txn.Inputs.TransactionId = "#4s"
 	// txn.Outputs[0] = out
 
-	// fmt.Println("Transaction ID: ", txn.Id)
+	fmt.Printf("Transaction ID: ", in.Index)
+	fmt.Println("Transaction ID: ")
+	
 	// fmt.Println("InputID: ", txn.Inputs[0].TransactionId)
 	// fmt.Println("Recipient: ", txn.Outputs[0].Recipient)
 }
