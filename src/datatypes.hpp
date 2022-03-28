@@ -21,8 +21,8 @@ public:
 	dataTypes current_data_type;
 	DataType* next_type;
 	
-	DataType* copyClass() { return new DataType();}; 
-	string getDataType() {return "NO TYPE";};
+	virtual DataType* copyClass() { return new DataType();}; 
+	virtual string getDataType() {return "NO TYPE";};
 };
 
 class ArrayType: public DataType{
