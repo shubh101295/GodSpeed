@@ -17,7 +17,11 @@ clean:
 	rm parser.output
 	rm bin/*.out
 	rm ./bin/*.csv
+	rm ./bin/*.dot
+	rm ./bin/*.png
+
 	rm ast.node ast.edge ast.dot *.png
 	
 clean_csv:
 	rm ./bin/*.csv
+	
