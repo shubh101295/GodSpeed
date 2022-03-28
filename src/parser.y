@@ -2533,7 +2533,7 @@ UnaryExpr:
 
 	}
  	| PrimaryExpr Index {
- 		cout<<"PrimaryExpr Index"<<endl;
+ 		cout<<"PrimaryExpr: PrimaryExpr Index"<<endl;
  		$$ = new Node("PrimaryExpr");
  		$$->add_non_terminal_children($1);
  		$$->add_non_terminal_children($2);
@@ -2548,14 +2548,15 @@ UnaryExpr:
  			if($2->current_type->getDataType() != "int"){
  				cout<<"Index can not be integer. Exiting.."<<endl;
  				exit(1);
- 			}
+	 			}
+	 		}
  			else if(t->current_data_type == _ARRAY){
  				ArrayType *tp = (ArrayType *)t;
 	 			$$->current_type = tp->array_index_type->copyClass();
 	 			if($2->current_type->getDataType() != "int"){
 	 				cout<<"Index can not be integer. Exiting.."<<endl;
 	 				exit(1);
-	 			}	
+	 			}
  			}
  			else if(t->current_data_type == _MAP){
  				MapType *tp = (MapType *)t;
@@ -2570,10 +2571,8 @@ UnaryExpr:
  			}
 
  			$$->current_node_data = $1->current_node_data;
- 			$$->current_node_data->value = true; 
+ 			$$->current_node_data->value = true;
  		}
-
- 	}
  	| PrimaryExpr Slice {
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children($1);
