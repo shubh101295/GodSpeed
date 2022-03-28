@@ -1019,8 +1019,10 @@ ParameterList:
 		$$->current_node_data = $1->current_node_data;
 		$$-> current_type = $1->current_type;
 		cout<<"Here"<<endl;
-		//($$->last_current_node_data())->next_data = $3->current_node_data;
-		//($$->last_current_type())->next_type = $3->current_type;
+		cout<<(($$->last_current_node_data()))<<" \n";
+		cout<<"  "<<(($$->last_current_type()))<<"\n";
+		($$->last_current_node_data())->next_data = $3->current_node_data;
+		($$->last_current_type())->next_type = $3->current_type;
 		cout<<"Here1"<<endl;
 	}
 	;
@@ -1303,7 +1305,7 @@ BreakStmt:
 		Node* curr = new Node("BreakStmt");
 		curr->current_node_data = new NodeData (string($1));
 		if(bl->is_empty()){
-			cout<<"Tried to break out without any label! Exiting..";
+			cout<<"[INVALID BREAK] Tried to break, outside from a for loop";
 			exit(1);
 		}
 		$$ = curr;
@@ -1323,15 +1325,20 @@ ContinueStmt:
 		Node* curr = new Node("ContinueStmt");
 		curr->current_node_data = new NodeData(string($1));
 		$$ = curr;
+		if(bl->is_empty()){
+			cout<<"[INVALID CONTINUE] Tried to continue when not inside a loop!";
+			exit(1);
+		}
+		
 	}
-	| CONTINUE IDENTIFIER {
-		Node* curr = new Node("ContinueStmt");
-		curr->add_terminal_children(string($2));
-		curr->current_node_data = new NodeData(string($1));
-		// check this reason
-		curr->current_node_data->node_child =  new NodeData(string($2));
-		$$ = curr;
-	}
+	// | CONTINUE IDENTIFIER {
+	// 	Node* curr = new Node("ContinueStmt");
+	// 	curr->add_terminal_children(string($2));
+	// 	curr->current_node_data = new NodeData(string($1));
+	// 	// check this reason
+	// 	curr->current_node_data->node_child =  new NodeData(string($2));
+	// 	$$ = curr;
+	// }
 	;
 
 GotoStmt:
