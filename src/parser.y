@@ -47,7 +47,7 @@
 %token <sval> LEFTPARAN LEFTBRACE LEFTSQUARE COLON DOT COMMA RAW_STRING INTERPRETED_STRING BYTE_VAL IDENTIFIER
 %token <sval> ASSGN_OP
 
-%type <nt> SourceFile Expression forMarker forMarkerEnd EmptyExpr Empty
+%type <nt> SourceFile Expression forMarker forMarkerEnd EmptyExpr
 %type <nt> Block StatementList Statement SimpleStmt EmptyStmt ExpressionStmt IncDecStmt MapType
 %type <nt> Assignment ShortVarDecl Declaration VarSpec PackageName
 %type <nt> Signature Result Parameters ParameterList ParameterDecl
@@ -597,10 +597,10 @@ Assignment:
 				string j = name;
 				cout<<"HERE 2\n";
 				name = (left_data->node_child)? left_data->node_child->data_name:left_data->data_name;
-				cout<<"HERE 4\n";
 				if(name==j) cout<<"UNCHANGED!\n";
-			}
-				cout<<"HERE 4\n";
+			}	
+
+				cout<<name<<" "<<"HERE 4\n";
 			if(right_type && right_type->getDataType() == "undefined"){
 				cout<<"[Undeclared Identifier]"<<"Identifier in RHS undeclared"<<endl;
 				exit(1);
@@ -1278,12 +1278,14 @@ ReturnStmt:
 	}
 	;
 
-// remaining
 BreakStmt:
 	BREAK {
 		Node* curr = new Node("BreakStmt");
 		curr->current_node_data = new NodeData (string($1));
-		// break labels
+		if(bl->is_empty()){
+			cout<<"Tried to break out without any label! Exiting..";
+			exit(1);
+		}
 		$$ = curr;
 	}
 	| BREAK IDENTIFIER {
@@ -1720,12 +1722,12 @@ forMarkerEnd:
 	;
 	}
 	;
-Empty:
+//Empty:
 	/* empty */
-	{
+	//{
 
-	}
-	;
+	//}
+	//;
 
 // Might change, temporarily added
 RangeClause:
@@ -2307,7 +2309,7 @@ UnaryExpr:
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
-		cout<<"Primary Value: "<<$$->current_node_data->value<<" "<<$1->current_node_data->value<< endl;
+		//cout<<"Primary Value: "<<$$->current_node_data->value<<" "<<$1->current_node_data->value<< endl;
 
 	}
 
@@ -2321,7 +2323,7 @@ UnaryExpr:
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
 		$$ = curr;
-		cout<<"Operand Value:"<<$$->current_node_data->value<<endl;
+		//cout<<"Operand Value:"<<$$->current_node_data->value<<endl;
 	}
  	| MakeExpr {
 		Node* curr = new Node("PrimaryExpr");
@@ -2332,11 +2334,10 @@ UnaryExpr:
 	}
  	| PrimaryExpr Selector {
  		cout<<"PrimaryExpr: PrimaryExpr Selector\n";
-		Node* curr = new Node("PrimaryExpr");
-		curr->add_non_terminal_children($1);
-		curr->add_non_terminal_children($2);
-		curr->current_node_data = new NodeData("Access");
-		$$ = curr;
+		$$ = new Node("PrimaryExpr");
+		$$->add_non_terminal_children($1);
+		$$->add_non_terminal_children($2);
+		$$->current_node_data = new NodeData("Access");
 		$$->current_node_data->node_child = $1->current_node_data;
 		$$->current_node_data->node_child->next_data = $2->current_node_data;
 		$$->current_node_data->value = true;
@@ -2405,6 +2406,41 @@ UnaryExpr:
  		$$ = new Node("PrimaryExpr");
  		$$->add_non_terminal_children($1);
  		$$->add_non_terminal_children($2);
+
+ 		DataType* t = $1->current_type;
+ 		if(t->current_data_type == _POINTER){
+ 			t = dynamic_cast<PointerType*>(t)->type_of_address_pointing_to;
+ 		}
+ 		if(t->current_data_type == _SLICE){
+ 			SliceType *tp = (SliceType *)t;
+ 			$$->current_type = tp->slice_base->copyClass();
+ 			if($2->current_type->getDataType() != "int"){
+ 				cout<<"Index can not be integer. Exiting.."<<endl;
+ 				exit(1);
+ 			}
+ 			else if(t->current_data_type == _ARRAY){
+ 				ArrayType *tp = (ArrayType *)t;
+	 			$$->current_type = tp->array_index_type->copyClass();
+	 			if($2->current_type->getDataType() != "int"){
+	 				cout<<"Index can not be integer. Exiting.."<<endl;
+	 				exit(1);
+	 			}	
+ 			}
+ 			else if(t->current_data_type == _MAP){
+ 				MapType *tp = (MapType *)t;
+	 			if($2->current_type->getDataType() != tp->key_datatype->getDataType()){
+	 				cout<<"Expected key type : [ "<<tp->key_datatype->getDataType()<<" ]. Found: ["<<$2->current_type->getDataType() <<endl;
+	 				exit(1);
+	 			}
+ 			}
+ 			else{
+ 				cout<<"Tried to index something of type: [ "<<t->getDataType()<<" ]."<<endl;
+ 				exit(1);
+ 			}
+
+ 			$$->current_node_data = $1->current_node_data;
+ 			$$->current_node_data->value = true; 
+ 		}
 
  	}
  	| PrimaryExpr Slice {
@@ -2910,7 +2946,6 @@ BasicLit:
 		 $$ = curr;
 		cout<<"BasicLit:String ";
 		 cout<<($$->current_type)<<"\n";
-		 // cout<<"String Value: "<<$$->current_node_data->value<<endl;
 		 }
 	| TRUE      {
 		 Node* curr = new Node("BasicLit");
@@ -2932,15 +2967,16 @@ String:
 	RAW_STRING { Node* curr = new Node("String");
 			 curr->add_terminal_children(string($1));
 			 curr->current_node_data = new NodeData($1);
+			 curr->current_type = new BasicType("string");
 			 $$ = curr;}
 	| INTERPRETED_STRING {
 			cout<<"INTERPRETED_STRING: "<<string($1)<<endl;
 			 Node* curr = new Node("String");
 			 curr->add_terminal_children(string($1));
 			 curr->current_node_data = new NodeData($1);
-
+			 curr->current_type = new BasicType("string");
 			 $$ = curr;
-			}
+		}
 	;
 
 %%
