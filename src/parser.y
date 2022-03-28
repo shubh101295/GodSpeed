@@ -595,24 +595,37 @@ Assignment:
 			if(left_data -> value){
 				cout<<"Here 1"<<endl;
 				string j = name;
+				cout<<"HERE 2\n";
 				name = (left_data->node_child)? left_data->node_child->data_name:left_data->data_name;
+				cout<<"HERE 4\n";
 				if(name==j) cout<<"UNCHANGED!\n";
 			}
+				cout<<"HERE 4\n";
 			if(right_type && right_type->getDataType() == "undefined"){
 				cout<<"[Undeclared Identifier]"<<"Identifier in RHS undeclared"<<endl;
 				exit(1);
 			}
-
+					cout<<"HERE 4\n";
+		
 			if(!st->get_type(name)){
+						cout<<"HERE 16\n";
+		
 				cout<<"[Undeclared Identifier] "<<name<<" not declared yet!";
 				exit(1);
 			}
 			else{
+				cout<<"HERE 8\n";
+				cout<<left_type->getDataType()<<"\n";
+				cout<<right_type->getDataType()<<"\n";
+								
 				if(left_type->getDataType() != right_type->getDataType()){
+				
 					cout<<"[Type Mismatch]"<<name<<" Expected type ( " <<left_type->getDataType()<<" ) whereas found ( "<<right_type->getDataType()<<" ) \n";
 					exit(1);
 				}
+
 			}
+				cout<<"HERE 4\n";
 			left_data = left_data->next_data;
 			left_type = left_type->next_type;
 			right_type = right_type->next_type;
