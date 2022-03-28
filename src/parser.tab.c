@@ -1987,7 +1987,7 @@ yyreduce:
 #line 117 "src/parser.y"
                             {
 		Node* curr = new Node("PackageClause");
-		cout<<"PackageClause:	PACKAGE PackageName \n";
+		// cout<<"PackageClause:	PACKAGE PackageName \n";
 		curr -> add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt) = curr;
 	}
@@ -1998,7 +1998,7 @@ yyreduce:
 #line 126 "src/parser.y"
                    {
 		Node* curr = new Node("PackageName");
-		cout<<"PackageName: IDENTIFIER - "<<string((yyvsp[0].sval))<<"\n";
+		// cout<<"PackageName: IDENTIFIER - "<<string($1)<<"\n";
 		curr -> add_terminal_children(string((yyvsp[0].sval)));
 		(yyval.nt) = curr;
 	}
@@ -2020,7 +2020,7 @@ yyreduce:
 #line 141 "src/parser.y"
                             {
 		Node* curr = new Node("ImportDeclList");
-		cout<<"ImportDeclList: ImportDecl SCOLON \n";
+		// cout<<"ImportDeclList: ImportDecl SCOLON \n";
 		curr->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt) = curr;
 	}
@@ -2031,7 +2031,7 @@ yyreduce:
 #line 150 "src/parser.y"
                                                    {
 		Node* curr = new Node("ImportDecl");
-		cout<<"ImportDecl:IMPORT LEFTPARAN ImportSpecList RIGHTPARAN\n";
+		// cout<<"ImportDecl:IMPORT LEFTPARAN ImportSpecList RIGHTPARAN\n";
 		curr->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt) = curr;
 	}
@@ -2051,7 +2051,7 @@ yyreduce:
 #line 160 "src/parser.y"
                             {
 		Node* curr = new Node("ImportDecl");
-		cout<<"ImportDecl: IMPORT ImportSpec \n";
+		// cout<<"ImportDecl: IMPORT ImportSpec \n";
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt) = curr;
 	}
@@ -2103,7 +2103,7 @@ yyreduce:
   case 16:
 #line 194 "src/parser.y"
                      {
-		cout<<"ImportSpec: ImportPath\n";
+		// cout<<"ImportSpec: ImportPath\n";
 		Node* curr = new Node("ImportSpec");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt) = curr;
@@ -2115,7 +2115,7 @@ yyreduce:
 #line 203 "src/parser.y"
                {
 		Node* curr = new Node("ImportPath");
-		cout<<"ImportPath: String\n";
+		// cout<<"ImportPath: String\n";
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt) = curr;
 	}
@@ -2125,14 +2125,14 @@ yyreduce:
   case 18:
 #line 212 "src/parser.y"
                                               {
-		cout<<"TopLevelDeclList: TopLevelDeclList TopLevelDecl SCOLON\n";
+		// cout<<"TopLevelDeclList: TopLevelDeclList TopLevelDecl SCOLON\n";
 		(yyval.nt) = new Node("TopLevelDeclList");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
 		(yyval.nt)->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt)->current_node_data = (yyvsp[-2].nt) -> current_node_data;
-		if((yyval.nt)->last_current_node_data() == NULL){
-			cout<<"NULL"<<endl;
-		}
+		// if($$->last_current_node_data() == NULL){
+		// 	cout<<"NULL"<<endl;
+		// }
 		((yyval.nt)->last_current_node_data())->next_data = (yyvsp[-1].nt)->current_node_data;
 	}
 #line 2139 "parser.tab.c"
@@ -2142,7 +2142,7 @@ yyreduce:
 #line 223 "src/parser.y"
                               {
 		Node* curr = new Node("TopLevelDeclList");
-		cout<<"TopLevelDeclList: TopLevelDecl SCOLON\n";
+		// cout<<"TopLevelDeclList: TopLevelDecl SCOLON\n";
 		curr->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt) = curr;
 		(yyval.nt)->current_node_data = (yyvsp[-1].nt)->current_node_data;
@@ -2166,7 +2166,7 @@ yyreduce:
 #line 240 "src/parser.y"
                        {
 		Node* curr = new Node("TopLevelDecl");
-		cout<<"TopLevelDecl : FunctionDecl\n";
+		// cout<<"TopLevelDecl : FunctionDecl\n";
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		curr->current_type = (yyvsp[0].nt)->current_type;
 		curr->current_node_data = (yyvsp[0].nt)->current_node_data;
@@ -2215,7 +2215,7 @@ yyreduce:
 #line 278 "src/parser.y"
                                        {
 
-		cout<<"StatementList: 	StatementList Statement SCOLON\n";
+		// cout<<"StatementList: 	StatementList Statement SCOLON\n";
 		Node* curr = new Node("StatementList");
 		curr->add_non_terminal_children((yyvsp[-2].nt));
 		curr->add_non_terminal_children((yyvsp[-1].nt));
@@ -2225,7 +2225,7 @@ yyreduce:
 		
 		// for checking if the fallthrough statement is the last one
 		if(fallthrough_expression_count){
-			cout<<"INC fallthrough_expression_count\n";
+			// cout<<"INC fallthrough_expression_count\n";
 			fallthrough_expression_count+=1;
 
 		} 
@@ -2248,14 +2248,14 @@ yyreduce:
 		curr->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt) = curr;
 		(yyval.nt)->current_node_data = new NodeData("list");
-		cout<<"HERE\n";
+		// cout<<"HERE\n";
 		if((yyvsp[-1].nt)->current_node_data==NULL){
-			cout<<"NO AST found here! Exiting........";
+			cout<<"NO AST found here! Exiting ";
 			exit(1);
 		}
-		cout<<"HERE\n";
+		// cout<<"HERE\n";
 		(yyval.nt)->current_node_data->node_child = (yyvsp[-1].nt)->current_node_data;
-		cout<<"HERE\n";
+		// cout<<"HERE\n";
 	
 	}
 #line 2262 "parser.tab.c"
@@ -2296,7 +2296,7 @@ yyreduce:
 		curr->current_type = (yyvsp[0].nt)->current_type;
 		
 		curr->current_node_data = (yyvsp[0].nt)->current_node_data;
-		cout<<"Statement:	SimpleStmt "<<((yyvsp[0].nt)->current_node_data==NULL)<<"\n";
+		// cout<<"Statement:	SimpleStmt "<<($1->current_node_data==NULL)<<"\n";
 		(yyval.nt) = curr;
 	}
 #line 2303 "parser.tab.c"
@@ -2305,7 +2305,7 @@ yyreduce:
   case 30:
 #line 347 "src/parser.y"
                     {
-		cout<<"Statement:	ReturnStmt\n";
+		// cout<<"Statement:	ReturnStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		curr->current_type = (yyvsp[0].nt)->current_type;
@@ -2318,7 +2318,7 @@ yyreduce:
   case 31:
 #line 355 "src/parser.y"
                     {
-		cout<<"Statement:	BreakStmt\n";
+		// cout<<"Statement:	BreakStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		curr->current_type = (yyvsp[0].nt)->current_type;
@@ -2331,7 +2331,7 @@ yyreduce:
   case 32:
 #line 363 "src/parser.y"
                        {
-		cout<<"Statement:	ContinueStmt\n";
+		// cout<<"Statement:	ContinueStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		curr->current_type = (yyvsp[0].nt)->current_type;
@@ -2344,7 +2344,7 @@ yyreduce:
   case 33:
 #line 371 "src/parser.y"
                    {
-		cout<<"Statement:	GotoStmt\n";
+		// cout<<"Statement:	GotoStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		curr->current_type = (yyvsp[0].nt)->current_type;
@@ -2357,7 +2357,7 @@ yyreduce:
   case 34:
 #line 379 "src/parser.y"
                      {
-		cout<<"Statement:	SwitchStmt\n";
+		// cout<<"Statement:	SwitchStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		curr->current_type = (yyvsp[0].nt)->current_type;
@@ -2370,7 +2370,7 @@ yyreduce:
   case 35:
 #line 387 "src/parser.y"
                           {
-		cout<<"Statement:	FallthroughStmt\n";
+		// cout<<"Statement:	FallthroughStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		curr->current_node_data = (yyvsp[0].nt)->current_node_data;
@@ -2382,7 +2382,7 @@ yyreduce:
   case 36:
 #line 394 "src/parser.y"
                 {
-		cout<<"Statement:	Block\n";
+		// cout<<"Statement:	Block\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		curr->current_type = (yyvsp[0].nt)->current_type;
@@ -2395,7 +2395,7 @@ yyreduce:
   case 37:
 #line 402 "src/parser.y"
                  {
-		cout<<"Statement:	IfStmt\n";
+		// cout<<"Statement:	IfStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		curr->current_type = (yyvsp[0].nt)->current_type;
@@ -2408,7 +2408,7 @@ yyreduce:
   case 38:
 #line 410 "src/parser.y"
                   {
-		cout<<"Statement:	ForStmt\n";
+		// cout<<"Statement:	ForStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		curr->current_type = (yyvsp[0].nt)->current_type;
@@ -2454,7 +2454,7 @@ yyreduce:
   case 42:
 #line 452 "src/parser.y"
                      {
-		cout<<"FunctionDecl: FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock \n";
+		// cout<<"FunctionDecl: FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock \n";
 		Node* curr = new Node("FunctionDecl");
 		curr->add_terminal_children(string((yyvsp[-5].sval)));
 		curr->add_non_terminal_children((yyvsp[-3].nt));
@@ -2545,7 +2545,7 @@ yyreduce:
   case 49:
 #line 517 "src/parser.y"
                          {
-		cout<<"SimpleStmt: ExpressionStmt\n";
+		// cout<<"SimpleStmt: ExpressionStmt\n";
 		(yyval.nt) = new Node("SimpleStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
@@ -2572,7 +2572,7 @@ yyreduce:
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
-		cout<<"SimpleStmt: Assignment "<<((yyval.nt)->current_node_data==NULL)<<"\n";
+		// cout<<"SimpleStmt: Assignment "<<($$->current_node_data==NULL)<<"\n";
 	}
 #line 2578 "parser.tab.c"
     break;
@@ -2610,7 +2610,7 @@ yyreduce:
   case 55:
 #line 559 "src/parser.y"
                    {
-		cout<<"ExpressionStmt: Expression\n";
+		// cout<<"ExpressionStmt: Expression\n";
 		(yyval.nt) = new Node("ExpressionStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
@@ -2647,7 +2647,7 @@ yyreduce:
   case 58:
 #line 587 "src/parser.y"
                                                {
-		cout<<"Assignment: ExpressionList ASSGN_OP ExpressionList "<<"\n";
+		// cout<<"Assignment: ExpressionList ASSGN_OP ExpressionList "<<"\n";
 
 		(yyval.nt) = new Node("Assignment");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -2661,15 +2661,15 @@ yyreduce:
 		NodeData* right_data = (yyvsp[0].nt)->current_node_data;
 		// cout<<"A  AAA \n";
 		// cout<<left_data->value<<" "<<right_data->value<<endl;
-		cout<<"A  AAA \n";
+		// cout<<"A  AAA \n";
 		while(left_data || right_type){
-			cout<<"ENTERED!"<<endl;
-			if(left_data){
-				cout<<"LEFT: "<<left_data->data_name<<endl;
-			}
-			if(right_type){
-				cout<<"RIGHT"<<right_type->getDataType()<<endl;
-			}
+			// cout<<"ENTERED!"<<endl;
+			// if(left_data){
+			// 	cout<<"LEFT: "<<left_data->data_name<<endl;
+			// }
+			// if(right_type){
+			// 	cout<<"RIGHT"<<right_type->getDataType()<<endl;
+			// }
 			if(!left_data || !right_type){
 				cout<<"[unpacking error], '=' operator expected same number of operands on LHS and RHS";
 				exit(1);
@@ -2685,31 +2685,31 @@ yyreduce:
 			}
 
 			if(temp_left_data -> value){
-				cout<<"Here 1"<<endl;
+				// cout<<"Here 1"<<endl;
 				string j = name;
-				cout<<"HERE 2\n";
+				// cout<<"HERE 2\n";
 				name = (temp_left_data->node_child)? temp_left_data->node_child->data_name:temp_left_data->data_name;
-				if(name==j) cout<<"UNCHANGED!\n";
+				// if(name==j) cout<<"UNCHANGED!\n";
 			}	
 
-				cout<<name<<" "<<"HERE 4\n";
+				// cout<<name<<" "<<"HERE 4\n";
 			if(right_type && right_type->getDataType() == "undefined"){
 				cout<<"[Undeclared Identifier]"<<"Identifier in RHS undeclared"<<endl;
 				exit(1);
 			}
-					cout<<"HERE 4\n";
+					// cout<<"HERE 4\n";
 		
 			if(!st->get_type(name)){
-						cout<<"HERE 16\n";
+						// cout<<"HERE 16\n";
 		
 				cout<<"[Undeclared Identifier] "<<name<<" not declared yet!";
 				exit(1);
 			}
 			else{
-				cout<<"HERE 8\n";
-				cout<<(left_type==NULL)<<" "<<(right_type==NULL)<<"\n";
-				cout<<left_type->getDataType()<<"\n";
-				cout<<right_type->getDataType()<<"\n";
+				// cout<<"HERE 8\n";
+				// cout<<(left_type==NULL)<<" "<<(right_type==NULL)<<"\n";
+				// cout<<left_type->getDataType()<<"\n";
+				// cout<<right_type->getDataType()<<"\n";
 								
 				if(left_type->getDataType() != right_type->getDataType()){
 				
@@ -2718,7 +2718,7 @@ yyreduce:
 				}
 
 			}
-				cout<<"HERE 4\n";
+				// cout<<"HERE 4\n";
 			left_data = left_data->next_data;
 			left_type = left_type->next_type;
 			right_type = right_type->next_type;
@@ -2733,7 +2733,7 @@ yyreduce:
 		// printf("%sSHUBH\n",string($2));
 		NodeData * temp_node_data = new NodeData(string((yyvsp[-1].sval)));
 		
-		cout<<"temp_node_data "<<(temp_node_data==NULL) <<"    "<<(temp_node_data!=NULL)<<"\n";
+		// cout<<"temp_node_data "<<(temp_node_data==NULL) <<"    "<<(temp_node_data!=NULL)<<"\n";
 		(yyval.nt)->current_node_data = temp_node_data;
 
 		(yyval.nt)->current_node_data->node_child = parLeft;
@@ -2744,7 +2744,7 @@ yyreduce:
   case 59:
 #line 682 "src/parser.y"
                                                {
-		cout<<"ShortVarDecl : IdentifierList INFER_EQ ExpressionList"<<endl;
+		// cout<<"ShortVarDecl : IdentifierList INFER_EQ ExpressionList"<<endl;
 		(yyval.nt) = new Node("ShortVarDecl");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
@@ -2758,12 +2758,12 @@ yyreduce:
 		bool newVar = false;
 
 		while(left_data || right_type){
-			if(left_data){
-				cout<<"LEFT :"<<left_data->data_name<<endl;
-			}
-			if(right_type){
-				cout<<"Right: "<<right_type->getDataType()<<endl;
-			}
+			// if(left_data){
+			// 	cout<<"LEFT :"<<left_data->data_name<<endl;
+			// }
+			// if(right_type){
+			// 	cout<<"Right: "<<right_type->getDataType()<<endl;
+			// }
 			if(!left_data || !right_type){
 				cout<<"[unpacking error], '=' operator expected same number of operands on LHS and RHS";
 				exit(1);
@@ -2792,7 +2792,7 @@ yyreduce:
 			}
 			else{
 				newVar = true;
-				cout<<"ADDING IN INFER_EQ mode \n\n\n\n";
+				// cout<<"ADDING IN INFER_EQ mode \n\n\n\n";
 				st->add_in_symbol_table({st->get_current_scope(),name}, right_type);
 			}
 
@@ -2877,10 +2877,10 @@ yyreduce:
 				exit(1);
 			}
 			st->add_in_symbol_table({st->get_current_scope(),curr->data_name},(yyvsp[0].nt)->current_type);
-			cout<<curr->data_name<<"    "<< (yyvsp[0].nt)->current_type<<"   "<<(yyvsp[0].nt)->current_type->getDataType()<<"\n";
+			// cout<<curr->data_name<<"    "<< $2->current_type<<"   "<<$2->current_type->getDataType()<<"\n";
 			DataType * temp = (yyvsp[0].nt)->current_type->copyClass();
-			cout<<temp<<" "<<temp->getDataType()<<"  " <<temp->getDataType()<<"\n";
-			cout<<"VarSpec:	IdentifierList Type \n ";
+			// cout<<temp<<" "<<temp->getDataType()<<"  " <<temp->getDataType()<<"\n";
+			// cout<<"VarSpec:	IdentifierList Type \n ";
 			// exit(1);
 			(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 			curr = curr->next_data;
@@ -3022,7 +3022,7 @@ yyreduce:
 #line 941 "src/parser.y"
                             {
 		(yyval.nt) = new Node("Signature");
-		cout<<"Signature: Parameters Result\n";
+		// cout<<"Signature: Parameters Result\n";
 		(yyval.nt)->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt) -> current_node_data = new NodeData("params");
@@ -3083,7 +3083,7 @@ yyreduce:
   case 72:
 #line 994 "src/parser.y"
                         {
-    	cout<<"TypeList: TypeList COMMA Type"<<endl;
+    	// cout<<"TypeList: TypeList COMMA Type"<<endl;
         (yyval.nt) = new Node("TypeList");
         (yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
         (yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
@@ -3098,7 +3098,7 @@ yyreduce:
   case 73:
 #line 1004 "src/parser.y"
            {
-    	cout<<"TypeList: TypeList COMMA Type"<<endl;
+    	// cout<<"TypeList: TypeList COMMA Type"<<endl;
         (yyval.nt) = new Node("TypeList");
         (yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
         (yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
@@ -3110,7 +3110,7 @@ yyreduce:
   case 74:
 #line 1014 "src/parser.y"
                              {
-		cout<<"Parameters: LEFTPARAN RIGHTPARAN \n";
+		// cout<<"Parameters: LEFTPARAN RIGHTPARAN \n";
 		(yyval.nt) = new Node("Parameters");
 		(yyval.nt)->current_node_data = new NodeData("Empty Params");
 		(yyval.nt)-> current_type = NULL;
@@ -3121,7 +3121,7 @@ yyreduce:
   case 75:
 #line 1020 "src/parser.y"
                                              {
-		cout<<"Parameters: LEFTPARAN ParameterList RIGHTPARAN"<<endl;
+		// cout<<"Parameters: LEFTPARAN ParameterList RIGHTPARAN"<<endl;
 		(yyval.nt) = new Node("Parameters");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt)->current_node_data = (yyvsp[-1].nt)->current_node_data;
@@ -3145,7 +3145,7 @@ yyreduce:
   case 77:
 #line 1037 "src/parser.y"
                       {
-		cout<<"ParameterList: ParameterDecl"<<endl;
+		// cout<<"ParameterList: ParameterDecl"<<endl;
 		(yyval.nt) = new Node("ParameterList");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
@@ -3157,18 +3157,18 @@ yyreduce:
   case 78:
 #line 1044 "src/parser.y"
                                            {
-		cout<<"ParameterList: ParameterList COMMA ParameterDecl"<<endl;
+		// cout<<"ParameterList: ParameterList COMMA ParameterDecl"<<endl;
 		(yyval.nt) = new Node("Parameters");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = (yyvsp[-2].nt)->current_node_data;
 		(yyval.nt)-> current_type = (yyvsp[-2].nt)->current_type;
-		cout<<"Here"<<endl;
-		cout<<(((yyval.nt)->last_current_node_data()))<<" \n";
-		cout<<"  "<<(((yyval.nt)->last_current_type()))<<"\n";
+		// cout<<"Here"<<endl;
+		// cout<<(($$->last_current_node_data()))<<" \n";
+		// cout<<"  "<<(($$->last_current_type()))<<"\n";
 		((yyval.nt)->last_current_node_data())->next_data = (yyvsp[0].nt)->current_node_data;
 		((yyval.nt)->last_current_type())->next_type = (yyvsp[0].nt)->current_type;
-		cout<<"Here1"<<endl;
+		// cout<<"Here1"<<endl;
 	}
 #line 3174 "parser.tab.c"
     break;
@@ -3176,7 +3176,7 @@ yyreduce:
   case 79:
 #line 1061 "src/parser.y"
                             {
-		cout<<"ParameterDecl: IdentifierList Type"<<endl;
+		// cout<<"ParameterDecl: IdentifierList Type"<<endl;
 		(yyval.nt) = new Node("ParameterDecl");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
@@ -3186,24 +3186,24 @@ yyreduce:
 		(yyval.nt)->current_node_data = data;
 
 		while(data){
-			cout<<"HERE"<<endl;
+			// cout<<"HERE"<<endl;
 			if(!st->scope_level(data->data_name)){
 				cout<<data->data_name<<" is already declared in this scope";
 				exit(1);
 			}
-			cout<<"add_in_symbol_table from ParameterDecl\n";
+			// cout<<"add_in_symbol_table from ParameterDecl\n";
 			st->add_in_symbol_table({st->get_current_scope(),data->data_name}, (yyvsp[0].nt)->current_type);
-			auto val = st->get_symbol_table_data();
-			 int x=0;
-			 for (auto temp:val)
-			 {
+			// auto val = st->get_symbol_table_data();
+			//  int x=0;
+			//  for (auto temp:val)
+			//  {
 
-			 	cout<<temp.first.first<<" - "<<temp.first.second<<" -  \n";
-			 	cout<<temp.second<<"\n";
-			 	if(x) cout<<temp.second->getDataType()<<"\n";
-			 	x+=1;
-			 }
-			 cout<<"\n\n\n\n\n\n";
+			//  	cout<<temp.first.first<<" - "<<temp.first.second<<" -  \n";
+			//  	cout<<temp.second<<"\n";
+			//  	if(x) cout<<temp.second->getDataType()<<"\n";
+			//  	x+=1;
+			//  }
+			//  cout<<"\n\n\n\n\n\n";
 			// exit(1);
 			type->next_type = (data->next_data)? type->copyClass(): NULL;
 			type = type->next_type;
@@ -3216,7 +3216,7 @@ yyreduce:
   case 80:
 #line 1099 "src/parser.y"
                                         {
-		cout<<"IdentifierList COMMA IDENTIFIER"<<endl;
+		// cout<<"IdentifierList COMMA IDENTIFIER"<<endl;
 		(yyval.nt) = new Node("IdentifierList");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
 		(yyval.nt)->add_terminal_children(string((yyvsp[0].sval)));
@@ -3232,7 +3232,7 @@ yyreduce:
   case 81:
 #line 1110 "src/parser.y"
                      {
-		cout<<"Identifier"<<endl;
+		// cout<<"Identifier"<<endl;
 		(yyval.nt) = new Node("IdentifierList");
 		(yyval.nt) -> add_terminal_children(string((yyvsp[0].sval)));
 		(yyval.nt)->current_node_data = new NodeData(string((yyvsp[0].sval)));
@@ -3253,7 +3253,7 @@ yyreduce:
   case 83:
 #line 1127 "src/parser.y"
                                  {
-		cout<<"CompositeLit: LiteralType LiteralValue"<<endl;
+		// cout<<"CompositeLit: LiteralType LiteralValue"<<endl;
         (yyval.nt) = new Node("CompositeLit");
         (yyval.nt)->add_non_terminal_children((yyvsp[-1].nt));
         (yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
@@ -3323,7 +3323,7 @@ yyreduce:
   case 85:
 #line 1190 "src/parser.y"
                     {
-		cout<<"LiteralType: ArrayType"<<endl;
+		// cout<<"LiteralType: ArrayType"<<endl;
 		(yyval.nt) = new Node("LiteralType");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
@@ -3378,7 +3378,7 @@ yyreduce:
   case 90:
 #line 1223 "src/parser.y"
                     {
-		cout<<"Type: LiteralType"<<endl;
+		// cout<<"Type: LiteralType"<<endl;
 		(yyval.nt) = new Node("Type");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
@@ -3390,7 +3390,7 @@ yyreduce:
   case 91:
 #line 1230 "src/parser.y"
                       {
-		cout<<"Type:OperandName"<<endl;
+		// cout<<"Type:OperandName"<<endl;
 		(yyval.nt) = new Node("Type");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_type = new BasicType(string((yyvsp[0].nt) -> current_node_data -> data_name));
@@ -3402,12 +3402,12 @@ yyreduce:
   case 92:
 #line 1240 "src/parser.y"
                 {
-		cout<<"Operand: Literal"<<endl;
+		// cout<<"Operand: Literal"<<endl;
 		(yyval.nt) = new Node("Operand");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
-		cout<<"Operand Value "<<(yyval.nt)->current_node_data->value<<endl;
+		// cout<<"Operand Value "<<$$->current_node_data->value<<endl;
 	}
 #line 3413 "parser.tab.c"
     break;
@@ -3415,12 +3415,12 @@ yyreduce:
   case 93:
 #line 1248 "src/parser.y"
                       {
-		cout<<"Operand: OperandName";
+		// cout<<"Operand: OperandName";
 		(yyval.nt) = new Node("Operand");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
-		cout<<"Value: "<<(yyval.nt)->current_node_data->value<<endl;
+		// cout<<"Value: "<<$$->current_node_data->value<<endl;
 	}
 #line 3426 "parser.tab.c"
     break;
@@ -3439,7 +3439,7 @@ yyreduce:
   case 95:
 #line 1265 "src/parser.y"
                    {
-		cout<<"OperandName:	IDENTIFIER - "<<string((yyvsp[0].sval))<<"\n";
+		// cout<<"OperandName:	IDENTIFIER - "<<string($1)<<"\n";
 		(yyval.nt) = new Node("OperandName");
 		// cout<<"OperandName2:	IDENTIFIER - "<<string($1)<<"\n";
 		(yyval.nt)->add_terminal_children(string((yyvsp[0].sval)));
@@ -3674,7 +3674,7 @@ yyreduce:
   case 114:
 #line 1447 "src/parser.y"
                        {
-		cout<<"SwitchStmt: ExprSwitchStmt\n";
+		// cout<<"SwitchStmt: ExprSwitchStmt\n";
 		(yyval.nt) = new Node("SwitchStmt");
 		(yyval.nt) -> add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt) -> current_type = (yyvsp[0].nt)->current_type;
@@ -3717,7 +3717,7 @@ yyreduce:
   case 118:
 #line 1480 "src/parser.y"
                                                          {
-	 	cout<<"SWITCH SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
+	 	// cout<<"SWITCH SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
 
 	 	(yyval.nt) = new Node("ExprSwitchStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-6].nt));
@@ -3744,7 +3744,7 @@ yyreduce:
   case 120:
 #line 1496 "src/parser.y"
                                                                                                                          {
-		cout<<"SWITCH Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
+		// cout<<"SWITCH Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
 		(yyval.nt) = new Node("ExprSwitchStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-5].nt));
 		(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -3764,15 +3764,15 @@ yyreduce:
   case 121:
 #line 1515 "src/parser.y"
                                           {
-		cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
+		// cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
 		(yyval.nt) = new Node("ExprCaseClauseList");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = (yyvsp[-1].nt)->current_node_data;
-		cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause \n";
-		cout<<(((yyval.nt)->current_node_data->last_next_child())==NULL)<<"\n";
+		// cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause \n";
+		// cout<<(($$->current_node_data->last_next_child())==NULL)<<"\n";
 		((yyval.nt)->current_node_data->last_next_child())->next_data = (yyvsp[0].nt)->current_node_data;
-		cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
+		// cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
 		
 	}
 #line 3779 "parser.tab.c"
@@ -3781,7 +3781,7 @@ yyreduce:
   case 122:
 #line 1527 "src/parser.y"
                          {
-		cout<<"ExprCaseClauseList: ExprCaseClause\n";
+		// cout<<"ExprCaseClauseList: ExprCaseClause\n";
 		(yyval.nt) = new Node("ExprCaseClauseList");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = new NodeData("list");
@@ -3794,7 +3794,7 @@ yyreduce:
   case 123:
 #line 1538 "src/parser.y"
                                            {
-		cout<<"ExprCaseCause:	ExprSwitchCase COLON StatementList\n";
+		// cout<<"ExprCaseCause:	ExprSwitchCase COLON StatementList\n";
 		(yyval.nt) = new Node("ExprCaseClause");
 		(yyval.nt) -> add_non_terminal_children((yyvsp[-2].nt));
 		(yyval.nt) -> add_non_terminal_children((yyvsp[0].nt));
@@ -3830,7 +3830,7 @@ yyreduce:
   case 125:
 #line 1570 "src/parser.y"
                             {
-		cout<<"ExprSwitchCase:  CASE ExpressionList\n";
+		// cout<<"ExprSwitchCase:  CASE ExpressionList\n";
 		(yyval.nt) = new Node("ExprSwitchCase");
 		(yyval.nt) -> add_non_terminal_children((yyvsp[0].nt));
 		is_inside_case = true;
@@ -3872,7 +3872,7 @@ yyreduce:
 		// 	cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
 		// 	exit(1); 
 		// }
-		cout<<"SET fallthrough_expression_count ==1\n";
+		// cout<<"SET fallthrough_expression_count ==1\n";
 		if (fallthrough_expression_count)
 		{
 			cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
@@ -4717,7 +4717,7 @@ yyreduce:
   case 159:
 #line 2368 "src/parser.y"
                     {
-		cout<<"Expression: UnaryExpr, Value: ";
+		// cout<<"Expression: UnaryExpr, Value: ";
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 			(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
@@ -4732,7 +4732,7 @@ yyreduce:
   case 160:
 #line 2381 "src/parser.y"
                         {
-		cout<<"UnaryExpr: MUL PrimaryExpr "<<endl;
+		// cout<<"UnaryExpr: MUL PrimaryExpr "<<endl;
 		(yyval.nt) = new Node("UnaryExpr");
 		(yyval.nt)->add_terminal_children(string((yyvsp[-1].sval)));
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
@@ -4802,7 +4802,7 @@ yyreduce:
   case 165:
 #line 2426 "src/parser.y"
                       {
-		cout<<"UnaryExpr: PrimaryExpr\n";
+		// cout<<"UnaryExpr: PrimaryExpr\n";
 		(yyval.nt) = new Node("UnaryExpr");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
@@ -4816,7 +4816,7 @@ yyreduce:
   case 166:
 #line 2439 "src/parser.y"
                  {
- 		cout<<" PrimaryExpr: Operand, Value:";
+ 		// cout<<" PrimaryExpr: Operand, Value:";
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		curr->current_node_data = (yyvsp[0].nt)->current_node_data;
@@ -4843,7 +4843,7 @@ yyreduce:
   case 168:
 #line 2456 "src/parser.y"
                                {
- 		cout<<"PrimaryExpr: PrimaryExpr Selector\n";
+ 		// cout<<"PrimaryExpr: PrimaryExpr Selector\n";
 		(yyval.nt) = new Node("PrimaryExpr");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
@@ -4851,13 +4851,13 @@ yyreduce:
 		(yyval.nt)->current_node_data->node_child = (yyvsp[-1].nt)->current_node_data;
 		(yyval.nt)->current_node_data->node_child->next_data = (yyvsp[0].nt)->current_node_data;
 		(yyval.nt)->current_node_data->value = true;
-		cout<<"Primary Expr Value Selector: "<<(yyval.nt)->current_node_data->value<<endl;
+		// cout<<"Primary Expr Value Selector: "<<$$->current_node_data->value<<endl;
 		auto temp_type = (yyvsp[-1].nt)->current_type;
 		if(temp_type==NULL) {
 			cout<<((yyvsp[-1].nt)->current_node_data->data_name)<<" has not been declared in the current scope\n";
 			exit(1);
 		}
-		cout<<"A\n";
+		// cout<<"A\n";
 		if((yyvsp[-1].nt)->current_type->current_data_type == _POINTER)
 		{
 			if((dynamic_cast<PointerType *>(temp_type))->type_of_address_pointing_to->current_data_type == _BASIC)
@@ -4865,19 +4865,19 @@ yyreduce:
 				temp_type = (dynamic_cast<PointerType *>(temp_type))->type_of_address_pointing_to;
 			}
 		}
-		cout<<"A\n";
+		// cout<<"A\n";
 
 		if (temp_type->current_data_type == _BASIC) {
-        	cout<<"D\n";
-        	cout<<temp_type->getDataType()<<"\n";
-        	for(auto valval:tt->get_type_table_data())
-        	{
-        		cout<<valval.first<<" -> "<<valval.second<<"\n";
-        	}
+        	// cout<<"D\n";
+        	// cout<<temp_type->getDataType()<<"\n";
+        	// for(auto valval:tt->get_type_table_data())
+        	// {
+        	// 	cout<<valval.first<<" -> "<<valval.second<<"\n";
+        	// }
         	temp_type = (tt->get_type_table_data())[temp_type->getDataType()]->copyClass() ;
-    		cout<<"E\n";
+    		// cout<<"E\n";
     	}
-		cout<<"A\n";
+		// cout<<"A\n";
 
     	if (temp_type->current_data_type != _STRUCT &&
 	        (temp_type->current_data_type != _POINTER ||
@@ -4885,14 +4885,14 @@ yyreduce:
 	        cout <<"[Type mismatch] Expected a struct type or pointer to struct type but got "	<< (yyvsp[-1].nt)->current_node_data->data_name <<" which is "<<temp_type->getDataType() << "\n";
 	        exit(1);
 	    }
-		cout<<"A\n";
+		// cout<<"A\n";
 
 	    if(temp_type->current_data_type==_STRUCT)
 	    {
-	    	cout<<"B\n";
+	    	// cout<<"B\n";
 	    	auto temp = (dynamic_cast<StructType *>(temp_type))->data_of_struct;
 	    	// auto temp2 = *temp;
-	   	    	cout<<"B\n";
+	   	    	// cout<<"B\n";
 		 	if(temp.find((yyvsp[0].nt)->current_node_data->data_name) == temp.end())
 	    	{
 	    		cout<<"[Invalid Member Access] Expected a access for type "<<temp_type->getDataType()<<" but found "<<(yyvsp[0].nt)->current_node_data->data_name<<"\n";
@@ -4901,17 +4901,17 @@ yyreduce:
 		    (yyval.nt)->current_type =  temp[(yyvsp[0].nt)->current_node_data->data_name];
 	    }
 	    else{
-	    	    	cout<<"C\n";
+	    	    	// cout<<"C\n";
 			auto temp = (dynamic_cast<StructType *>((dynamic_cast<PointerType *>(temp_type))->type_of_address_pointing_to))->data_of_struct;
 	    	// auto temp = *temp;
-	    		    	cout<<"C\n";
+	    		    	// cout<<"C\n";
 
 	    	if(temp.find((yyvsp[0].nt)->current_node_data->data_name) == temp.end())
 	    	{
 	    		cout<<"[Invalid Member Access] Expected a access for type "<<temp_type->getDataType()<<" but found "<<(yyvsp[0].nt)->current_node_data->data_name<<"\n";
 	    		exit(1);
 	    	}
-	    	cout<<"C\n";
+	    	// cout<<"C\n";
 		    (yyval.nt)->current_type =  temp[(yyvsp[0].nt)->current_node_data->data_name];
 	    }
 	    (yyval.nt)->current_node_data = new NodeData("Access");
@@ -5085,7 +5085,7 @@ yyreduce:
   case 177:
 #line 2663 "src/parser.y"
                        {
-		cout<<"Selector:  DOT IDENTIFIER\n";
+		// cout<<"Selector:  DOT IDENTIFIER\n";
 		Node* curr = new Node("Selector");
 		curr->add_terminal_children((yyvsp[0].sval));
 
@@ -5525,7 +5525,7 @@ yyreduce:
   case 207:
 #line 3024 "src/parser.y"
                                                {
-		cout<<"ArrayType : LEFTSQUARE Expression RIGHTSQUARE Type"<<endl;
+		// cout<<"ArrayType : LEFTSQUARE Expression RIGHTSQUARE Type"<<endl;
 		 Node* curr = new Node("ArrayType");
 		 curr->add_non_terminal_children((yyvsp[-2].nt));
 		 curr->add_non_terminal_children((yyvsp[0].nt));
@@ -5567,7 +5567,7 @@ yyreduce:
   case 208:
 #line 3065 "src/parser.y"
                  {
-		cout<<"Literal:BasicLit\n";
+		// cout<<"Literal:BasicLit\n";
 		 Node* curr = new Node("Literal");
 		 curr->add_non_terminal_children((yyvsp[0].nt));
 		 curr->current_node_data = (yyvsp[0].nt)->current_node_data;
@@ -5634,7 +5634,7 @@ yyreduce:
 		 curr->current_node_data = (yyvsp[0].nt)->current_node_data;
 		 curr->current_type = new BasicType("string");
 		 (yyval.nt) = curr;
-		cout<<"BasicLit:String ";
+		// cout<<"BasicLit:String ";
 		 cout<<((yyval.nt)->current_type)<<"\n";
 		 }
 #line 5641 "parser.tab.c"

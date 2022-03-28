@@ -116,7 +116,7 @@ CloseBlock:
 PackageClause:
 	PACKAGE PackageName {
 		Node* curr = new Node("PackageClause");
-		cout<<"PackageClause:	PACKAGE PackageName \n";
+		// cout<<"PackageClause:	PACKAGE PackageName \n";
 		curr -> add_non_terminal_children($2);
 		$$ = curr;
 	}
@@ -125,7 +125,7 @@ PackageClause:
 PackageName:
 	IDENTIFIER {
 		Node* curr = new Node("PackageName");
-		cout<<"PackageName: IDENTIFIER - "<<string($1)<<"\n";
+		// cout<<"PackageName: IDENTIFIER - "<<string($1)<<"\n";
 		curr -> add_terminal_children(string($1));
 		$$ = curr;
 	}
@@ -140,7 +140,7 @@ ImportDeclList:
 	}
 	| ImportDecl SCOLON {
 		Node* curr = new Node("ImportDeclList");
-		cout<<"ImportDeclList: ImportDecl SCOLON \n";
+		// cout<<"ImportDeclList: ImportDecl SCOLON \n";
 		curr->add_non_terminal_children($1);
 		$$ = curr;
 	}
@@ -149,7 +149,7 @@ ImportDeclList:
 ImportDecl:
 	IMPORT LEFTPARAN ImportSpecList RIGHTPARAN {
 		Node* curr = new Node("ImportDecl");
-		cout<<"ImportDecl:IMPORT LEFTPARAN ImportSpecList RIGHTPARAN\n";
+		// cout<<"ImportDecl:IMPORT LEFTPARAN ImportSpecList RIGHTPARAN\n";
 		curr->add_non_terminal_children($3);
 		$$ = curr;
 	}
@@ -159,7 +159,7 @@ ImportDecl:
 	}
 	| IMPORT ImportSpec {
 		Node* curr = new Node("ImportDecl");
-		cout<<"ImportDecl: IMPORT ImportSpec \n";
+		// cout<<"ImportDecl: IMPORT ImportSpec \n";
 		curr->add_non_terminal_children($2);
 		$$ = curr;
 	}
@@ -192,7 +192,7 @@ ImportSpec:
 		$$ = curr;
 	}
 	| ImportPath {
-		cout<<"ImportSpec: ImportPath\n";
+		// cout<<"ImportSpec: ImportPath\n";
 		Node* curr = new Node("ImportSpec");
 		curr->add_non_terminal_children($1);
 		$$ = curr;
@@ -202,7 +202,7 @@ ImportSpec:
 ImportPath:
 	String {
 		Node* curr = new Node("ImportPath");
-		cout<<"ImportPath: String\n";
+		// cout<<"ImportPath: String\n";
 		curr->add_non_terminal_children($1);
 		$$ = curr;
 	}
@@ -210,19 +210,19 @@ ImportPath:
 
 TopLevelDeclList:
 	TopLevelDeclList TopLevelDecl SCOLON  {
-		cout<<"TopLevelDeclList: TopLevelDeclList TopLevelDecl SCOLON\n";
+		// cout<<"TopLevelDeclList: TopLevelDeclList TopLevelDecl SCOLON\n";
 		$$ = new Node("TopLevelDeclList");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
 		$$->current_node_data = $1 -> current_node_data;
-		if($$->last_current_node_data() == NULL){
-			cout<<"NULL"<<endl;
-		}
+		// if($$->last_current_node_data() == NULL){
+		// 	cout<<"NULL"<<endl;
+		// }
 		($$->last_current_node_data())->next_data = $2->current_node_data;
 	}
 	| TopLevelDecl SCOLON {
 		Node* curr = new Node("TopLevelDeclList");
-		cout<<"TopLevelDeclList: TopLevelDecl SCOLON\n";
+		// cout<<"TopLevelDeclList: TopLevelDecl SCOLON\n";
 		curr->add_non_terminal_children($1);
 		$$ = curr;
 		$$->current_node_data = $1->current_node_data;
@@ -239,7 +239,7 @@ TopLevelDecl:
 	}
 	| FunctionDecl {
 		Node* curr = new Node("TopLevelDecl");
-		cout<<"TopLevelDecl : FunctionDecl\n";
+		// cout<<"TopLevelDecl : FunctionDecl\n";
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
@@ -277,7 +277,7 @@ Condition:
 StatementList:
 	StatementList Statement SCOLON {
 
-		cout<<"StatementList: 	StatementList Statement SCOLON\n";
+		// cout<<"StatementList: 	StatementList Statement SCOLON\n";
 		Node* curr = new Node("StatementList");
 		curr->add_non_terminal_children($1);
 		curr->add_non_terminal_children($2);
@@ -287,7 +287,7 @@ StatementList:
 		
 		// for checking if the fallthrough statement is the last one
 		if(fallthrough_expression_count){
-			cout<<"INC fallthrough_expression_count\n";
+			// cout<<"INC fallthrough_expression_count\n";
 			fallthrough_expression_count+=1;
 
 		} 
@@ -305,14 +305,14 @@ StatementList:
 		curr->add_non_terminal_children($1);
 		$$ = curr;
 		$$->current_node_data = new NodeData("list");
-		cout<<"HERE\n";
+		// cout<<"HERE\n";
 		if($1->current_node_data==NULL){
-			cout<<"NO AST found here! Exiting........";
+			cout<<"NO AST found here! Exiting ";
 			exit(1);
 		}
-		cout<<"HERE\n";
+		// cout<<"HERE\n";
 		$$->current_node_data->node_child = $1->current_node_data;
-		cout<<"HERE\n";
+		// cout<<"HERE\n";
 	
 	}
 	;
@@ -341,11 +341,11 @@ Statement:
 		curr->current_type = $1->current_type;
 		
 		curr->current_node_data = $1->current_node_data;
-		cout<<"Statement:	SimpleStmt "<<($1->current_node_data==NULL)<<"\n";
+		// cout<<"Statement:	SimpleStmt "<<($1->current_node_data==NULL)<<"\n";
 		$$ = curr;
 	}
 	| ReturnStmt{
-		cout<<"Statement:	ReturnStmt\n";
+		// cout<<"Statement:	ReturnStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -353,7 +353,7 @@ Statement:
 		$$ = curr;
 	}
 	| BreakStmt {
-		cout<<"Statement:	BreakStmt\n";
+		// cout<<"Statement:	BreakStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -361,7 +361,7 @@ Statement:
 		$$ = curr;
 	}
 	| ContinueStmt {
-		cout<<"Statement:	ContinueStmt\n";
+		// cout<<"Statement:	ContinueStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -369,7 +369,7 @@ Statement:
 		$$ = curr;
 	}
 	| GotoStmt {
-		cout<<"Statement:	GotoStmt\n";
+		// cout<<"Statement:	GotoStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -377,7 +377,7 @@ Statement:
 		$$ = curr;
 	}
 	| SwitchStmt {
-		cout<<"Statement:	SwitchStmt\n";
+		// cout<<"Statement:	SwitchStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -385,14 +385,14 @@ Statement:
 		$$ = curr;
 	}
 	| FallthroughStmt {
-		cout<<"Statement:	FallthroughStmt\n";
+		// cout<<"Statement:	FallthroughStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_node_data = $1->current_node_data;
 		$$ = curr;
 	}
 	| Block {
-		cout<<"Statement:	Block\n";
+		// cout<<"Statement:	Block\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -400,7 +400,7 @@ Statement:
 		$$ = curr;
 	}
 	| IfStmt {
-		cout<<"Statement:	IfStmt\n";
+		// cout<<"Statement:	IfStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -408,7 +408,7 @@ Statement:
 		$$ = curr;
 	}
 	| ForStmt {
-		cout<<"Statement:	ForStmt\n";
+		// cout<<"Statement:	ForStmt\n";
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
@@ -450,7 +450,7 @@ FunctionDecl:
 		st->add_in_symbol_table({"0;",string($2)},$4->current_type); 
 		st->output_csv_for_function(string($2),st->get_current_scope());
 	} CloseBlock {
-		cout<<"FunctionDecl: FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock \n";
+		// cout<<"FunctionDecl: FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock \n";
 		Node* curr = new Node("FunctionDecl");
 		curr->add_terminal_children(string($2));
 		curr->add_non_terminal_children($4);
@@ -515,7 +515,7 @@ SimpleStmt:
 		$$->current_node_data = $1->current_node_data;
 	}
 	| ExpressionStmt {
-		cout<<"SimpleStmt: ExpressionStmt\n";
+		// cout<<"SimpleStmt: ExpressionStmt\n";
 		$$ = new Node("SimpleStmt");
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
@@ -532,7 +532,7 @@ SimpleStmt:
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
-		cout<<"SimpleStmt: Assignment "<<($$->current_node_data==NULL)<<"\n";
+		// cout<<"SimpleStmt: Assignment "<<($$->current_node_data==NULL)<<"\n";
 	}
 	| ShortVarDecl {
 		$$ = new Node("SimpleStmt");
@@ -557,7 +557,7 @@ EmptyExpr : {   // For infinite looping
 
 ExpressionStmt:
 	Expression {
-		cout<<"ExpressionStmt: Expression\n";
+		// cout<<"ExpressionStmt: Expression\n";
 		$$ = new Node("ExpressionStmt");
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
@@ -585,7 +585,7 @@ IncDecStmt:
 
 Assignment:
 	ExpressionList ASSGN_OP ExpressionList {
-		cout<<"Assignment: ExpressionList ASSGN_OP ExpressionList "<<"\n";
+		// cout<<"Assignment: ExpressionList ASSGN_OP ExpressionList "<<"\n";
 
 		$$ = new Node("Assignment");
 		$$->add_non_terminal_children($1);
@@ -599,15 +599,15 @@ Assignment:
 		NodeData* right_data = $3->current_node_data;
 		// cout<<"A  AAA \n";
 		// cout<<left_data->value<<" "<<right_data->value<<endl;
-		cout<<"A  AAA \n";
+		// cout<<"A  AAA \n";
 		while(left_data || right_type){
-			cout<<"ENTERED!"<<endl;
-			if(left_data){
-				cout<<"LEFT: "<<left_data->data_name<<endl;
-			}
-			if(right_type){
-				cout<<"RIGHT"<<right_type->getDataType()<<endl;
-			}
+			// cout<<"ENTERED!"<<endl;
+			// if(left_data){
+			// 	cout<<"LEFT: "<<left_data->data_name<<endl;
+			// }
+			// if(right_type){
+			// 	cout<<"RIGHT"<<right_type->getDataType()<<endl;
+			// }
 			if(!left_data || !right_type){
 				cout<<"[unpacking error], '=' operator expected same number of operands on LHS and RHS";
 				exit(1);
@@ -623,31 +623,31 @@ Assignment:
 			}
 
 			if(temp_left_data -> value){
-				cout<<"Here 1"<<endl;
+				// cout<<"Here 1"<<endl;
 				string j = name;
-				cout<<"HERE 2\n";
+				// cout<<"HERE 2\n";
 				name = (temp_left_data->node_child)? temp_left_data->node_child->data_name:temp_left_data->data_name;
-				if(name==j) cout<<"UNCHANGED!\n";
+				// if(name==j) cout<<"UNCHANGED!\n";
 			}	
 
-				cout<<name<<" "<<"HERE 4\n";
+				// cout<<name<<" "<<"HERE 4\n";
 			if(right_type && right_type->getDataType() == "undefined"){
 				cout<<"[Undeclared Identifier]"<<"Identifier in RHS undeclared"<<endl;
 				exit(1);
 			}
-					cout<<"HERE 4\n";
+					// cout<<"HERE 4\n";
 		
 			if(!st->get_type(name)){
-						cout<<"HERE 16\n";
+						// cout<<"HERE 16\n";
 		
 				cout<<"[Undeclared Identifier] "<<name<<" not declared yet!";
 				exit(1);
 			}
 			else{
-				cout<<"HERE 8\n";
-				cout<<(left_type==NULL)<<" "<<(right_type==NULL)<<"\n";
-				cout<<left_type->getDataType()<<"\n";
-				cout<<right_type->getDataType()<<"\n";
+				// cout<<"HERE 8\n";
+				// cout<<(left_type==NULL)<<" "<<(right_type==NULL)<<"\n";
+				// cout<<left_type->getDataType()<<"\n";
+				// cout<<right_type->getDataType()<<"\n";
 								
 				if(left_type->getDataType() != right_type->getDataType()){
 				
@@ -656,7 +656,7 @@ Assignment:
 				}
 
 			}
-				cout<<"HERE 4\n";
+				// cout<<"HERE 4\n";
 			left_data = left_data->next_data;
 			left_type = left_type->next_type;
 			right_type = right_type->next_type;
@@ -671,7 +671,7 @@ Assignment:
 		// printf("%sSHUBH\n",string($2));
 		NodeData * temp_node_data = new NodeData(string($2));
 		
-		cout<<"temp_node_data "<<(temp_node_data==NULL) <<"    "<<(temp_node_data!=NULL)<<"\n";
+		// cout<<"temp_node_data "<<(temp_node_data==NULL) <<"    "<<(temp_node_data!=NULL)<<"\n";
 		$$->current_node_data = temp_node_data;
 
 		$$->current_node_data->node_child = parLeft;
@@ -680,7 +680,7 @@ Assignment:
 
 ShortVarDecl:
 	IdentifierList INFER_EQ ExpressionList {
-		cout<<"ShortVarDecl : IdentifierList INFER_EQ ExpressionList"<<endl;
+		// cout<<"ShortVarDecl : IdentifierList INFER_EQ ExpressionList"<<endl;
 		$$ = new Node("ShortVarDecl");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($3);
@@ -694,12 +694,12 @@ ShortVarDecl:
 		bool newVar = false;
 
 		while(left_data || right_type){
-			if(left_data){
-				cout<<"LEFT :"<<left_data->data_name<<endl;
-			}
-			if(right_type){
-				cout<<"Right: "<<right_type->getDataType()<<endl;
-			}
+			// if(left_data){
+			// 	cout<<"LEFT :"<<left_data->data_name<<endl;
+			// }
+			// if(right_type){
+			// 	cout<<"Right: "<<right_type->getDataType()<<endl;
+			// }
 			if(!left_data || !right_type){
 				cout<<"[unpacking error], '=' operator expected same number of operands on LHS and RHS";
 				exit(1);
@@ -728,7 +728,7 @@ ShortVarDecl:
 			}
 			else{
 				newVar = true;
-				cout<<"ADDING IN INFER_EQ mode \n\n\n\n";
+				// cout<<"ADDING IN INFER_EQ mode \n\n\n\n";
 				st->add_in_symbol_table({st->get_current_scope(),name}, right_type);
 			}
 
@@ -797,10 +797,10 @@ VarSpec:
 				exit(1);
 			}
 			st->add_in_symbol_table({st->get_current_scope(),curr->data_name},$2->current_type);
-			cout<<curr->data_name<<"    "<< $2->current_type<<"   "<<$2->current_type->getDataType()<<"\n";
+			// cout<<curr->data_name<<"    "<< $2->current_type<<"   "<<$2->current_type->getDataType()<<"\n";
 			DataType * temp = $2->current_type->copyClass();
-			cout<<temp<<" "<<temp->getDataType()<<"  " <<temp->getDataType()<<"\n";
-			cout<<"VarSpec:	IdentifierList Type \n ";
+			// cout<<temp<<" "<<temp->getDataType()<<"  " <<temp->getDataType()<<"\n";
+			// cout<<"VarSpec:	IdentifierList Type \n ";
 			// exit(1);
 			$$->current_type = $2->current_type;
 			curr = curr->next_data;
@@ -940,7 +940,7 @@ Signature:
 	}
 	| Parameters Result {
 		$$ = new Node("Signature");
-		cout<<"Signature: Parameters Result\n";
+		// cout<<"Signature: Parameters Result\n";
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
 		$$ -> current_node_data = new NodeData("params");
@@ -992,7 +992,7 @@ Result:
 
 TypeList:
     TypeList COMMA Type {
-    	cout<<"TypeList: TypeList COMMA Type"<<endl;
+    	// cout<<"TypeList: TypeList COMMA Type"<<endl;
         $$ = new Node("TypeList");
         $$->add_non_terminal_children($1);
         $$->add_non_terminal_children($3);
@@ -1002,7 +1002,7 @@ TypeList:
         $$->current_type->next_type = $3->current_type;
     }
     | Type {
-    	cout<<"TypeList: TypeList COMMA Type"<<endl;
+    	// cout<<"TypeList: TypeList COMMA Type"<<endl;
         $$ = new Node("TypeList");
         $$->add_non_terminal_children($1);
         $$->current_type = $1->current_type;
@@ -1012,13 +1012,13 @@ TypeList:
 
 Parameters:
 	LEFTPARAN RIGHTPARAN {
-		cout<<"Parameters: LEFTPARAN RIGHTPARAN \n";
+		// cout<<"Parameters: LEFTPARAN RIGHTPARAN \n";
 		$$ = new Node("Parameters");
 		$$->current_node_data = new NodeData("Empty Params");
 		$$-> current_type = NULL;
 	}
 	| LEFTPARAN ParameterList RIGHTPARAN {
-		cout<<"Parameters: LEFTPARAN ParameterList RIGHTPARAN"<<endl;
+		// cout<<"Parameters: LEFTPARAN ParameterList RIGHTPARAN"<<endl;
 		$$ = new Node("Parameters");
 		$$->add_non_terminal_children($2);
 		$$->current_node_data = $2->current_node_data;
@@ -1035,31 +1035,31 @@ Parameters:
 
 ParameterList:
 	ParameterDecl {
-		cout<<"ParameterList: ParameterDecl"<<endl;
+		// cout<<"ParameterList: ParameterDecl"<<endl;
 		$$ = new Node("ParameterList");
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
 		$$-> current_type = $1->current_type;
 	}
 	| ParameterList COMMA ParameterDecl{
-		cout<<"ParameterList: ParameterList COMMA ParameterDecl"<<endl;
+		// cout<<"ParameterList: ParameterList COMMA ParameterDecl"<<endl;
 		$$ = new Node("Parameters");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($3);
 		$$->current_node_data = $1->current_node_data;
 		$$-> current_type = $1->current_type;
-		cout<<"Here"<<endl;
-		cout<<(($$->last_current_node_data()))<<" \n";
-		cout<<"  "<<(($$->last_current_type()))<<"\n";
+		// cout<<"Here"<<endl;
+		// cout<<(($$->last_current_node_data()))<<" \n";
+		// cout<<"  "<<(($$->last_current_type()))<<"\n";
 		($$->last_current_node_data())->next_data = $3->current_node_data;
 		($$->last_current_type())->next_type = $3->current_type;
-		cout<<"Here1"<<endl;
+		// cout<<"Here1"<<endl;
 	}
 	;
 
 ParameterDecl:
 	IdentifierList Type {
-		cout<<"ParameterDecl: IdentifierList Type"<<endl;
+		// cout<<"ParameterDecl: IdentifierList Type"<<endl;
 		$$ = new Node("ParameterDecl");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
@@ -1069,24 +1069,24 @@ ParameterDecl:
 		$$->current_node_data = data;
 
 		while(data){
-			cout<<"HERE"<<endl;
+			// cout<<"HERE"<<endl;
 			if(!st->scope_level(data->data_name)){
 				cout<<data->data_name<<" is already declared in this scope";
 				exit(1);
 			}
-			cout<<"add_in_symbol_table from ParameterDecl\n";
+			// cout<<"add_in_symbol_table from ParameterDecl\n";
 			st->add_in_symbol_table({st->get_current_scope(),data->data_name}, $2->current_type);
-			auto val = st->get_symbol_table_data();
-			 int x=0;
-			 for (auto temp:val)
-			 {
+			// auto val = st->get_symbol_table_data();
+			//  int x=0;
+			//  for (auto temp:val)
+			//  {
 
-			 	cout<<temp.first.first<<" - "<<temp.first.second<<" -  \n";
-			 	cout<<temp.second<<"\n";
-			 	if(x) cout<<temp.second->getDataType()<<"\n";
-			 	x+=1;
-			 }
-			 cout<<"\n\n\n\n\n\n";
+			//  	cout<<temp.first.first<<" - "<<temp.first.second<<" -  \n";
+			//  	cout<<temp.second<<"\n";
+			//  	if(x) cout<<temp.second->getDataType()<<"\n";
+			//  	x+=1;
+			//  }
+			//  cout<<"\n\n\n\n\n\n";
 			// exit(1);
 			type->next_type = (data->next_data)? type->copyClass(): NULL;
 			type = type->next_type;
@@ -1097,7 +1097,7 @@ ParameterDecl:
 
 IdentifierList:
 	IdentifierList COMMA IDENTIFIER {
-		cout<<"IdentifierList COMMA IDENTIFIER"<<endl;
+		// cout<<"IdentifierList COMMA IDENTIFIER"<<endl;
 		$$ = new Node("IdentifierList");
 		$$->add_non_terminal_children($1);
 		$$->add_terminal_children(string($3));
@@ -1108,7 +1108,7 @@ IdentifierList:
 
 	}
 	| IDENTIFIER {
-		cout<<"Identifier"<<endl;
+		// cout<<"Identifier"<<endl;
 		$$ = new Node("IdentifierList");
 		$$ -> add_terminal_children(string($1));
 		$$->current_node_data = new NodeData(string($1));
@@ -1125,7 +1125,7 @@ Receiver:
 
 CompositeLit:
 	LiteralType LiteralValue {
-		cout<<"CompositeLit: LiteralType LiteralValue"<<endl;
+		// cout<<"CompositeLit: LiteralType LiteralValue"<<endl;
         $$ = new Node("CompositeLit");
         $$->add_non_terminal_children($1);
         $$->add_non_terminal_children($2);
@@ -1188,7 +1188,7 @@ LiteralType:
 		$$->current_type = $1->current_type;
 	}
 	| ArrayType {
-		cout<<"LiteralType: ArrayType"<<endl;
+		// cout<<"LiteralType: ArrayType"<<endl;
 		$$ = new Node("LiteralType");
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
@@ -1221,14 +1221,14 @@ LiteralType:
 
 Type:
 	LiteralType {
-		cout<<"Type: LiteralType"<<endl;
+		// cout<<"Type: LiteralType"<<endl;
 		$$ = new Node("Type");
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
 		$$->current_node_data = new NodeData($$->current_type->getDataType());
 	}
 	| OperandName {
-		cout<<"Type:OperandName"<<endl;
+		// cout<<"Type:OperandName"<<endl;
 		$$ = new Node("Type");
 		$$->add_non_terminal_children($1);
 		$$->current_type = new BasicType(string($1 -> current_node_data -> data_name));
@@ -1238,20 +1238,20 @@ Type:
 
 Operand:
 	Literal {
-		cout<<"Operand: Literal"<<endl;
+		// cout<<"Operand: Literal"<<endl;
 		$$ = new Node("Operand");
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
-		cout<<"Operand Value "<<$$->current_node_data->value<<endl;
+		// cout<<"Operand Value "<<$$->current_node_data->value<<endl;
 	}
 	| OperandName {
-		cout<<"Operand: OperandName";
+		// cout<<"Operand: OperandName";
 		$$ = new Node("Operand");
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
-		cout<<"Value: "<<$$->current_node_data->value<<endl;
+		// cout<<"Value: "<<$$->current_node_data->value<<endl;
 	}
 	| LEFTPARAN Expression RIGHTPARAN {
 		$$ = new Node("Operand");
@@ -1263,7 +1263,7 @@ Operand:
 
 OperandName:
 	IDENTIFIER {
-		cout<<"OperandName:	IDENTIFIER - "<<string($1)<<"\n";
+		// cout<<"OperandName:	IDENTIFIER - "<<string($1)<<"\n";
 		$$ = new Node("OperandName");
 		// cout<<"OperandName2:	IDENTIFIER - "<<string($1)<<"\n";
 		$$->add_terminal_children(string($1));
@@ -1445,7 +1445,7 @@ GotoStmt:
 
 SwitchStmt:
 	ExprSwitchStmt {
-		cout<<"SwitchStmt: ExprSwitchStmt\n";
+		// cout<<"SwitchStmt: ExprSwitchStmt\n";
 		$$ = new Node("SwitchStmt");
 		$$ -> add_non_terminal_children($1);
 		$$ -> current_type = $1->current_type;
@@ -1478,7 +1478,7 @@ ExprSwitchStmt:
 	 }
 	| SWITCH OpenBlock SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); }
 	 	ExprCaseClauseList RIGHTBRACE CloseBlock {
-	 	cout<<"SWITCH SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
+	 	// cout<<"SWITCH SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
 
 	 	$$ = new Node("ExprSwitchStmt");
 		$$->add_non_terminal_children($3);
@@ -1494,7 +1494,7 @@ ExprSwitchStmt:
 	 	scl = NULL;
 	}
 	| SWITCH OpenBlock Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE CloseBlock {
-		cout<<"SWITCH Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
+		// cout<<"SWITCH Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
 		$$ = new Node("ExprSwitchStmt");
 		$$->add_non_terminal_children($3);
 		$$->add_non_terminal_children($6);
@@ -1513,19 +1513,19 @@ ExprSwitchStmt:
 
 ExprCaseClauseList:
 	ExprCaseClauseList ExprCaseClause {
-		cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
+		// cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
 		$$ = new Node("ExprCaseClauseList");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
 		$$->current_node_data = $1->current_node_data;
-		cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause \n";
-		cout<<(($$->current_node_data->last_next_child())==NULL)<<"\n";
+		// cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause \n";
+		// cout<<(($$->current_node_data->last_next_child())==NULL)<<"\n";
 		($$->current_node_data->last_next_child())->next_data = $2->current_node_data;
-		cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
+		// cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
 		
 	}
 	| ExprCaseClause {
-		cout<<"ExprCaseClauseList: ExprCaseClause\n";
+		// cout<<"ExprCaseClauseList: ExprCaseClause\n";
 		$$ = new Node("ExprCaseClauseList");
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = new NodeData("list");
@@ -1536,7 +1536,7 @@ ExprCaseClauseList:
 
 ExprCaseClause:
 	ExprSwitchCase COLON StatementList {
-		cout<<"ExprCaseCause:	ExprSwitchCase COLON StatementList\n";
+		// cout<<"ExprCaseCause:	ExprSwitchCase COLON StatementList\n";
 		$$ = new Node("ExprCaseClause");
 		$$ -> add_non_terminal_children($1);
 		$$ -> add_non_terminal_children($3);
@@ -1568,7 +1568,7 @@ FakeTrue:
 
 ExprSwitchCase:
 	CASE ExpressionList {
-		cout<<"ExprSwitchCase:  CASE ExpressionList\n";
+		// cout<<"ExprSwitchCase:  CASE ExpressionList\n";
 		$$ = new Node("ExprSwitchCase");
 		$$ -> add_non_terminal_children($2);
 		is_inside_case = true;
@@ -1603,7 +1603,7 @@ FallthroughStmt:
 		// 	cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
 		// 	exit(1); 
 		// }
-		cout<<"SET fallthrough_expression_count ==1\n";
+		// cout<<"SET fallthrough_expression_count ==1\n";
 		if (fallthrough_expression_count)
 		{
 			cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
@@ -2366,7 +2366,7 @@ Expression:
 			$$->current_type = new BasicType("bool");
 		}
 	| UnaryExpr {
-		cout<<"Expression: UnaryExpr, Value: ";
+		// cout<<"Expression: UnaryExpr, Value: ";
 			$$ = new Node("Expression");
 			$$->add_non_terminal_children($1);
 			$$->current_type = $1->current_type;
@@ -2379,7 +2379,7 @@ Expression:
 
 UnaryExpr:
 	MUL PrimaryExpr {
-		cout<<"UnaryExpr: MUL PrimaryExpr "<<endl;
+		// cout<<"UnaryExpr: MUL PrimaryExpr "<<endl;
 		$$ = new Node("UnaryExpr");
 		$$->add_terminal_children(string($1));
 		$$->add_non_terminal_children($2);
@@ -2424,7 +2424,7 @@ UnaryExpr:
 			$$->current_type = $2->current_type->copyClass();
 		}
 	| PrimaryExpr {
-		cout<<"UnaryExpr: PrimaryExpr\n";
+		// cout<<"UnaryExpr: PrimaryExpr\n";
 		$$ = new Node("UnaryExpr");
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
@@ -2437,7 +2437,7 @@ UnaryExpr:
 
  PrimaryExpr:
  	Operand  {
- 		cout<<" PrimaryExpr: Operand, Value:";
+ 		// cout<<" PrimaryExpr: Operand, Value:";
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children($1);
 		curr->current_node_data = $1->current_node_data;
@@ -2454,7 +2454,7 @@ UnaryExpr:
 		$$ = curr;
 	}
  	| PrimaryExpr Selector {
- 		cout<<"PrimaryExpr: PrimaryExpr Selector\n";
+ 		// cout<<"PrimaryExpr: PrimaryExpr Selector\n";
 		$$ = new Node("PrimaryExpr");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
@@ -2462,13 +2462,13 @@ UnaryExpr:
 		$$->current_node_data->node_child = $1->current_node_data;
 		$$->current_node_data->node_child->next_data = $2->current_node_data;
 		$$->current_node_data->value = true;
-		cout<<"Primary Expr Value Selector: "<<$$->current_node_data->value<<endl;
+		// cout<<"Primary Expr Value Selector: "<<$$->current_node_data->value<<endl;
 		auto temp_type = $1->current_type;
 		if(temp_type==NULL) {
 			cout<<($1->current_node_data->data_name)<<" has not been declared in the current scope\n";
 			exit(1);
 		}
-		cout<<"A\n";
+		// cout<<"A\n";
 		if($1->current_type->current_data_type == _POINTER)
 		{
 			if((dynamic_cast<PointerType *>(temp_type))->type_of_address_pointing_to->current_data_type == _BASIC)
@@ -2476,19 +2476,19 @@ UnaryExpr:
 				temp_type = (dynamic_cast<PointerType *>(temp_type))->type_of_address_pointing_to;
 			}
 		}
-		cout<<"A\n";
+		// cout<<"A\n";
 
 		if (temp_type->current_data_type == _BASIC) {
-        	cout<<"D\n";
-        	cout<<temp_type->getDataType()<<"\n";
-        	for(auto valval:tt->get_type_table_data())
-        	{
-        		cout<<valval.first<<" -> "<<valval.second<<"\n";
-        	}
+        	// cout<<"D\n";
+        	// cout<<temp_type->getDataType()<<"\n";
+        	// for(auto valval:tt->get_type_table_data())
+        	// {
+        	// 	cout<<valval.first<<" -> "<<valval.second<<"\n";
+        	// }
         	temp_type = (tt->get_type_table_data())[temp_type->getDataType()]->copyClass() ;
-    		cout<<"E\n";
+    		// cout<<"E\n";
     	}
-		cout<<"A\n";
+		// cout<<"A\n";
 
     	if (temp_type->current_data_type != _STRUCT &&
 	        (temp_type->current_data_type != _POINTER ||
@@ -2496,14 +2496,14 @@ UnaryExpr:
 	        cout <<"[Type mismatch] Expected a struct type or pointer to struct type but got "	<< $1->current_node_data->data_name <<" which is "<<temp_type->getDataType() << "\n";
 	        exit(1);
 	    }
-		cout<<"A\n";
+		// cout<<"A\n";
 
 	    if(temp_type->current_data_type==_STRUCT)
 	    {
-	    	cout<<"B\n";
+	    	// cout<<"B\n";
 	    	auto temp = (dynamic_cast<StructType *>(temp_type))->data_of_struct;
 	    	// auto temp2 = *temp;
-	   	    	cout<<"B\n";
+	   	    	// cout<<"B\n";
 		 	if(temp.find($2->current_node_data->data_name) == temp.end())
 	    	{
 	    		cout<<"[Invalid Member Access] Expected a access for type "<<temp_type->getDataType()<<" but found "<<$2->current_node_data->data_name<<"\n";
@@ -2512,17 +2512,17 @@ UnaryExpr:
 		    $$->current_type =  temp[$2->current_node_data->data_name];
 	    }
 	    else{
-	    	    	cout<<"C\n";
+	    	    	// cout<<"C\n";
 			auto temp = (dynamic_cast<StructType *>((dynamic_cast<PointerType *>(temp_type))->type_of_address_pointing_to))->data_of_struct;
 	    	// auto temp = *temp;
-	    		    	cout<<"C\n";
+	    		    	// cout<<"C\n";
 
 	    	if(temp.find($2->current_node_data->data_name) == temp.end())
 	    	{
 	    		cout<<"[Invalid Member Access] Expected a access for type "<<temp_type->getDataType()<<" but found "<<$2->current_node_data->data_name<<"\n";
 	    		exit(1);
 	    	}
-	    	cout<<"C\n";
+	    	// cout<<"C\n";
 		    $$->current_type =  temp[$2->current_node_data->data_name];
 	    }
 	    $$->current_node_data = new NodeData("Access");
@@ -2661,7 +2661,7 @@ KeyValueList :
 
 Selector:
 	DOT IDENTIFIER {
-		cout<<"Selector:  DOT IDENTIFIER\n";
+		// cout<<"Selector:  DOT IDENTIFIER\n";
 		Node* curr = new Node("Selector");
 		curr->add_terminal_children($2);
 
@@ -3022,7 +3022,7 @@ BaseType:
 // remaining: Please check if this is correct, TK and SA
 ArrayType:
 	LEFTSQUARE Expression RIGHTSQUARE Type {
-		cout<<"ArrayType : LEFTSQUARE Expression RIGHTSQUARE Type"<<endl;
+		// cout<<"ArrayType : LEFTSQUARE Expression RIGHTSQUARE Type"<<endl;
 		 Node* curr = new Node("ArrayType");
 		 curr->add_non_terminal_children($2);
 		 curr->add_non_terminal_children($4);
@@ -3063,7 +3063,7 @@ ArrayType:
 
 Literal:
 	BasicLit {
-		cout<<"Literal:BasicLit\n";
+		// cout<<"Literal:BasicLit\n";
 		 Node* curr = new Node("Literal");
 		 curr->add_non_terminal_children($1);
 		 curr->current_node_data = $1->current_node_data;
@@ -3108,7 +3108,7 @@ BasicLit:
 		 curr->current_node_data = $1->current_node_data;
 		 curr->current_type = new BasicType("string");
 		 $$ = curr;
-		cout<<"BasicLit:String ";
+		// cout<<"BasicLit:String ";
 		 cout<<($$->current_type)<<"\n";
 		 }
 	| TRUE      {

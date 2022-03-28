@@ -36,7 +36,7 @@ string FunctionType::getDataType(){
 	{
 		for(int i=0;i<(argument_types.size()-1);i++)
 		{
-			cout<<"A "<<i<<"\n";
+			// cout<<"A "<<i<<"\n";
 			current_type+=argument_types[i]->getDataType()+", ";
 		}
 		// cout<<current_type<<"\n";
