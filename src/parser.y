@@ -32,6 +32,7 @@
 %define parse.error verbose
 %code requires{
 	#include "node.hpp"
+	// #include "dot_generator.hpp"
 }
 
 %union {
@@ -85,17 +86,17 @@ SourceFile:
 			 curr->current_node_data->node_child = $4->current_node_data;
 			 $$ = curr;
 			 dump_dot_file("ast.dot", $$);
-			 auto val = st->get_symbol_table_data();
-			 int x=0;
-			 string yoyyo = "ghasgtvdegd";
-			 // cout<<string
-			 for (auto temp:val)
-			 {
-			 	cout<<temp.first.first<<" - "<<temp.first.second<<" -  \n";
-			 	cout<<temp.second<<"\n";
-			 	cout<<temp.second->getDataType()<<"\n";
-			 	x+=1;
-			 }
+			 // auto val = st->get_symbol_table_data();
+			 // int x=0;
+			 // string yoyyo = "ghasgtvdegd";
+			 // // cout<<string
+			 // for (auto temp:val)
+			 // {
+			 // 	cout<<temp.first.first<<" - "<<temp.first.second<<" -  \n";
+			 // 	cout<<temp.second<<"\n";
+			 // 	cout<<temp.second->getDataType()<<"\n";
+			 // 	x+=1;
+			 // }
 		}
     ;
 
@@ -460,6 +461,7 @@ FunctionDecl:
 		// exit(1);
 		$$-> current_node_data = new NodeData("Function-" + string($2));
 		$$-> current_node_data->node_child = $5->current_node_data;
+		dump_dot_file("./bin/"+string($2)+".dot", $$);
 
 	}
 	| FUNC IDENTIFIER OpenBlock Signature {
@@ -472,6 +474,7 @@ FunctionDecl:
 		$$ = curr;
 		// st->add_in_symbol_table({st->get_current_scope(),string($2)},$4->current_type);
 		$$->current_node_data = new NodeData("Function-"+ string($2));
+		dump_dot_file("./bin/"+string($2)+".dot", $$);
 	}
 	;
 

@@ -1,3 +1,6 @@
+#ifndef _DOT_GENERATOR_H
+#define _DOT_GENERATOR_H
+
 #include "node.hpp"
 #include<fstream>
 
@@ -75,3 +78,6 @@ void dump_dot_file(string file_name, Node* root)
     treeout<<"}";
     treeout.close();
 }
+
+
+#endif

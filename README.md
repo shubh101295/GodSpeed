@@ -20,3 +20,5 @@ Steps to run AST part
 
 Csv for symbolTable of each function is generated in ```bin``` folder.
 
+Do ```make clean_csv``` do remove the csv files generated in the ```bin``` folder.
+
