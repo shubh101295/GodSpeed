@@ -587,16 +587,20 @@ Assignment:
 				exit(1);
 			}
 			string name = left_data->data_name;
-			if(!left_data->value && left_data->node_child){
+			auto temp_left_data = left_data;
+			if(left_data->data_name.substr(1) == "unary"){
+				temp_left_data = left_data->node_child;
+			}
+			if(!temp_left_data->value && temp_left_data->node_child){
 				cout<<"[]"<<"Unexpected non identifier on the left of '=' operator";
 				exit(1);
 			}
 
-			if(left_data -> value){
+			if(temp_left_data -> value){
 				cout<<"Here 1"<<endl;
 				string j = name;
 				cout<<"HERE 2\n";
-				name = (left_data->node_child)? left_data->node_child->data_name:left_data->data_name;
+				name = (temp_left_data->node_child)? temp_left_data->node_child->data_name:temp_left_data->data_name;
 				if(name==j) cout<<"UNCHANGED!\n";
 			}	
 
