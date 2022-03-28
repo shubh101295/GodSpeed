@@ -25,15 +25,19 @@ NodeData* Node::last_current_node_data(){
 }
 
 DataType* Node::last_current_type(){
+	cout<<"B2\n";
 	DataType* temp = current_type;
-	cout<<"Here-1"<<endl;
+	cout<<"B2\n";
 	while(temp->next_type!=NULL)
 	{
-		cout<<"Here0"<<endl;
-		cout<<temp->next_type<<endl;
+		cout<<"B2\n";
+		cout<<(temp==NULL)<<"\n";
+		cout<<(temp->next_type==NULL)<<"\n";
 		temp = temp->next_type;
+		cout<<(temp==NULL)<<"\n";
+		cout<<(temp->next_type==NULL)<<"AA\n";
 	}
-	cout<<"Here1"<<endl;
+	cout<<"B24\n";
 	return temp;
 }
 
