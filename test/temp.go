@@ -4,8 +4,8 @@ import "fmt"
 
 func main() {
 
-	// fmt.Println("v")
-	a, b := 2+4, 56
-	//	a[10] = 3
-
+	var a, c *int
+	var b, d int = 3
+	*a = b
+	*a, *c = b, d
 }

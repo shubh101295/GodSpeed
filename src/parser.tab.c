@@ -617,23 +617,23 @@ static const yytype_int16 yyrline[] =
      221,   228,   236,   246,   256,   266,   290,   309,   317,   325,
      335,   343,   351,   359,   367,   375,   382,   390,   398,   409,
      416,   436,   448,   459,   466,   477,   488,   494,   501,   507,
-     514,   522,   528,   536,   546,   554,   564,   656,   728,   734,
-     743,   752,   761,   779,   803,   874,   883,   909,   947,   953,
-     962,   972,   982,   988,   996,  1005,  1011,  1026,  1051,  1062,
-    1072,  1079,  1087,  1093,  1100,  1106,  1112,  1117,  1126,  1133,
-    1143,  1151,  1158,  1167,  1185,  1189,  1195,  1203,  1212,  1219,
-    1235,  1242,  1252,  1257,  1265,  1272,  1283,  1288,  1298,  1307,
-    1318,  1323,  1334,  1344,  1362,  1362,  1376,  1376,  1393,  1393,
-    1412,  1424,  1435,  1458,  1467,  1476,  1493,  1518,  1536,  1558,
-    1580,  1602,  1627,  1655,  1666,  1678,  1690,  1727,  1735,  1782,
-    1809,  1834,  1860,  1886,  1911,  1936,  1962,  1987,  2012,  2038,
-    2063,  2089,  2114,  2140,  2165,  2190,  2215,  2240,  2265,  2279,
-    2292,  2300,  2308,  2316,  2324,  2337,  2346,  2353,  2432,  2474,
-    2480,  2487,  2493,  2502,  2510,  2516,  2527,  2539,  2551,  2558,
-    2562,  2568,  2575,  2583,  2595,  2609,  2620,  2628,  2639,  2647,
-    2651,  2660,  2674,  2684,  2702,  2728,  2737,  2747,  2763,  2774,
-    2786,  2792,  2816,  2837,  2859,  2876,  2888,  2929,  2938,  2948,
-    2955,  2962,  2969,  2978,  2985,  2995,  3000
+     514,   522,   528,   536,   546,   554,   564,   659,   731,   737,
+     746,   755,   764,   782,   806,   877,   886,   912,   950,   956,
+     965,   975,   985,   991,   999,  1008,  1014,  1029,  1054,  1065,
+    1075,  1082,  1090,  1096,  1103,  1109,  1115,  1120,  1129,  1136,
+    1146,  1154,  1162,  1171,  1189,  1193,  1199,  1207,  1216,  1223,
+    1239,  1246,  1256,  1261,  1269,  1276,  1287,  1292,  1302,  1311,
+    1322,  1327,  1338,  1348,  1366,  1366,  1380,  1380,  1397,  1397,
+    1416,  1428,  1439,  1462,  1471,  1480,  1497,  1522,  1540,  1562,
+    1584,  1606,  1631,  1659,  1670,  1682,  1694,  1731,  1739,  1786,
+    1813,  1838,  1864,  1890,  1915,  1940,  1966,  1991,  2016,  2042,
+    2067,  2093,  2118,  2144,  2169,  2194,  2219,  2244,  2269,  2282,
+    2295,  2303,  2311,  2319,  2327,  2340,  2350,  2357,  2436,  2478,
+    2484,  2491,  2497,  2506,  2514,  2520,  2531,  2543,  2555,  2562,
+    2566,  2572,  2579,  2587,  2599,  2613,  2624,  2632,  2643,  2651,
+    2655,  2664,  2678,  2688,  2706,  2732,  2741,  2751,  2767,  2778,
+    2790,  2796,  2820,  2841,  2863,  2880,  2892,  2933,  2942,  2952,
+    2959,  2966,  2973,  2982,  2989,  2999,  3004
 };
 #endif
 
@@ -2623,6 +2623,9 @@ yyreduce:
 				exit(1);
 			}
 			string name = left_data->data_name;
+			if(left_data->data_name.substr(1) == "unary"){
+				left_data = left_data->node_child;
+			}
 			if(!left_data->value && left_data->node_child){
 				cout<<"[]"<<"Unexpected non identifier on the left of '=' operator";
 				exit(1);
@@ -2683,11 +2686,11 @@ yyreduce:
 
 		(yyval.nt)->current_node_data->node_child = parLeft;
 	}
-#line 2687 "parser.tab.c"
+#line 2690 "parser.tab.c"
     break;
 
   case 57:
-#line 656 "src/parser.y"
+#line 659 "src/parser.y"
                                                {
 		cout<<"ShortVarDecl : IdentifierList INFER_EQ ExpressionList"<<endl;
 		(yyval.nt) = new Node("ShortVarDecl");
@@ -2757,33 +2760,33 @@ yyreduce:
 		(yyval.nt)->current_node_data->node_child = parLeft;
 
 	}
-#line 2761 "parser.tab.c"
+#line 2764 "parser.tab.c"
     break;
 
   case 58:
-#line 728 "src/parser.y"
+#line 731 "src/parser.y"
                     {
 		(yyval.nt) = new Node("VarDecl");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
 	}
-#line 2772 "parser.tab.c"
+#line 2775 "parser.tab.c"
     break;
 
   case 59:
-#line 734 "src/parser.y"
+#line 737 "src/parser.y"
                                                {
 		(yyval.nt) = new Node("VarDecl");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt)->current_type = (yyvsp[-1].nt)->current_type;
 		(yyval.nt)->current_node_data = (yyvsp[-1].nt)->current_node_data;
 	}
-#line 2783 "parser.tab.c"
+#line 2786 "parser.tab.c"
     break;
 
   case 60:
-#line 743 "src/parser.y"
+#line 746 "src/parser.y"
                                    {
 		(yyval.nt) = new Node("VarSpecList");
 
@@ -2793,22 +2796,22 @@ yyreduce:
 		((yyval.nt)->current_node_data->last_next_child())->next_data = (yyvsp[-1].nt)->current_node_data;
 		// might need to add type checks
 	}
-#line 2797 "parser.tab.c"
+#line 2800 "parser.tab.c"
     break;
 
   case 61:
-#line 752 "src/parser.y"
+#line 755 "src/parser.y"
                          {
 		(yyval.nt) = new Node("VarSpecList");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt)->current_type = (yyvsp[-1].nt)->current_type;
 		(yyval.nt)->current_node_data = (yyvsp[-1].nt)->current_node_data;
 	}
-#line 2808 "parser.tab.c"
+#line 2811 "parser.tab.c"
     break;
 
   case 62:
-#line 761 "src/parser.y"
+#line 764 "src/parser.y"
                             {
 		(yyval.nt) = new Node("VarSpec");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-1].nt));
@@ -2827,11 +2830,11 @@ yyreduce:
 
 		(yyval.nt)->current_node_data = new NodeData("");
 	}
-#line 2831 "parser.tab.c"
+#line 2834 "parser.tab.c"
     break;
 
   case 63:
-#line 779 "src/parser.y"
+#line 782 "src/parser.y"
                                                       {
 		(yyval.nt) = new Node("VarSpec");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-3].nt));
@@ -2856,11 +2859,11 @@ yyreduce:
 		(yyval.nt)->current_node_data = new NodeData("=");
 		(yyval.nt)->current_node_data->node_child = parLeft;
 	}
-#line 2860 "parser.tab.c"
+#line 2863 "parser.tab.c"
     break;
 
   case 64:
-#line 803 "src/parser.y"
+#line 806 "src/parser.y"
                                                  {
 		(yyval.nt) = new Node("VarSpec");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -2912,22 +2915,22 @@ yyreduce:
 		(yyval.nt)->current_node_data->node_child = parLeft;
 
 	}
-#line 2916 "parser.tab.c"
+#line 2919 "parser.tab.c"
     break;
 
   case 65:
-#line 874 "src/parser.y"
+#line 877 "src/parser.y"
               {
 		(yyval.nt) = new Node("FunctionBody");
 		(yyval.nt) -> add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt) -> current_type = (yyvsp[0].nt)->current_type;
 		(yyval.nt) -> current_node_data = (yyvsp[0].nt)->current_node_data;
 	}
-#line 2927 "parser.tab.c"
+#line 2930 "parser.tab.c"
     break;
 
   case 66:
-#line 883 "src/parser.y"
+#line 886 "src/parser.y"
                    {
 		cout<<"Signature: Parameters\n";
 		(yyval.nt) = new Node("Signature");
@@ -2954,11 +2957,11 @@ yyreduce:
 		(yyval.nt) -> current_type = new FunctionType(arguments,return_types);
 
 	}
-#line 2958 "parser.tab.c"
+#line 2961 "parser.tab.c"
     break;
 
   case 67:
-#line 909 "src/parser.y"
+#line 912 "src/parser.y"
                             {
 		(yyval.nt) = new Node("Signature");
 		cout<<"Signature: Parameters Result\n";
@@ -2994,33 +2997,33 @@ yyreduce:
 
 		(yyval.nt) -> current_type = new FunctionType(arguments,return_types);
 	}
-#line 2998 "parser.tab.c"
+#line 3001 "parser.tab.c"
     break;
 
   case 68:
-#line 947 "src/parser.y"
+#line 950 "src/parser.y"
                                       {
 		(yyval.nt) = new Node("Result");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt)->current_node_data = (yyvsp[-1].nt)->current_node_data;
 		(yyval.nt)->current_type = (yyvsp[-1].nt)->current_type;
 	}
-#line 3009 "parser.tab.c"
+#line 3012 "parser.tab.c"
     break;
 
   case 69:
-#line 953 "src/parser.y"
+#line 956 "src/parser.y"
                {
 		(yyval.nt) = new Node("Result");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 	}
-#line 3020 "parser.tab.c"
+#line 3023 "parser.tab.c"
     break;
 
   case 70:
-#line 962 "src/parser.y"
+#line 965 "src/parser.y"
                         {
     	cout<<"TypeList: TypeList COMMA Type"<<endl;
         (yyval.nt) = new Node("TypeList");
@@ -3031,11 +3034,11 @@ yyreduce:
         (yyval.nt)->current_node_data->next_data = (yyvsp[0].nt)->current_node_data;
         (yyval.nt)->current_type->next_type = (yyvsp[0].nt)->current_type;
     }
-#line 3035 "parser.tab.c"
+#line 3038 "parser.tab.c"
     break;
 
   case 71:
-#line 972 "src/parser.y"
+#line 975 "src/parser.y"
            {
     	cout<<"TypeList: TypeList COMMA Type"<<endl;
         (yyval.nt) = new Node("TypeList");
@@ -3043,22 +3046,22 @@ yyreduce:
         (yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
         (yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
     }
-#line 3047 "parser.tab.c"
+#line 3050 "parser.tab.c"
     break;
 
   case 72:
-#line 982 "src/parser.y"
+#line 985 "src/parser.y"
                              {
 		cout<<"Parameters: LEFTPARAN RIGHTPARAN \n";
 		(yyval.nt) = new Node("Parameters");
 		(yyval.nt)->current_node_data = NULL;
 		(yyval.nt)-> current_type = NULL;
 	}
-#line 3058 "parser.tab.c"
+#line 3061 "parser.tab.c"
     break;
 
   case 73:
-#line 988 "src/parser.y"
+#line 991 "src/parser.y"
                                              {
 		cout<<"Parameters: LEFTPARAN ParameterList RIGHTPARAN"<<endl;
 		(yyval.nt) = new Node("Parameters");
@@ -3067,33 +3070,33 @@ yyreduce:
 		(yyval.nt)-> current_type = (yyvsp[-1].nt)->current_type;
 
 	}
-#line 3071 "parser.tab.c"
+#line 3074 "parser.tab.c"
     break;
 
   case 74:
-#line 996 "src/parser.y"
+#line 999 "src/parser.y"
                                                    {
 		(yyval.nt) = new Node("Parameters");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
 		(yyval.nt)->current_node_data = (yyvsp[-2].nt)->current_node_data;
 		(yyval.nt)-> current_type = (yyvsp[-2].nt)->current_type;
 	}
-#line 3082 "parser.tab.c"
+#line 3085 "parser.tab.c"
     break;
 
   case 75:
-#line 1005 "src/parser.y"
+#line 1008 "src/parser.y"
                       {
 		(yyval.nt) = new Node("ParameterList");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
 		(yyval.nt)-> current_type = (yyvsp[0].nt)->current_type;
 	}
-#line 3093 "parser.tab.c"
+#line 3096 "parser.tab.c"
     break;
 
   case 76:
-#line 1011 "src/parser.y"
+#line 1014 "src/parser.y"
                                            {
 		cout<<"ParameterList: ParameterList COMMA ParameterDecl"<<endl;
 		(yyval.nt) = new Node("Parameters");
@@ -3102,15 +3105,15 @@ yyreduce:
 		(yyval.nt)->current_node_data = (yyvsp[-2].nt)->current_node_data;
 		(yyval.nt)-> current_type = (yyvsp[-2].nt)->current_type;
 		cout<<"Here"<<endl;
-		((yyval.nt)->last_current_node_data())->next_data = (yyvsp[0].nt)->current_node_data;
-		((yyval.nt)->last_current_type())->next_type = (yyvsp[0].nt)->current_type;
+		//($$->last_current_node_data())->next_data = $3->current_node_data;
+		//($$->last_current_type())->next_type = $3->current_type;
 		cout<<"Here1"<<endl;
 	}
-#line 3110 "parser.tab.c"
+#line 3113 "parser.tab.c"
     break;
 
   case 77:
-#line 1026 "src/parser.y"
+#line 1029 "src/parser.y"
                             {
 		cout<<"ParameterDecl: IdentifierList Type"<<endl;
 		(yyval.nt) = new Node("ParameterDecl");
@@ -3133,11 +3136,11 @@ yyreduce:
 			data = data->next_data;
 		}
 	}
-#line 3137 "parser.tab.c"
+#line 3140 "parser.tab.c"
     break;
 
   case 78:
-#line 1051 "src/parser.y"
+#line 1054 "src/parser.y"
                                         {
 		cout<<"IdentifierList COMMA IDENTIFIER"<<endl;
 		(yyval.nt) = new Node("IdentifierList");
@@ -3149,11 +3152,11 @@ yyreduce:
         ((yyval.nt)->last_current_type())->next_type = (st->get_type(string((yyvsp[0].sval))))?(st->get_type(string((yyvsp[0].sval)))):(new BasicType("undefined"));
 
 	}
-#line 3153 "parser.tab.c"
+#line 3156 "parser.tab.c"
     break;
 
   case 79:
-#line 1062 "src/parser.y"
+#line 1065 "src/parser.y"
                      {
 		cout<<"Identifier"<<endl;
 		(yyval.nt) = new Node("IdentifierList");
@@ -3161,41 +3164,41 @@ yyreduce:
 		(yyval.nt)->current_node_data = new NodeData(string((yyvsp[0].sval)));
 		(yyval.nt)->current_type = (st->get_type(string((yyvsp[0].sval))))?(st->get_type(string((yyvsp[0].sval)))):(new BasicType("undefined"));
 	}
-#line 3165 "parser.tab.c"
+#line 3168 "parser.tab.c"
     break;
 
   case 80:
-#line 1072 "src/parser.y"
+#line 1075 "src/parser.y"
                    {
 		(yyval.nt) = new Node("Receiver");
 		(yyval.nt) -> add_non_terminal_children((yyvsp[0].nt));
 	}
-#line 3174 "parser.tab.c"
+#line 3177 "parser.tab.c"
     break;
 
   case 81:
-#line 1079 "src/parser.y"
+#line 1082 "src/parser.y"
                                  {
 		cout<<"CompositeLit: LiteralType LiteralValue"<<endl;
         (yyval.nt) = new Node("CompositeLit");
 
     }
-#line 3184 "parser.tab.c"
+#line 3187 "parser.tab.c"
     break;
 
   case 82:
-#line 1087 "src/parser.y"
+#line 1090 "src/parser.y"
                    {
 		(yyval.nt) = new Node("LiteralType");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 	}
-#line 3195 "parser.tab.c"
+#line 3198 "parser.tab.c"
     break;
 
   case 83:
-#line 1093 "src/parser.y"
+#line 1096 "src/parser.y"
                     {
 		cout<<"LiteralType: ArrayType"<<endl;
 		(yyval.nt) = new Node("LiteralType");
@@ -3203,54 +3206,54 @@ yyreduce:
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 	}
-#line 3207 "parser.tab.c"
+#line 3210 "parser.tab.c"
     break;
 
   case 84:
-#line 1100 "src/parser.y"
+#line 1103 "src/parser.y"
                       {
 		(yyval.nt) = new Node("LiteralType");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 	}
-#line 3218 "parser.tab.c"
+#line 3221 "parser.tab.c"
     break;
 
   case 85:
-#line 1106 "src/parser.y"
+#line 1109 "src/parser.y"
                     {
 		(yyval.nt) = new Node("LiteralType");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 	}
-#line 3229 "parser.tab.c"
+#line 3232 "parser.tab.c"
     break;
 
   case 86:
-#line 1112 "src/parser.y"
+#line 1115 "src/parser.y"
                                                  {
 		(yyval.nt) = new Node("LiteralType");
 		(yyval.nt)->add_terminal_children(string((yyvsp[-2].sval)));
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 	}
-#line 3239 "parser.tab.c"
+#line 3242 "parser.tab.c"
     break;
 
   case 87:
-#line 1117 "src/parser.y"
+#line 1120 "src/parser.y"
                   {
 		(yyval.nt) = new Node("LiteralType");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 	}
-#line 3250 "parser.tab.c"
+#line 3253 "parser.tab.c"
     break;
 
   case 88:
-#line 1126 "src/parser.y"
+#line 1129 "src/parser.y"
                     {
 		cout<<"Type: LiteralType"<<endl;
 		(yyval.nt) = new Node("Type");
@@ -3258,11 +3261,11 @@ yyreduce:
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 		(yyval.nt)->current_node_data = new NodeData((yyval.nt)->current_type->getDataType());
 	}
-#line 3262 "parser.tab.c"
+#line 3265 "parser.tab.c"
     break;
 
   case 89:
-#line 1133 "src/parser.y"
+#line 1136 "src/parser.y"
                       {
 		cout<<"Type:OperandName"<<endl;
 		(yyval.nt) = new Node("Type");
@@ -3270,11 +3273,11 @@ yyreduce:
 		(yyval.nt)->current_type = new BasicType(string((yyvsp[0].nt) -> current_node_data -> data_name));
 		(yyval.nt)->current_node_data = new NodeData((yyval.nt)->current_type->getDataType());
 	}
-#line 3274 "parser.tab.c"
+#line 3277 "parser.tab.c"
     break;
 
   case 90:
-#line 1143 "src/parser.y"
+#line 1146 "src/parser.y"
                 {
 		cout<<"Operand: Literal"<<endl;
 		(yyval.nt) = new Node("Operand");
@@ -3283,34 +3286,35 @@ yyreduce:
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 		cout<<"Operand Value "<<(yyval.nt)->current_node_data->value<<endl;
 	}
-#line 3287 "parser.tab.c"
+#line 3290 "parser.tab.c"
     break;
 
   case 91:
-#line 1151 "src/parser.y"
+#line 1154 "src/parser.y"
                       {
 		cout<<"Operand: OperandName";
 		(yyval.nt) = new Node("Operand");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
+		cout<<"Value: "<<(yyval.nt)->current_node_data->value<<endl;
 	}
-#line 3299 "parser.tab.c"
+#line 3303 "parser.tab.c"
     break;
 
   case 92:
-#line 1158 "src/parser.y"
+#line 1162 "src/parser.y"
                                           {
 		(yyval.nt) = new Node("Operand");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt)->current_node_data = (yyvsp[-1].nt)->current_node_data;
 		(yyval.nt)->current_type = (yyvsp[-1].nt)->current_type;
 	}
-#line 3310 "parser.tab.c"
+#line 3314 "parser.tab.c"
     break;
 
   case 93:
-#line 1167 "src/parser.y"
+#line 1171 "src/parser.y"
                    {
 		cout<<"OperandName:	IDENTIFIER - "<<string((yyvsp[0].sval))<<"\n";
 		(yyval.nt) = new Node("OperandName");
@@ -3326,53 +3330,53 @@ yyreduce:
 		// cout<<"OperandName5:	IDENTIFIER - "<<string($1)<<"\n";
 
 	}
-#line 3330 "parser.tab.c"
+#line 3334 "parser.tab.c"
     break;
 
   case 94:
-#line 1185 "src/parser.y"
+#line 1189 "src/parser.y"
                              {
 		(yyval.nt) = new Node("LiteralValue");
 		(yyval.nt)-> current_node_data = new NodeData("Empty");
 	}
-#line 3339 "parser.tab.c"
+#line 3343 "parser.tab.c"
     break;
 
   case 95:
-#line 1189 "src/parser.y"
+#line 1193 "src/parser.y"
                                            {
 		(yyval.nt) = new Node("LiteralValue");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt)->current_type = (yyvsp[-1].nt)->current_type;
 		(yyval.nt)->current_node_data = (yyvsp[-1].nt)->current_node_data;
 	}
-#line 3350 "parser.tab.c"
+#line 3354 "parser.tab.c"
     break;
 
   case 96:
-#line 1195 "src/parser.y"
+#line 1199 "src/parser.y"
                                                  {
 		(yyval.nt) = new Node("LiteralValue");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
 		(yyval.nt)->current_type = (yyvsp[-2].nt)->current_type;
 		(yyval.nt)->current_node_data = (yyvsp[-2].nt)->current_node_data;
 	}
-#line 3361 "parser.tab.c"
+#line 3365 "parser.tab.c"
     break;
 
   case 97:
-#line 1203 "src/parser.y"
+#line 1207 "src/parser.y"
                                     {
 		(yyval.nt) = new Node("LiteralValue");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_type = new SliceType((yyvsp[0].nt)->current_type);
         (yyval.nt)->current_node_data = new NodeData((yyval.nt)->current_type->getDataType());
 		;}
-#line 3372 "parser.tab.c"
+#line 3376 "parser.tab.c"
     break;
 
   case 98:
-#line 1212 "src/parser.y"
+#line 1216 "src/parser.y"
                      {
 		Node* curr = new Node("ElementList");
 		curr->add_non_terminal_children((yyvsp[0].nt));
@@ -3380,11 +3384,11 @@ yyreduce:
 		curr->current_type = (yyvsp[0].nt)->current_type;
 		(yyval.nt) = curr;
 	}
-#line 3384 "parser.tab.c"
+#line 3388 "parser.tab.c"
     break;
 
   case 99:
-#line 1219 "src/parser.y"
+#line 1223 "src/parser.y"
                                          {
 		Node* curr = new Node("ElementList");
 		curr->add_non_terminal_children((yyvsp[-2].nt));
@@ -3398,11 +3402,11 @@ yyreduce:
 
 		(yyval.nt) = curr;
 	}
-#line 3402 "parser.tab.c"
+#line 3406 "parser.tab.c"
     break;
 
   case 100:
-#line 1235 "src/parser.y"
+#line 1239 "src/parser.y"
                 {
 		Node* curr = new Node("KeyedElement");
 		curr->add_non_terminal_children((yyvsp[0].nt));
@@ -3410,11 +3414,11 @@ yyreduce:
 		curr->current_type = (yyvsp[0].nt)->current_type;
 		(yyval.nt) = curr;
 	}
-#line 3414 "parser.tab.c"
+#line 3418 "parser.tab.c"
     break;
 
   case 101:
-#line 1242 "src/parser.y"
+#line 1246 "src/parser.y"
                             {
 		Node* curr = new Node("KeyedElement");
 		curr->add_non_terminal_children((yyvsp[-2].nt));
@@ -3422,31 +3426,31 @@ yyreduce:
 		(yyval.nt) = curr;
 
 	}
-#line 3426 "parser.tab.c"
+#line 3430 "parser.tab.c"
     break;
 
   case 102:
-#line 1252 "src/parser.y"
+#line 1256 "src/parser.y"
                    {
 		Node* curr = new Node("Key");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt) = curr;
 	}
-#line 3436 "parser.tab.c"
+#line 3440 "parser.tab.c"
     break;
 
   case 103:
-#line 1257 "src/parser.y"
+#line 1261 "src/parser.y"
                        {
 		Node* curr = new Node("Key");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt) = curr;
 	}
-#line 3446 "parser.tab.c"
+#line 3450 "parser.tab.c"
     break;
 
   case 104:
-#line 1265 "src/parser.y"
+#line 1269 "src/parser.y"
                    {
 		Node* curr = new Node("Element");
 		curr->add_non_terminal_children((yyvsp[0].nt));
@@ -3454,11 +3458,11 @@ yyreduce:
 		curr->current_type = (yyvsp[0].nt)->current_type;
 		(yyval.nt) = curr;
 	}
-#line 3458 "parser.tab.c"
+#line 3462 "parser.tab.c"
     break;
 
   case 105:
-#line 1272 "src/parser.y"
+#line 1276 "src/parser.y"
                        {
 		Node* curr = new Node("Element");
 		curr->add_non_terminal_children((yyvsp[0].nt));
@@ -3466,21 +3470,21 @@ yyreduce:
 		curr->current_type = (yyvsp[0].nt)->current_type;
 		(yyval.nt) = curr;
 	}
-#line 3470 "parser.tab.c"
+#line 3474 "parser.tab.c"
     break;
 
   case 106:
-#line 1283 "src/parser.y"
+#line 1287 "src/parser.y"
                {
 		(yyval.nt) = new Node("ReturnStmt");
 		(yyval.nt) -> current_node_data = new NodeData(string((yyvsp[0].sval)));
 
 	}
-#line 3480 "parser.tab.c"
+#line 3484 "parser.tab.c"
     break;
 
   case 107:
-#line 1288 "src/parser.y"
+#line 1292 "src/parser.y"
                                 {
 		(yyval.nt) = new Node("ReturnStmt");
 		(yyval.nt) -> add_non_terminal_children((yyvsp[0].nt));
@@ -3488,11 +3492,11 @@ yyreduce:
 		(yyval.nt)->current_node_data->node_child = (yyvsp[0].nt)->current_node_data;
 
 	}
-#line 3492 "parser.tab.c"
+#line 3496 "parser.tab.c"
     break;
 
   case 108:
-#line 1298 "src/parser.y"
+#line 1302 "src/parser.y"
               {
 		Node* curr = new Node("BreakStmt");
 		curr->current_node_data = new NodeData (string((yyvsp[0].sval)));
@@ -3502,11 +3506,11 @@ yyreduce:
 		}
 		(yyval.nt) = curr;
 	}
-#line 3506 "parser.tab.c"
+#line 3510 "parser.tab.c"
     break;
 
   case 109:
-#line 1307 "src/parser.y"
+#line 1311 "src/parser.y"
                            {
 		Node * curr = new Node("BreakStmt");
 		curr->add_terminal_children(string((yyvsp[0].sval)));
@@ -3514,21 +3518,21 @@ yyreduce:
 		curr->current_node_data->node_child = new NodeData(string((yyvsp[0].sval)));
 		(yyval.nt) = curr;
 	}
-#line 3518 "parser.tab.c"
+#line 3522 "parser.tab.c"
     break;
 
   case 110:
-#line 1318 "src/parser.y"
+#line 1322 "src/parser.y"
                  {
 		Node* curr = new Node("ContinueStmt");
 		curr->current_node_data = new NodeData(string((yyvsp[0].sval)));
 		(yyval.nt) = curr;
 	}
-#line 3528 "parser.tab.c"
+#line 3532 "parser.tab.c"
     break;
 
   case 111:
-#line 1323 "src/parser.y"
+#line 1327 "src/parser.y"
                               {
 		Node* curr = new Node("ContinueStmt");
 		curr->add_terminal_children(string((yyvsp[0].sval)));
@@ -3537,11 +3541,11 @@ yyreduce:
 		curr->current_node_data->node_child =  new NodeData(string((yyvsp[0].sval)));
 		(yyval.nt) = curr;
 	}
-#line 3541 "parser.tab.c"
+#line 3545 "parser.tab.c"
     break;
 
   case 112:
-#line 1334 "src/parser.y"
+#line 1338 "src/parser.y"
                         {
 		Node* curr = new Node("GotoStmt");
 		curr->add_terminal_children(string((yyvsp[0].sval)));
@@ -3549,11 +3553,11 @@ yyreduce:
 		curr->current_node_data->node_child = new NodeData(string((yyvsp[0].sval)));
 		(yyval.nt) = curr;
 	}
-#line 3553 "parser.tab.c"
+#line 3557 "parser.tab.c"
     break;
 
   case 113:
-#line 1344 "src/parser.y"
+#line 1348 "src/parser.y"
                        {
 		cout<<"SwitchStmt: ExprSwitchStmt\n";
 		(yyval.nt) = new Node("SwitchStmt");
@@ -3561,17 +3565,17 @@ yyreduce:
 		(yyval.nt) -> current_type = (yyvsp[0].nt)->current_type;
 		(yyval.nt) -> current_node_data = (yyvsp[0].nt)->current_node_data;
 	}
-#line 3565 "parser.tab.c"
+#line 3569 "parser.tab.c"
     break;
 
   case 114:
-#line 1362 "src/parser.y"
+#line 1366 "src/parser.y"
                                               { scl = new SwitchCaseList(); }
-#line 3571 "parser.tab.c"
+#line 3575 "parser.tab.c"
     break;
 
   case 115:
-#line 1362 "src/parser.y"
+#line 1366 "src/parser.y"
                                                                                                                        {
 	 	(yyval.nt) = new Node("ExprSwitchStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-5].nt));
@@ -3586,17 +3590,17 @@ yyreduce:
 		it->node_child = (yyvsp[-2].nt)->current_node_data;
 	 	scl = NULL;
 	 }
-#line 3590 "parser.tab.c"
+#line 3594 "parser.tab.c"
     break;
 
   case 116:
-#line 1376 "src/parser.y"
+#line 1380 "src/parser.y"
                                                        { scl = new SwitchCaseList(); }
-#line 3596 "parser.tab.c"
+#line 3600 "parser.tab.c"
     break;
 
   case 117:
-#line 1377 "src/parser.y"
+#line 1381 "src/parser.y"
                                                          {
 	 	cout<<"SWITCH SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
 
@@ -3613,17 +3617,17 @@ yyreduce:
 		it->node_child = (yyvsp[-2].nt)->current_node_data;
 	 	scl = NULL;
 	}
-#line 3617 "parser.tab.c"
+#line 3621 "parser.tab.c"
     break;
 
   case 118:
-#line 1393 "src/parser.y"
+#line 1397 "src/parser.y"
                                                 { scl = new SwitchCaseList(); }
-#line 3623 "parser.tab.c"
+#line 3627 "parser.tab.c"
     break;
 
   case 119:
-#line 1393 "src/parser.y"
+#line 1397 "src/parser.y"
                                                                                                                          {
 		cout<<"SWITCH Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
 		(yyval.nt) = new Node("ExprSwitchStmt");
@@ -3639,11 +3643,11 @@ yyreduce:
 		it->node_child = (yyvsp[-2].nt)->current_node_data;
 	 	scl = NULL;
 	}
-#line 3643 "parser.tab.c"
+#line 3647 "parser.tab.c"
     break;
 
   case 120:
-#line 1412 "src/parser.y"
+#line 1416 "src/parser.y"
                                           {
 		cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
 		(yyval.nt) = new Node("ExprCaseClauseList");
@@ -3656,11 +3660,11 @@ yyreduce:
 		cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
 		
 	}
-#line 3660 "parser.tab.c"
+#line 3664 "parser.tab.c"
     break;
 
   case 121:
-#line 1424 "src/parser.y"
+#line 1428 "src/parser.y"
                          {
 		cout<<"ExprCaseClauseList: ExprCaseClause\n";
 		(yyval.nt) = new Node("ExprCaseClauseList");
@@ -3669,11 +3673,11 @@ yyreduce:
 		(yyval.nt)->current_node_data->node_child = (yyvsp[0].nt)->current_node_data;
 		// $$->current_type = $1->current_type;
 	}
-#line 3673 "parser.tab.c"
+#line 3677 "parser.tab.c"
     break;
 
   case 122:
-#line 1435 "src/parser.y"
+#line 1439 "src/parser.y"
                                            {
 		cout<<"ExprCaseCause:	ExprSwitchCase COLON StatementList\n";
 		(yyval.nt) = new Node("ExprCaseClause");
@@ -3693,11 +3697,11 @@ yyreduce:
 		(yyval.nt)->current_type = (yyvsp[-2].nt)->current_type;
 		(yyval.nt)->current_node_data->next_data = (yyvsp[0].nt)->current_node_data;
     }
-#line 3697 "parser.tab.c"
+#line 3701 "parser.tab.c"
     break;
 
   case 123:
-#line 1458 "src/parser.y"
+#line 1462 "src/parser.y"
         {
 		 Node* curr = new Node("BasicLit");
 		 curr->add_terminal_children("true");
@@ -3705,11 +3709,11 @@ yyreduce:
 		 curr->current_type = new BasicType("bool");
 		 (yyval.nt) = curr;
 	}
-#line 3709 "parser.tab.c"
+#line 3713 "parser.tab.c"
     break;
 
   case 124:
-#line 1467 "src/parser.y"
+#line 1471 "src/parser.y"
                             {
 		cout<<"ExprSwitchCase:  CASE ExpressionList\n";
 		(yyval.nt) = new Node("ExprSwitchCase");
@@ -3719,11 +3723,11 @@ yyreduce:
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 
 	}
-#line 3723 "parser.tab.c"
+#line 3727 "parser.tab.c"
     break;
 
   case 125:
-#line 1476 "src/parser.y"
+#line 1480 "src/parser.y"
                            {
 		/* a fake true as expression list*/
 		// Node* child_curr = new Node("BasicLit");
@@ -3738,11 +3742,11 @@ yyreduce:
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;	
 	}
-#line 3742 "parser.tab.c"
+#line 3746 "parser.tab.c"
     break;
 
   case 126:
-#line 1493 "src/parser.y"
+#line 1497 "src/parser.y"
                     {
 		if (is_inside_case==false){
 			cout<<"[FALLTHROUGH] fallthrough can only be used inside switch cases\n";
@@ -3764,11 +3768,11 @@ yyreduce:
 		(yyval.nt) = new Node("FallthroughStmt");
 		(yyval.nt)->current_node_data = new NodeData("FallThorugh");
 	}
-#line 3768 "parser.tab.c"
+#line 3772 "parser.tab.c"
     break;
 
   case 127:
-#line 1518 "src/parser.y"
+#line 1522 "src/parser.y"
                                                  {
 		(yyval.nt) = new Node("IfStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -3787,11 +3791,11 @@ yyreduce:
 			exit(1);
 		}
 	}
-#line 3791 "parser.tab.c"
+#line 3795 "parser.tab.c"
     break;
 
   case 128:
-#line 1536 "src/parser.y"
+#line 1540 "src/parser.y"
                                                                     {
 		(yyval.nt) = new Node("IfStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-4].nt));
@@ -3814,11 +3818,11 @@ yyreduce:
 			exit(1);
 		}
 	}
-#line 3818 "parser.tab.c"
+#line 3822 "parser.tab.c"
     break;
 
   case 129:
-#line 1558 "src/parser.y"
+#line 1562 "src/parser.y"
                                                               {
 		(yyval.nt) = new Node("IfStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-4].nt));
@@ -3841,11 +3845,11 @@ yyreduce:
 		}
 
 	}
-#line 3845 "parser.tab.c"
+#line 3849 "parser.tab.c"
     break;
 
   case 130:
-#line 1580 "src/parser.y"
+#line 1584 "src/parser.y"
                                                              {
 		(yyval.nt) = new Node("IfStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-4].nt));
@@ -3868,11 +3872,11 @@ yyreduce:
 		}
 
 	}
-#line 3872 "parser.tab.c"
+#line 3876 "parser.tab.c"
     break;
 
   case 131:
-#line 1602 "src/parser.y"
+#line 1606 "src/parser.y"
                                                                                 {
 		(yyval.nt) = new Node("IfStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-6].nt));
@@ -3898,11 +3902,11 @@ yyreduce:
 			exit(1);
 		}
 	}
-#line 3902 "parser.tab.c"
+#line 3906 "parser.tab.c"
     break;
 
   case 132:
-#line 1627 "src/parser.y"
+#line 1631 "src/parser.y"
                                                                                {
 		(yyval.nt) = new Node("IfStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-6].nt));
@@ -3928,11 +3932,11 @@ yyreduce:
 			exit(1);
 		}
 	}
-#line 3932 "parser.tab.c"
+#line 3936 "parser.tab.c"
     break;
 
   case 133:
-#line 1656 "src/parser.y"
+#line 1660 "src/parser.y"
         {
 		(yyval.nt) = new Node("ForStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-1].nt));
@@ -3943,11 +3947,11 @@ yyreduce:
 		it->node_child = (yyvsp[-1].nt)->current_node_data;
 
 	}
-#line 3947 "parser.tab.c"
+#line 3951 "parser.tab.c"
     break;
 
   case 134:
-#line 1666 "src/parser.y"
+#line 1670 "src/parser.y"
                                                                                                               {
 		(yyval.nt) = new Node("ForStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-8].nt));
@@ -3960,11 +3964,11 @@ yyreduce:
 		it->node_child->node_child = (yyvsp[-2].nt)->current_node_data;
 
 	}
-#line 3964 "parser.tab.c"
+#line 3968 "parser.tab.c"
     break;
 
   case 135:
-#line 1678 "src/parser.y"
+#line 1682 "src/parser.y"
                                                                                                                    {
 		(yyval.nt) = new Node("ForStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-8].nt));
@@ -3977,11 +3981,11 @@ yyreduce:
 		it->node_child = new NodeData("ForBody");
 		it->node_child->node_child = (yyvsp[-2].nt)->current_node_data;
 	}
-#line 3981 "parser.tab.c"
+#line 3985 "parser.tab.c"
     break;
 
   case 136:
-#line 1690 "src/parser.y"
+#line 1694 "src/parser.y"
                                                                           {
 		(yyval.nt) = new Node("ForStmt");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-4].nt));
@@ -3995,30 +3999,30 @@ yyreduce:
 		it = it->next_data;
 		it->node_child= (yyvsp[-2].nt)->current_node_data;
 	}
-#line 3999 "parser.tab.c"
+#line 4003 "parser.tab.c"
     break;
 
   case 137:
-#line 1727 "src/parser.y"
+#line 1731 "src/parser.y"
         {
 		(yyval.nt) = new Node("");
 		bl -> add_new_break_label();
 	}
-#line 4008 "parser.tab.c"
+#line 4012 "parser.tab.c"
     break;
 
   case 138:
-#line 1735 "src/parser.y"
+#line 1739 "src/parser.y"
         {
 		(yyval.nt) = new Node("");
 		bl -> remove_last_break_label();
 	;
 	}
-#line 4018 "parser.tab.c"
+#line 4022 "parser.tab.c"
     break;
 
   case 139:
-#line 1782 "src/parser.y"
+#line 1786 "src/parser.y"
                                   {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
 			(yyval.nt) = new Node("Expression");
@@ -4046,11 +4050,11 @@ yyreduce:
 			(yyval.nt)->current_type = (yyvsp[-2].nt)->current_type;
 
 		}
-#line 4050 "parser.tab.c"
+#line 4054 "parser.tab.c"
     break;
 
   case 140:
-#line 1809 "src/parser.y"
+#line 1813 "src/parser.y"
                                      {
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -4076,11 +4080,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = (yyvsp[-2].nt)->current_type;
 		}
-#line 4080 "parser.tab.c"
+#line 4084 "parser.tab.c"
     break;
 
   case 141:
-#line 1834 "src/parser.y"
+#line 1838 "src/parser.y"
                                     {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
 			(yyval.nt) = new Node("Expression");
@@ -4107,11 +4111,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = (yyvsp[-2].nt)->current_type;
 		}
-#line 4111 "parser.tab.c"
+#line 4115 "parser.tab.c"
     break;
 
   case 142:
-#line 1860 "src/parser.y"
+#line 1864 "src/parser.y"
                                     {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
 			(yyval.nt) = new Node("Expression");
@@ -4138,11 +4142,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = (yyvsp[-2].nt)->current_type;
 		}
-#line 4142 "parser.tab.c"
+#line 4146 "parser.tab.c"
     break;
 
   case 143:
-#line 1886 "src/parser.y"
+#line 1890 "src/parser.y"
                                     {
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -4168,11 +4172,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = (yyvsp[-2].nt)->current_type;
 		}
-#line 4172 "parser.tab.c"
+#line 4176 "parser.tab.c"
     break;
 
   case 144:
-#line 1911 "src/parser.y"
+#line 1915 "src/parser.y"
                                     {
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -4198,11 +4202,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = (yyvsp[-2].nt)->current_type;
 		}
-#line 4202 "parser.tab.c"
+#line 4206 "parser.tab.c"
     break;
 
   case 145:
-#line 1936 "src/parser.y"
+#line 1940 "src/parser.y"
                                        {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
 			(yyval.nt) = new Node("Expression");
@@ -4229,11 +4233,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = (yyvsp[-2].nt)->current_type;
 		}
-#line 4233 "parser.tab.c"
+#line 4237 "parser.tab.c"
     break;
 
   case 146:
-#line 1962 "src/parser.y"
+#line 1966 "src/parser.y"
                                     {
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -4259,11 +4263,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = (yyvsp[-2].nt)->current_type;
 		}
-#line 4263 "parser.tab.c"
+#line 4267 "parser.tab.c"
     break;
 
   case 147:
-#line 1987 "src/parser.y"
+#line 1991 "src/parser.y"
                                     {
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -4289,11 +4293,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = (yyvsp[-2].nt)->current_type;
 		}
-#line 4293 "parser.tab.c"
+#line 4297 "parser.tab.c"
     break;
 
   case 148:
-#line 2012 "src/parser.y"
+#line 2016 "src/parser.y"
                                    {
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -4320,11 +4324,11 @@ yyreduce:
 			(yyval.nt)->current_type = (yyvsp[-2].nt)->current_type;
 
 		}
-#line 4324 "parser.tab.c"
+#line 4328 "parser.tab.c"
     break;
 
   case 149:
-#line 2038 "src/parser.y"
+#line 2042 "src/parser.y"
                                     {
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -4350,11 +4354,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = (yyvsp[-2].nt)->current_type;
 		}
-#line 4354 "parser.tab.c"
+#line 4358 "parser.tab.c"
     break;
 
   case 150:
-#line 2063 "src/parser.y"
+#line 2067 "src/parser.y"
                                        {
 		(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -4381,11 +4385,11 @@ yyreduce:
 			(yyval.nt)->current_type = new BasicType("bool");
 
 		}
-#line 4385 "parser.tab.c"
+#line 4389 "parser.tab.c"
     break;
 
   case 151:
-#line 2089 "src/parser.y"
+#line 2093 "src/parser.y"
                                       {
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -4411,11 +4415,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = new BasicType("bool");
 		}
-#line 4415 "parser.tab.c"
+#line 4419 "parser.tab.c"
     break;
 
   case 152:
-#line 2114 "src/parser.y"
+#line 2118 "src/parser.y"
                                      {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
 			(yyval.nt) = new Node("Expression");
@@ -4442,11 +4446,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = new BasicType("bool");
 		}
-#line 4446 "parser.tab.c"
+#line 4450 "parser.tab.c"
     break;
 
   case 153:
-#line 2140 "src/parser.y"
+#line 2144 "src/parser.y"
                                     {
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -4472,11 +4476,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = new BasicType("bool");
 		}
-#line 4476 "parser.tab.c"
+#line 4480 "parser.tab.c"
     break;
 
   case 154:
-#line 2165 "src/parser.y"
+#line 2169 "src/parser.y"
                                       {
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -4502,11 +4506,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = new BasicType("bool");
 		}
-#line 4506 "parser.tab.c"
+#line 4510 "parser.tab.c"
     break;
 
   case 155:
-#line 2190 "src/parser.y"
+#line 2194 "src/parser.y"
                                     {
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -4532,11 +4536,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = new BasicType("bool");
 		}
-#line 4536 "parser.tab.c"
+#line 4540 "parser.tab.c"
     break;
 
   case 156:
-#line 2215 "src/parser.y"
+#line 2219 "src/parser.y"
                                        {
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -4562,11 +4566,11 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = new BasicType("bool");
 		}
-#line 4566 "parser.tab.c"
+#line 4570 "parser.tab.c"
     break;
 
   case 157:
-#line 2240 "src/parser.y"
+#line 2244 "src/parser.y"
                                      {
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -4592,29 +4596,28 @@ yyreduce:
 			string temp = string((yyvsp[-1].sval));
 			(yyval.nt)->current_type = new BasicType("bool");
 		}
-#line 4596 "parser.tab.c"
+#line 4600 "parser.tab.c"
     break;
 
   case 158:
-#line 2265 "src/parser.y"
+#line 2269 "src/parser.y"
                     {
-		cout<<"Expression: UnaryExpr\n";
+		cout<<"Expression: UnaryExpr, Value: ";
 			(yyval.nt) = new Node("Expression");
 			(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 			(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 			(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
-			cout<<(yyvsp[0].nt)->current_node_data<<"\n";
 			// cout<<"Unary value"<<endl;
-			// // cout<<$$->current_node_data->value<<endl;
+			  cout<<(yyval.nt)->current_node_data->value<<endl;
 			// cout<<"Unary value"<<endl;
 		}
-#line 4612 "parser.tab.c"
+#line 4615 "parser.tab.c"
     break;
 
   case 159:
-#line 2279 "src/parser.y"
+#line 2282 "src/parser.y"
                         {
-		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
+		cout<<"UnaryExpr: MUL PrimaryExpr "<<endl;
 		(yyval.nt) = new Node("UnaryExpr");
 		(yyval.nt)->add_terminal_children(string((yyvsp[-1].sval)));
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
@@ -4624,13 +4627,13 @@ yyreduce:
 			cout<<"Can not dereference a non-pointer! Exiting..."<<endl;
 			exit(1);
 		}
-		(yyval.nt)->current_type = static_cast<PointerType*>((yyvsp[0].nt)->current_type)->type_of_address_pointing_to->copyClass();
+		(yyval.nt)->current_type = dynamic_cast<PointerType*>((yyvsp[0].nt)->current_type)->type_of_address_pointing_to->copyClass();
 	}
-#line 4630 "parser.tab.c"
+#line 4633 "parser.tab.c"
     break;
 
   case 160:
-#line 2292 "src/parser.y"
+#line 2295 "src/parser.y"
                           {
 			(yyval.nt) = new Node("UnaryExpr");
 			(yyval.nt)->add_terminal_children(string((yyvsp[-1].sval)));
@@ -4639,11 +4642,11 @@ yyreduce:
 			(yyval.nt)->current_node_data->node_child = (yyvsp[0].nt)->current_node_data;
 			(yyval.nt)->current_type = new PointerType((yyvsp[0].nt)->current_type);
 		}
-#line 4643 "parser.tab.c"
+#line 4646 "parser.tab.c"
     break;
 
   case 161:
-#line 2300 "src/parser.y"
+#line 2303 "src/parser.y"
                           {
 			(yyval.nt) = new Node("UnaryExpr");
 			(yyval.nt)->add_terminal_children(string((yyvsp[-1].sval)));
@@ -4652,11 +4655,11 @@ yyreduce:
 			(yyval.nt)->current_node_data->node_child = (yyvsp[0].nt)->current_node_data;
 			(yyval.nt)->current_type = (yyvsp[0].nt)->current_type->copyClass();
 		}
-#line 4656 "parser.tab.c"
+#line 4659 "parser.tab.c"
     break;
 
   case 162:
-#line 2308 "src/parser.y"
+#line 2311 "src/parser.y"
                           {
 			(yyval.nt) = new Node("UnaryExpr");
 			(yyval.nt)->add_terminal_children(string((yyvsp[-1].sval)));
@@ -4665,11 +4668,11 @@ yyreduce:
 			(yyval.nt)->current_node_data->node_child = (yyvsp[0].nt)->current_node_data;
 			(yyval.nt)->current_type = (yyvsp[0].nt)->current_type->copyClass();
 		}
-#line 4669 "parser.tab.c"
+#line 4672 "parser.tab.c"
     break;
 
   case 163:
-#line 2316 "src/parser.y"
+#line 2319 "src/parser.y"
                           {
 			(yyval.nt) = new Node("UnaryExpr");
 			(yyval.nt)->add_terminal_children(string((yyvsp[-1].sval)));
@@ -4678,11 +4681,11 @@ yyreduce:
 			(yyval.nt)->current_node_data->node_child = (yyvsp[0].nt)->current_node_data;
 			(yyval.nt)->current_type = (yyvsp[0].nt)->current_type->copyClass();
 		}
-#line 4682 "parser.tab.c"
+#line 4685 "parser.tab.c"
     break;
 
   case 164:
-#line 2324 "src/parser.y"
+#line 2327 "src/parser.y"
                       {
 		cout<<"UnaryExpr: PrimaryExpr\n";
 		(yyval.nt) = new Node("UnaryExpr");
@@ -4692,25 +4695,26 @@ yyreduce:
 		//cout<<"Primary Value: "<<$$->current_node_data->value<<" "<<$1->current_node_data->value<< endl;
 
 	}
-#line 4696 "parser.tab.c"
+#line 4699 "parser.tab.c"
     break;
 
   case 165:
-#line 2337 "src/parser.y"
+#line 2340 "src/parser.y"
                  {
- 		cout<<" PrimaryExpr: Operand \n";
+ 		cout<<" PrimaryExpr: Operand, Value:";
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		curr->current_node_data = (yyvsp[0].nt)->current_node_data;
 		curr->current_type = (yyvsp[0].nt)->current_type;
 		(yyval.nt) = curr;
+		cout<<(yyval.nt)->current_node_data->value<<endl;
 		//cout<<"Operand Value:"<<$$->current_node_data->value<<endl;
 	}
-#line 4710 "parser.tab.c"
+#line 4714 "parser.tab.c"
     break;
 
   case 166:
-#line 2346 "src/parser.y"
+#line 2350 "src/parser.y"
                    {
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children((yyvsp[0].nt));
@@ -4718,11 +4722,11 @@ yyreduce:
 		curr->current_type = (yyvsp[0].nt)->current_type;
 		(yyval.nt) = curr;
 	}
-#line 4722 "parser.tab.c"
+#line 4726 "parser.tab.c"
     break;
 
   case 167:
-#line 2353 "src/parser.y"
+#line 2357 "src/parser.y"
                                {
  		cout<<"PrimaryExpr: PrimaryExpr Selector\n";
 		(yyval.nt) = new Node("PrimaryExpr");
@@ -4802,11 +4806,11 @@ yyreduce:
 
 
 	}
-#line 4806 "parser.tab.c"
+#line 4810 "parser.tab.c"
     break;
 
   case 168:
-#line 2432 "src/parser.y"
+#line 2436 "src/parser.y"
                             {
  		cout<<"PrimaryExpr Index"<<endl;
  		(yyval.nt) = new Node("PrimaryExpr");
@@ -4849,22 +4853,22 @@ yyreduce:
  		}
 
  	}
-#line 4853 "parser.tab.c"
+#line 4857 "parser.tab.c"
     break;
 
   case 169:
-#line 2474 "src/parser.y"
+#line 2478 "src/parser.y"
                             {
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children((yyvsp[-1].nt));
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt) = curr;
 	}
-#line 4864 "parser.tab.c"
+#line 4868 "parser.tab.c"
     break;
 
   case 170:
-#line 2480 "src/parser.y"
+#line 2484 "src/parser.y"
                                 {
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children((yyvsp[-1].nt));
@@ -4872,54 +4876,54 @@ yyreduce:
 		// curr->add_non_terminal_children($2);
 		(yyval.nt) = curr;
 	}
-#line 4876 "parser.tab.c"
+#line 4880 "parser.tab.c"
     break;
 
   case 171:
-#line 2487 "src/parser.y"
+#line 2491 "src/parser.y"
                                     {
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children((yyvsp[-1].nt));
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt) = curr;
 	}
-#line 4887 "parser.tab.c"
+#line 4891 "parser.tab.c"
     break;
 
   case 172:
-#line 2493 "src/parser.y"
+#line 2497 "src/parser.y"
                                     {
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children((yyvsp[-1].nt));
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt) = curr;
 	}
-#line 4898 "parser.tab.c"
+#line 4902 "parser.tab.c"
     break;
 
   case 173:
-#line 2502 "src/parser.y"
+#line 2506 "src/parser.y"
                                           {
 		Node* curr = new Node("StructLiteral");
 		curr->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt) = curr;
 	}
-#line 4908 "parser.tab.c"
+#line 4912 "parser.tab.c"
     break;
 
   case 174:
-#line 2510 "src/parser.y"
+#line 2514 "src/parser.y"
                                     {
 		Node* curr = new Node("KeyValueList");
 		curr->add_non_terminal_children((yyvsp[-2].nt));
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt) = curr;
 	}
-#line 4919 "parser.tab.c"
+#line 4923 "parser.tab.c"
     break;
 
   case 175:
-#line 2516 "src/parser.y"
+#line 2520 "src/parser.y"
                                                          {
 		Node* curr = new Node("KeyValueList");
 		curr->add_non_terminal_children((yyvsp[-4].nt));
@@ -4927,11 +4931,11 @@ yyreduce:
 		curr->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt) = curr;
 	}
-#line 4931 "parser.tab.c"
+#line 4935 "parser.tab.c"
     break;
 
   case 176:
-#line 2527 "src/parser.y"
+#line 2531 "src/parser.y"
                        {
 		cout<<"Selector:  DOT IDENTIFIER\n";
 		Node* curr = new Node("Selector");
@@ -4941,11 +4945,11 @@ yyreduce:
 
 		(yyval.nt) = curr;
 	}
-#line 4945 "parser.tab.c"
+#line 4949 "parser.tab.c"
     break;
 
   case 177:
-#line 2539 "src/parser.y"
+#line 2543 "src/parser.y"
                                           {
 		Node* curr = new Node("Index");
 		curr->add_non_terminal_children((yyvsp[-1].nt));
@@ -4955,11 +4959,11 @@ yyreduce:
 
 		(yyval.nt) = curr;
 	}
-#line 4959 "parser.tab.c"
+#line 4963 "parser.tab.c"
     break;
 
   case 178:
-#line 2551 "src/parser.y"
+#line 2555 "src/parser.y"
                                                  {
 		Node* curr = new Node("Slice");
 		curr->add_terminal_children(string((yyvsp[-2].sval)));
@@ -4967,31 +4971,31 @@ yyreduce:
 		curr->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt) = curr;
 	}
-#line 4971 "parser.tab.c"
+#line 4975 "parser.tab.c"
     break;
 
   case 179:
-#line 2558 "src/parser.y"
+#line 2562 "src/parser.y"
                                         {
 		Node* curr = new Node("Slice");
 		(yyval.nt) = curr;
 	}
-#line 4980 "parser.tab.c"
+#line 4984 "parser.tab.c"
     break;
 
   case 180:
-#line 2562 "src/parser.y"
+#line 2566 "src/parser.y"
                                                     {
 		Node* curr = new Node("Slice");
 		curr->add_non_terminal_children((yyvsp[-2].nt));
 		curr->add_terminal_children(string((yyvsp[-1].sval)));
 		(yyval.nt) = curr;
 	}
-#line 4991 "parser.tab.c"
+#line 4995 "parser.tab.c"
     break;
 
   case 181:
-#line 2568 "src/parser.y"
+#line 2572 "src/parser.y"
                                                               {
 		Node* curr = new Node("Slice");
 		curr->add_non_terminal_children((yyvsp[-3].nt));
@@ -4999,11 +5003,11 @@ yyreduce:
 		curr->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt) = curr;
 	}
-#line 5003 "parser.tab.c"
+#line 5007 "parser.tab.c"
     break;
 
   case 182:
-#line 2575 "src/parser.y"
+#line 2579 "src/parser.y"
                                                                     {
 		Node* curr = new Node("Slice");
 		curr->add_terminal_children(string((yyvsp[-4].sval)));
@@ -5012,11 +5016,11 @@ yyreduce:
 		curr->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt) = curr;
 	}
-#line 5016 "parser.tab.c"
+#line 5020 "parser.tab.c"
     break;
 
   case 183:
-#line 2583 "src/parser.y"
+#line 2587 "src/parser.y"
                                                                                {
 		Node* curr = new Node("Slice");
 		curr->add_non_terminal_children((yyvsp[-5].nt));
@@ -5026,11 +5030,11 @@ yyreduce:
 		curr->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt) = curr;
 	}
-#line 5030 "parser.tab.c"
+#line 5034 "parser.tab.c"
     break;
 
   case 184:
-#line 2595 "src/parser.y"
+#line 2599 "src/parser.y"
                                                                          {
 		Node* curr = new Node("MakeExpr");
 		curr->add_non_terminal_children((yyvsp[-5].nt));
@@ -5045,11 +5049,11 @@ yyreduce:
 
 		(yyval.nt) = curr;
 	}
-#line 5049 "parser.tab.c"
+#line 5053 "parser.tab.c"
     break;
 
   case 185:
-#line 2609 "src/parser.y"
+#line 2613 "src/parser.y"
                                                           {
 		Node* curr = new Node("MakeExpr");
 		curr->add_non_terminal_children((yyvsp[-3].nt));
@@ -5061,11 +5065,11 @@ yyreduce:
 		curr->current_node_data->node_child = (yyvsp[-1].nt)->current_node_data;
 		(yyval.nt) = curr;
 	}
-#line 5065 "parser.tab.c"
+#line 5069 "parser.tab.c"
     break;
 
   case 186:
-#line 2620 "src/parser.y"
+#line 2624 "src/parser.y"
                                          {
 		Node* curr = new Node("MakeExpr");
 		curr->add_non_terminal_children((yyvsp[-1].nt));
@@ -5074,11 +5078,11 @@ yyreduce:
 		curr->current_node_data = new NodeData("Make");
 		(yyval.nt) = curr;
 	}
-#line 5078 "parser.tab.c"
+#line 5082 "parser.tab.c"
     break;
 
   case 187:
-#line 2628 "src/parser.y"
+#line 2632 "src/parser.y"
                                         {
 		Node* curr = new Node("NewExpr");
 		curr->add_non_terminal_children((yyvsp[-1].nt));
@@ -5087,30 +5091,30 @@ yyreduce:
 		curr->current_node_data = new NodeData("New");
 		(yyval.nt) = curr;
 	}
-#line 5091 "parser.tab.c"
+#line 5095 "parser.tab.c"
     break;
 
   case 188:
-#line 2639 "src/parser.y"
+#line 2643 "src/parser.y"
                                       {
 		Node* curr = new Node("TypeAssertion");
 		curr->add_non_terminal_children((yyvsp[-1].nt));
 		(yyval.nt) = curr;
 	}
-#line 5101 "parser.tab.c"
+#line 5105 "parser.tab.c"
     break;
 
   case 189:
-#line 2647 "src/parser.y"
+#line 2651 "src/parser.y"
                              {
 		Node* curr = new Node("Arguments");
 		(yyval.nt) = curr;
 	}
-#line 5110 "parser.tab.c"
+#line 5114 "parser.tab.c"
     break;
 
   case 190:
-#line 2651 "src/parser.y"
+#line 2655 "src/parser.y"
                                               {
 		Node* curr = new Node("Arguments");
 		curr->add_non_terminal_children((yyvsp[-1].nt));
@@ -5120,11 +5124,11 @@ yyreduce:
 
 		(yyval.nt) = curr;
 	}
-#line 5124 "parser.tab.c"
+#line 5128 "parser.tab.c"
     break;
 
   case 191:
-#line 2660 "src/parser.y"
+#line 2664 "src/parser.y"
                                                       {
 		Node* curr = new Node("Arguments");
 		curr->add_non_terminal_children((yyvsp[-2].nt));
@@ -5135,26 +5139,26 @@ yyreduce:
 
 		(yyval.nt) = curr;
 	}
-#line 5139 "parser.tab.c"
+#line 5143 "parser.tab.c"
     break;
 
   case 192:
-#line 2674 "src/parser.y"
+#line 2678 "src/parser.y"
                    {
-		cout<<"ExpressionList: Expression\n";
+		cout<<"ExpressionList: Expression, Value: ";
 		Node* curr = new Node("ExpressionList");
 		curr->add_non_terminal_children((yyvsp[0].nt));
 
 		curr->current_node_data = (yyvsp[0].nt)->current_node_data;
 		curr->current_type = (yyvsp[0].nt)->current_type;
-		// cout<<
+		 cout<<(yyval.nt)->current_node_data->value<<endl;
 		(yyval.nt) = curr;
 	}
-#line 5154 "parser.tab.c"
+#line 5158 "parser.tab.c"
     break;
 
   case 193:
-#line 2684 "src/parser.y"
+#line 2688 "src/parser.y"
                                           {
 		(yyval.nt) = new Node("ExpressionList");
 		(yyval.nt)->add_non_terminal_children((yyvsp[-2].nt));
@@ -5165,11 +5169,11 @@ yyreduce:
 		((yyval.nt)->last_current_type())->next_type = (yyvsp[0].nt)->current_type;
 
 	}
-#line 5169 "parser.tab.c"
+#line 5173 "parser.tab.c"
     break;
 
   case 194:
-#line 2702 "src/parser.y"
+#line 2706 "src/parser.y"
                       {
 		(yyval.nt) = new Node("TypeDecl");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
@@ -5177,22 +5181,22 @@ yyreduce:
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 	}
-#line 5181 "parser.tab.c"
+#line 5185 "parser.tab.c"
     break;
 
   case 195:
-#line 2728 "src/parser.y"
+#line 2732 "src/parser.y"
                 {
 		(yyval.nt) = new Node("TypeSpec");
 		(yyval.nt)->add_non_terminal_children((yyvsp[0].nt));
 		(yyval.nt)->current_node_data = (yyvsp[0].nt)->current_node_data;
 		(yyval.nt)->current_type = (yyvsp[0].nt)->current_type;
 	}
-#line 5192 "parser.tab.c"
+#line 5196 "parser.tab.c"
     break;
 
   case 196:
-#line 2737 "src/parser.y"
+#line 2741 "src/parser.y"
                         {
 		(yyval.nt) =  new Node("TypeDef");
 		(yyval.nt)->add_terminal_children((yyvsp[-1].sval));
@@ -5200,11 +5204,11 @@ yyreduce:
 		tt->add_in_type_table(string((yyvsp[-1].sval)), (yyvsp[0].nt)->current_type);
 		(yyval.nt)->current_node_data = new NodeData("TypeDef");
 	}
-#line 5204 "parser.tab.c"
+#line 5208 "parser.tab.c"
     break;
 
   case 197:
-#line 2747 "src/parser.y"
+#line 2751 "src/parser.y"
                                              {
 		Node* curr = new Node("MapType");
 		curr->add_terminal_children(string((yyvsp[-4].sval)));
@@ -5218,11 +5222,11 @@ yyreduce:
 		curr->current_type = new MapType(key,value);
 		(yyval.nt) = curr;
 	}
-#line 5222 "parser.tab.c"
+#line 5226 "parser.tab.c"
     break;
 
   case 198:
-#line 2763 "src/parser.y"
+#line 2767 "src/parser.y"
                                                   {
 		Node* curr = new Node("StructType");
 		curr->add_terminal_children(string((yyvsp[-3].sval)));
@@ -5233,11 +5237,11 @@ yyreduce:
 
 		(yyval.nt) = curr;
 	}
-#line 5237 "parser.tab.c"
+#line 5241 "parser.tab.c"
     break;
 
   case 199:
-#line 2774 "src/parser.y"
+#line 2778 "src/parser.y"
                                       {
 		Node* curr = new Node("StructType");
 		curr->add_terminal_children(string((yyvsp[-2].sval)));
@@ -5247,22 +5251,22 @@ yyreduce:
 
 		(yyval.nt) = curr;
 	}
-#line 5251 "parser.tab.c"
+#line 5255 "parser.tab.c"
     break;
 
   case 200:
-#line 2786 "src/parser.y"
+#line 2790 "src/parser.y"
                          {
 		Node* curr = new Node("FieldDeclList");
 		curr->current_node_data = (yyvsp[-1].nt)->current_node_data;
 		curr->current_type = (yyvsp[-1].nt)->current_type;
 		(yyval.nt) = curr;
 	}
-#line 5262 "parser.tab.c"
+#line 5266 "parser.tab.c"
     break;
 
   case 201:
-#line 2792 "src/parser.y"
+#line 2796 "src/parser.y"
                                          {
 		Node* curr = new Node("FieldDeclList");
 		curr->add_non_terminal_children((yyvsp[-2].nt));
@@ -5284,11 +5288,11 @@ yyreduce:
         curr->current_type = new StructType(mem1);
 		(yyval.nt) = curr;
 	}
-#line 5288 "parser.tab.c"
+#line 5292 "parser.tab.c"
     break;
 
   case 202:
-#line 2816 "src/parser.y"
+#line 2820 "src/parser.y"
                                    {
 		Node* curr = new Node("FieldDecl");
 		curr->add_non_terminal_children((yyvsp[-2].nt));
@@ -5310,11 +5314,11 @@ yyreduce:
 		curr->current_type = new StructType(m);
 		(yyval.nt) = curr;
 		}
-#line 5314 "parser.tab.c"
+#line 5318 "parser.tab.c"
     break;
 
   case 203:
-#line 2837 "src/parser.y"
+#line 2841 "src/parser.y"
                               {
 		Node* curr = new Node("FieldDecl");
 		curr->add_non_terminal_children((yyvsp[-1].nt));
@@ -5334,11 +5338,11 @@ yyreduce:
 		curr->current_type = new StructType(m);
 		(yyval.nt) = curr;
 		}
-#line 5338 "parser.tab.c"
+#line 5342 "parser.tab.c"
     break;
 
   case 204:
-#line 2859 "src/parser.y"
+#line 2863 "src/parser.y"
                      {
 		Node* curr = new Node("PointerType");
 		curr->add_terminal_children((yyvsp[-1].sval));
@@ -5353,11 +5357,11 @@ yyreduce:
 		curr-> current_type = new PointerType((yyvsp[0].nt)->current_type->copyClass());
 		(yyval.nt) = curr;
 	}
-#line 5357 "parser.tab.c"
+#line 5361 "parser.tab.c"
     break;
 
   case 205:
-#line 2876 "src/parser.y"
+#line 2880 "src/parser.y"
             {
 		Node* curr = new Node("BaseType");
 		curr->add_non_terminal_children((yyvsp[0].nt));
@@ -5367,11 +5371,11 @@ yyreduce:
 
 		(yyval.nt) = curr;
 	}
-#line 5371 "parser.tab.c"
+#line 5375 "parser.tab.c"
     break;
 
   case 206:
-#line 2888 "src/parser.y"
+#line 2892 "src/parser.y"
                                                {
 		cout<<"ArrayType : LEFTSQUARE Expression RIGHTSQUARE Type"<<endl;
 		 Node* curr = new Node("ArrayType");
@@ -5409,11 +5413,11 @@ yyreduce:
 		 }
 		 (yyval.nt) = curr;
 		 }
-#line 5413 "parser.tab.c"
+#line 5417 "parser.tab.c"
     break;
 
   case 207:
-#line 2929 "src/parser.y"
+#line 2933 "src/parser.y"
                  {
 		cout<<"Literal:BasicLit\n";
 		 Node* curr = new Node("Literal");
@@ -5423,11 +5427,11 @@ yyreduce:
 		 (yyval.nt) = curr;
 		 cout<<((yyval.nt)->current_type)<<"\n";
 		 }
-#line 5427 "parser.tab.c"
+#line 5431 "parser.tab.c"
     break;
 
   case 208:
-#line 2938 "src/parser.y"
+#line 2942 "src/parser.y"
                  {
 		 Node* curr =new Node("Literal");
 		 curr->add_non_terminal_children((yyvsp[0].nt));
@@ -5435,11 +5439,11 @@ yyreduce:
 		 curr->current_type = (yyvsp[0].nt)->current_type;
 		 (yyval.nt) = curr;
 		 }
-#line 5439 "parser.tab.c"
+#line 5443 "parser.tab.c"
     break;
 
   case 209:
-#line 2948 "src/parser.y"
+#line 2952 "src/parser.y"
                     {
 		 Node* curr = new Node("BasicLit");
 		 curr->add_terminal_children(string((yyvsp[0].sval)));
@@ -5447,11 +5451,11 @@ yyreduce:
 		 curr->current_type = new BasicType("int");
 		 (yyval.nt) = curr;
 		 }
-#line 5451 "parser.tab.c"
+#line 5455 "parser.tab.c"
     break;
 
   case 210:
-#line 2955 "src/parser.y"
+#line 2959 "src/parser.y"
                     {
 		 Node* curr = new Node("BasicLit");
 		 curr->add_terminal_children(string((yyvsp[0].sval)));
@@ -5459,11 +5463,11 @@ yyreduce:
 		 curr->current_type = new BasicType("float");
 		 (yyval.nt) = curr;
 		 }
-#line 5463 "parser.tab.c"
+#line 5467 "parser.tab.c"
     break;
 
   case 211:
-#line 2962 "src/parser.y"
+#line 2966 "src/parser.y"
                     {
 		 Node* curr = new Node("BasicLit");
 		 curr->add_terminal_children((yyvsp[0].sval));
@@ -5471,11 +5475,11 @@ yyreduce:
 		 curr->current_type = new BasicType("byte");
 		 (yyval.nt) = curr;
 		 }
-#line 5475 "parser.tab.c"
+#line 5479 "parser.tab.c"
     break;
 
   case 212:
-#line 2969 "src/parser.y"
+#line 2973 "src/parser.y"
                  {
 		 Node* curr = new Node("BasicLit");
 		 curr->add_non_terminal_children((yyvsp[0].nt));
@@ -5485,11 +5489,11 @@ yyreduce:
 		cout<<"BasicLit:String ";
 		 cout<<((yyval.nt)->current_type)<<"\n";
 		 }
-#line 5489 "parser.tab.c"
+#line 5493 "parser.tab.c"
     break;
 
   case 213:
-#line 2978 "src/parser.y"
+#line 2982 "src/parser.y"
                     {
 		 Node* curr = new Node("BasicLit");
 		 curr->add_terminal_children(string((yyvsp[0].sval)));
@@ -5497,11 +5501,11 @@ yyreduce:
 		 curr->current_type = new BasicType("bool");
 		 (yyval.nt) = curr;
 		 }
-#line 5501 "parser.tab.c"
+#line 5505 "parser.tab.c"
     break;
 
   case 214:
-#line 2985 "src/parser.y"
+#line 2989 "src/parser.y"
                     {
 		 Node* curr = new Node("BasicLit");
 		 curr->add_terminal_children(string((yyvsp[0].sval)));
@@ -5509,21 +5513,21 @@ yyreduce:
 		 curr->current_type = new BasicType("bool");
 		 (yyval.nt) = curr;
 		 }
-#line 5513 "parser.tab.c"
+#line 5517 "parser.tab.c"
     break;
 
   case 215:
-#line 2995 "src/parser.y"
+#line 2999 "src/parser.y"
                    { Node* curr = new Node("String");
 			 curr->add_terminal_children(string((yyvsp[0].sval)));
 			 curr->current_node_data = new NodeData((yyvsp[0].sval));
 			 curr->current_type = new BasicType("string");
 			 (yyval.nt) = curr;}
-#line 5523 "parser.tab.c"
+#line 5527 "parser.tab.c"
     break;
 
   case 216:
-#line 3000 "src/parser.y"
+#line 3004 "src/parser.y"
                              {
 			cout<<"INTERPRETED_STRING: "<<string((yyvsp[0].sval))<<endl;
 			 Node* curr = new Node("String");
@@ -5532,11 +5536,11 @@ yyreduce:
 			 curr->current_type = new BasicType("string");
 			 (yyval.nt) = curr;
 		}
-#line 5536 "parser.tab.c"
+#line 5540 "parser.tab.c"
     break;
 
 
-#line 5540 "parser.tab.c"
+#line 5544 "parser.tab.c"
 
       default: break;
     }
@@ -5768,7 +5772,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 3010 "src/parser.y"
+#line 3014 "src/parser.y"
 
 
 
