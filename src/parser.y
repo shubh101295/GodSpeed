@@ -1085,14 +1085,13 @@ CompositeLit:
         $$ = new Node("CompositeLit");
         $$->add_non_terminal_children($1);
         $$->add_non_terminal_children($2);
-        int num;
+        int num=0;
         DataType *iter;
         ArrayType* array;
         SliceType* slice;
         switch ($1->current_type->current_data_type) {
             case _ARRAY:
                 array = dynamic_cast<ArrayType*>($1->current_type);
-                num = 0;
                 iter = $2->current_type;
                 while (iter != NULL) {
                     if (iter->getDataType() != array->array_index_type->getDataType()) {
@@ -1130,7 +1129,7 @@ CompositeLit:
                 $$->current_node_data->node_child->next_data->node_child = $2->current_node_data;
                 $$->current_type = $1->current_type->copyClass();
             default:
-                cerr << "Composite type not yet supported" << endl;
+                cout << "Composite type not yet supported" << endl;
                 exit(1);
         }
     }
@@ -2380,6 +2379,7 @@ UnaryExpr:
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
+		cout<<"HER"<<endl;
 		//cout<<"Primary Value: "<<$$->current_node_data->value<<" "<<$1->current_node_data->value<< endl;
 
 	}
@@ -2484,7 +2484,7 @@ UnaryExpr:
 
 	}
  	| PrimaryExpr Index {
- 		cout<<"PrimaryExpr Index"<<endl;
+ 		cout<<"PrimaryExpr: PrimaryExpr Index"<<endl;
  		$$ = new Node("PrimaryExpr");
  		$$->add_non_terminal_children($1);
  		$$->add_non_terminal_children($2);
@@ -2499,7 +2499,8 @@ UnaryExpr:
  			if($2->current_type->getDataType() != "int"){
  				cout<<"Index can not be integer. Exiting.."<<endl;
  				exit(1);
- 			}
+	 			}
+	 		}
  			else if(t->current_data_type == _ARRAY){
  				ArrayType *tp = (ArrayType *)t;
 	 			$$->current_type = tp->array_index_type->copyClass();
@@ -2522,7 +2523,6 @@ UnaryExpr:
 
  			$$->current_node_data = $1->current_node_data;
  			$$->current_node_data->value = true; 
- 		}
 
  	}
  	| PrimaryExpr Slice {
@@ -2995,6 +2995,7 @@ ArrayType:
 			 }
 			 if(is_basic)
 			 {
+			 	cout<<val_stored<<endl;
 				 DataType* tp = $4->current_type->copyClass();
 				 curr->current_type = new ArrayType(tp, val_stored);
 			 }
