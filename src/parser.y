@@ -204,7 +204,7 @@ TopLevelDeclList:
 		$$->add_non_terminal_children($2);
 		$$->current_node_data = $1 -> current_node_data;
 		if($$->last_current_node_data() == NULL){
-			cout<<"NOT NULL"<<endl;
+			cout<<"NULL"<<endl;
 		}
 		($$->last_current_node_data())->next_data = $2->current_node_data;
 	}
@@ -565,9 +565,14 @@ Assignment:
 
 		NodeData* left_data = $1->current_node_data;
 		NodeData* right_data = $3->current_node_data;
-
 		while(left_data || right_type){
 			cout<<"ENTERED!"<<endl;
+			if(left_data){
+				cout<<"LEFT: "<<left_data->data_name<<endl;
+			}
+			if(right_type){
+				cout<<"RIGHT"<<right_type->getDataType()<<endl;
+			}
 			if(!left_data || !right_type){
 				cout<<"[unpacking error], '=' operator expected same number of operands on LHS and RHS";
 				exit(1);
@@ -579,16 +584,18 @@ Assignment:
 			}
 
 			if(left_data -> value){
+				cout<<"Here 1"<<endl;
+				string j = name;
 				name = (left_data->node_child)? left_data->node_child->data_name:left_data->data_name;
+				if(name==j) cout<<"UNCHANGED!\n";
 			}
-
 			if(right_type && right_type->getDataType() == "undefined"){
 				cout<<"[Undeclared Identifier]"<<"Identifier in RHS undeclared"<<endl;
 				exit(1);
 			}
 
 			if(!st->get_type(name)){
-				cout<<"[Undeclared Identifier]"<<name<<" not declared yet!";
+				cout<<"[Undeclared Identifier] "<<name<<" not declared yet!";
 				exit(1);
 			}
 			else{
@@ -2245,6 +2252,7 @@ UnaryExpr:
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
+
 	}
 
  	;
@@ -2271,6 +2279,10 @@ UnaryExpr:
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children($1);
 		curr->add_non_terminal_children($2);
+		curr->current_node_data = new NodeData("Access");
+		$$->current_node_data->node_child = $1->current_node_data;
+		$$->current_node_data->node_child->next_data = $2->current_node_data;
+		$$->current_node_data->value = true;
 		// still remaining
 		// curr->current_type = isValidMemberon($1->current_type)
 		$$ = curr;
