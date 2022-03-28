@@ -198,12 +198,15 @@ ImportPath:
 
 TopLevelDeclList:
 	TopLevelDeclList TopLevelDecl SCOLON  {
-		Node* curr = new Node("TopLevelDeclList");
-		curr->add_non_terminal_children($1);
-		curr->add_non_terminal_children($2);
-		curr->current_node_data = $1 -> current_node_data;
-		(curr->last_current_node_data())->next_data = $2->current_node_data;
-		$$ = curr;
+		cout<<"TopLevelDeclList: TopLevelDeclList TopLevelDecl SCOLON\n";
+		$$ = new Node("TopLevelDeclList");
+		$$->add_non_terminal_children($1);
+		$$->add_non_terminal_children($2);
+		$$->current_node_data = $1 -> current_node_data;
+		if($$->last_current_node_data() == NULL){
+			cout<<"NOT NULL"<<endl;
+		}
+		($$->last_current_node_data())->next_data = $2->current_node_data;
 	}
 	| TopLevelDecl SCOLON {
 		Node* curr = new Node("TopLevelDeclList");
@@ -423,7 +426,7 @@ Declaration:
 // might change
 FunctionDecl:
 	FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock {
-
+		cout<<"FunctionDecl: FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock \n";
 		Node* curr = new Node("FunctionDecl");
 		curr->add_terminal_children(string($2));
 		curr->add_non_terminal_children($4);
@@ -551,6 +554,8 @@ IncDecStmt:
 
 Assignment:
 	ExpressionList ASSGN_OP ExpressionList {
+		cout<<"Assignment: ExpressionList ASSGN_OP ExpressionList "<<($$->current_node_data==NULL)<<"\n";
+
 		$$ = new Node("Assignment");
 		$$->add_non_terminal_children($1);
 		$$->add_terminal_children(string($2));
@@ -559,9 +564,10 @@ Assignment:
 		DataType* right_type = $3->current_type;
 
 		NodeData* left_data = $1->current_node_data;
-		NodeData* right_data = $1->current_node_data;
+		NodeData* right_data = $3->current_node_data;
 
 		while(left_data || right_type){
+			cout<<"ENTERED!"<<endl;
 			if(!left_data || !right_type){
 				cout<<"[unpacking error], '=' operator expected same number of operands on LHS and RHS";
 				exit(1);
@@ -605,7 +611,6 @@ Assignment:
 		$$->current_node_data = new NodeData(string($2));
 		
 		$$->current_node_data->node_child = parLeft;
-		cout<<"Assignment: ExpressionList ASSGN_OP ExpressionList "<<($$->current_node_data==NULL)<<"\n";
 	}
 	;
 
@@ -1077,6 +1082,7 @@ Type:
 
 Operand:
 	Literal {
+		cout<<"Operand: Literal"<<endl;
 		$$ = new Node("Operand");
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
@@ -1616,18 +1622,18 @@ ForStmt:
 		it = it->next_data;
 		it->node_child= $5->current_node_data;
 	}
-	| FOR OpenBlock EmptyStmt Empty forMarker Expression Empty EmptyStmt Block forMarkerEnd CloseBlock {
-		$$ = new Node("ForStmt");
-		$$->add_non_terminal_children($3);
-		$$->add_non_terminal_children($6);
-		$$->add_non_terminal_children($8);
-		$$->add_non_terminal_children($9);
+	//| FOR OpenBlock EmptyStmt Empty forMarker Expression Empty EmptyStmt Block forMarkerEnd CloseBlock {
+	//	$$ = new Node("ForStmt");
+	//	$$->add_non_terminal_children($3);
+	//	$$->add_non_terminal_children($6);
+	//	$$->add_non_terminal_children($8);
+	//	$$->add_non_terminal_children($9);
 
-		$$ -> current_node_data = new NodeData("For");
-		NodeData* it= $$->current_node_data;
-		it->node_child = new NodeData("ForBody");
-		it->node_child->node_child = $9->current_node_data;
-	}
+	//	$$ -> current_node_data = new NodeData("For");
+	//	NodeData* it= $$->current_node_data;
+	//	it->node_child = new NodeData("ForBody");
+	//	it->node_child->node_child = $9->current_node_data;
+	//}
 	;
 
 //ForClause:
@@ -2269,7 +2275,12 @@ UnaryExpr:
 		// curr->current_type = isValidMemberon($1->current_type)
 		$$ = curr;
 	}
- 	| PrimaryExpr Index {cout<<"PrimaryExpr:Index\n";}
+ 	| PrimaryExpr Index {
+ 		$$ = new Node("PrimaryExpr");
+ 		$$->add_non_terminal_children($1);
+ 		$$->add_non_terminal_children($2);
+
+ 	}
  	| PrimaryExpr Slice {
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children($1);
@@ -2529,6 +2540,8 @@ TypeSpec:
 	TypeDef {
 		$$ = new Node("TypeSpec");
 		$$->add_non_terminal_children($1);
+		$$->current_node_data = $1->current_node_data;
+		$$->current_type = $1->current_type;
 	}
 	;
 // remaining
@@ -2541,6 +2554,7 @@ TypeSpec:
 TypeDef:
 	IDENTIFIER Type {
 		$$ =  new Node("TypeDef");
+		$$->add_terminal_children($1);
 		$$->add_non_terminal_children($2);
 		tt->add_in_type_table(string($1), $2->current_type);
 		$$->current_node_data = new NodeData("TypeDef");
@@ -2605,9 +2619,10 @@ FieldDeclList:
 		for(auto& it: mem2) {
             string key = it.first;
 			DataType* value = it.second->copyClass();
-//            if(mem1.find(key) == mem1.end()) {
-// Remaining                ("Redeclaration of struct member: ", key, @2);
-//            }
+            if(mem1.find(key) != mem1.end()) {
+                 cout<<"Redeclaration of struct member: "<<endl;;
+                 exit(1);
+            }
 			mem1[key] = value;
         }
         curr->current_type = new StructType(mem1);
@@ -2689,6 +2704,7 @@ BaseType:
 // remaining: Please check if this is correct, TK and SA
 ArrayType:
 	LEFTSQUARE Expression RIGHTSQUARE Type {
+		cout<<"ArrayType : LEFTSQUARE Expression RIGHTSQUARE Type"<<endl;
 		 Node* curr = new Node("ArrayType");
 		 curr->add_non_terminal_children($2);
 		 curr->add_non_terminal_children($4);
@@ -2794,10 +2810,13 @@ String:
 			 curr->add_terminal_children(string($1));
 			 curr->current_node_data = new NodeData($1);
 			 $$ = curr;}
-	| INTERPRETED_STRING { Node* curr = new Node("String");
+	| INTERPRETED_STRING {
+			cout<<"INTERPRETED_STRING: "<<string($1)<<endl;
+			 Node* curr = new Node("String");
 			 curr->add_terminal_children(string($1));
 			 curr->current_node_data = new NodeData($1);
-			 $$ = curr;}
+			 $$ = curr;
+			}
 	;
 
 %%
@@ -2810,6 +2829,12 @@ int main (int argc, char **argv) {
 
 	yyin = fopen(argv[1], "r");	//taking input as argument
 	yyparse ( );
+	tt->add_in_type_table("void", new BasicType("void"));
+    tt->add_in_type_table("int", new BasicType("int"));
+    tt->add_in_type_table("bool", new BasicType("bool"));
+    tt->add_in_type_table("byte", new BasicType("byte"));
+    tt->add_in_type_table("float", new BasicType("float"));
+    tt->add_in_type_table("string", new BasicType("string"));
 	cout<<"THE GIVEN FILE WAS PARSABLE \n";
 
 }
