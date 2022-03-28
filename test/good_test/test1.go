@@ -23,7 +23,7 @@ type Transaction struct {
 
 func main() {
 	var in Input
-	in.TransactionId = "13457"
+	in.TransactzionId = "13457"
 	// in.Index = 0
 	// in.Signature = "abcd"
 
@@ -36,7 +36,7 @@ func main() {
 	// txn.Inputs[0] = in
 	// txn.Outputs[0] = out
 
-	fmt.Println("Transaction ID: ", txn.Id)
-	fmt.Println("InputID: ", txn.Inputs[0].TransactionId)
-	fmt.Println("Recipient: ", txn.Outputs[0].Recipient)
+	// fmt.Println("Transaction ID: ", txn.Id)
+	// fmt.Println("InputID: ", txn.Inputs[0].TransactionId)
+	// fmt.Println("Recipient: ", txn.Outputs[0].Recipient)
 }

@@ -2323,13 +2323,13 @@ UnaryExpr:
 		curr->add_non_terminal_children($1);
 		curr->add_non_terminal_children($2);
 		curr->current_node_data = new NodeData("Access");
+		$$ = curr;
 		$$->current_node_data->node_child = $1->current_node_data;
 		$$->current_node_data->node_child->next_data = $2->current_node_data;
 		$$->current_node_data->value = true;
 		cout<<"Primary Expr Value Selector: "<<$$->current_node_data->value<<endl;
 		// still remaining
 		// curr->current_type = isValidMemberon($1->current_type)
-		$$ = curr;
 	}
  	| PrimaryExpr Index {
  		$$ = new Node("PrimaryExpr");
