@@ -23,7 +23,7 @@ type Transaction struct {
 
 func main() {
 	var in Input
-	in.TransactzionId = "13457"
+	in.TransactionId = "13457"
 	// in.Index = 0
 	// in.Signature = "abcd"
 
