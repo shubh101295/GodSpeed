@@ -1277,7 +1277,6 @@ ReturnStmt:
 	}
 	;
 
-// remaining
 BreakStmt:
 	BREAK {
 		Node* curr = new Node("BreakStmt");
@@ -2350,6 +2349,41 @@ UnaryExpr:
  		$$ = new Node("PrimaryExpr");
  		$$->add_non_terminal_children($1);
  		$$->add_non_terminal_children($2);
+
+ 		DataType* t = $1->current_type;
+ 		if(t->current_data_type == _POINTER){
+ 			t = dynamic_cast<PointerType*>(t)->type_of_address_pointing_to;
+ 		}
+ 		if(t->current_data_type == _SLICE){
+ 			SliceType *tp = (SliceType *)t;
+ 			$$->current_type = tp->slice_base->copyClass();
+ 			if($2->current_type->getDataType() != "int"){
+ 				cout<<"Index can not be integer. Exiting.."<<endl;
+ 				exit(1);
+ 			}
+ 			else if(t->current_data_type == _ARRAY){
+ 				ArrayType *tp = (ArrayType *)t;
+	 			$$->current_type = tp->array_index_type->copyClass();
+	 			if($2->current_type->getDataType() != "int"){
+	 				cout<<"Index can not be integer. Exiting.."<<endl;
+	 				exit(1);
+	 			}	
+ 			}
+ 			else if(t->current_data_type == _MAP){
+ 				MapType *tp = (MapType *)t;
+	 			if($2->current_type->getDataType() != tp->key_datatype->getDataType()){
+	 				cout<<"Expected key type : [ "<<tp->key_datatype->getDataType()<<" ]. Found: ["<<$2->current_type->getDataType() <<endl;
+	 				exit(1);
+	 			}
+ 			}
+ 			else{
+ 				cout<<"Tried to index something of type: [ "<<t->getDataType()<<" ]."<<endl;
+ 				exit(1);
+ 			}
+
+ 			$$->current_node_data = $1->current_node_data;
+ 			$$->current_node_data->value = true; 
+ 		}
 
  	}
  	| PrimaryExpr Slice {
