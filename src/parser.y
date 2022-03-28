@@ -2532,11 +2532,44 @@ UnaryExpr:
 		$$ = curr;
 	}
  	| PrimaryExpr Arguments {
-		Node* curr = new Node("PrimaryExpr");
-		curr->add_non_terminal_children($1);
-		// still remaining
-		// curr->add_non_terminal_children($2);
-		$$ = curr;
+		$$ = new Node("PrimaryExpr");
+		$$->add_non_terminal_children($1);
+		$$->add_non_terminal_children($2);
+		$$->current_node_data = new NodeData("FunctionCall");
+		$$->current_node_data->node_child = $1->current_node_data;
+		$$->current_node_data->node_child->next_data = $2->current_node_data;
+		if($1->current_type->current_data_type != _FUNCTION){
+			cout<<$1->current_type->getDataType()<<" is not a function\n";
+			exit(1);
+		}
+		int pos=1;
+		auto fxn = dynamic_cast<FunctionType *>($1->current_type);
+		DataType* argType = $2->current_type;
+		for(auto req_arg_type: fxn->argument_types){
+			cout<<req_arg_type->getDataType()<<endl;
+			if(argType == NULL){
+				cout<<"Insufficient number of arguments for function "<<endl;
+				exit(1);
+			}
+			if(argType->getDataType()!= req_arg_type->getDataType()){
+				cout<<"[Type Mismatch] at position: " << pos<<". Expected arg type: "<<req_arg_type->getDataType()<<" . Found Type: "<<argType->getDataType()<<endl;
+				exit(1);
+			}
+			argType = argType -> next_type;
+			pos++;
+		}
+		if(argType){
+			cout<<"Extra arguments provided to function"<<endl;
+			exit(1);
+		}
+
+		DataType* head = new BasicType("");
+		DataType* temp = head;
+		for(auto x: fxn->return_type){
+			head -> next_type = x;
+			head = head->next_type; 
+		}
+		$$->current_type = temp->next_type;
 	}
  	| OperandName StructLiteral {
 		Node* curr = new Node("PrimaryExpr");

@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func area(length, width int) int {
+func area(length int, width int) int {
 
 	Ar := length * width
 	return Ar
