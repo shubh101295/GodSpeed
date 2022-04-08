@@ -5,6 +5,8 @@
 	#include "tables.hpp"
 	#include "datatypes.hpp"
 	#include "dot_generator.hpp"
+	#include "tac.hpp"
+	#include "place.hpp"
 	#include "parser.tab.h"
 	using namespace std;
 

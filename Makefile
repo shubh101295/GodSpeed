@@ -5,8 +5,10 @@ all:
 	g++ ./src/node.cpp -c -g -std=c++14 -Wno-write-strings -o ./bin/node.out
 	g++ ./src/datatypes.cpp -c -g -std=c++14 -Wno-write-strings -o ./bin/datatypes.out
 	g++ ./src/tables.cpp -c -g -std=c++14 -Wno-write-strings -o ./bin/tables.out
+	g++ ./src/place.cpp -c -g -std=c++14 -Wno-write-strings -o ./bin/place.out
+	g++ ./src/tac.cpp -c -g -std=c++14 -Wno-write-strings -o ./bin/tac.out
 
-	g++ src/parser.tab.h src/lex.yy.c src/parser.tab.c ./bin/node.out ./bin/datatypes.out ./bin/tables.out -ll -o bin/parser
+	g++ src/parser.tab.h src/lex.yy.c src/parser.tab.c ./bin/node.out ./bin/place.out ./bin/tac.out ./bin/datatypes.out ./bin/tables.out -ll -o bin/parser
 	# python3 src/graph.py parser.output
 
 clean:
