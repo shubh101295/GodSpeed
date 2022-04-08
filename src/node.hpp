@@ -4,6 +4,8 @@
 
 #include<bits/stdc++.h>
 #include "datatypes.hpp"
+#include "place.hpp"
+#include "tac.hpp"
 using namespace std;
 
 
@@ -18,7 +20,7 @@ struct NodeData {
 	NodeData *node_child;
 	bool value;
 
-	NodeData(string _data_name): data_name(_data_name), next_data(NULL), value(false) { cout<<"NodeData "<<_data_name<<"\n";};
+	NodeData(string _data_name): data_name(_data_name), next_data(NULL),node_child(NULL), value(false) { cout<<"NodeData "<<_data_name<<"\n";};
 	NodeData* last_next_child();
 };
 
@@ -43,14 +45,19 @@ struct Node{
 	vector<NodeChildren> current_node_children;
 	NodeData* current_node_data;
 	DataType* current_type;
+	Place * current_place;
+	int current_code_count;
+	map<int,Instruction*> current_code;
 
-	
 
-	Node(string _node_name): node_name(_node_name) {};
+
+	Node(string _node_name): node_name(_node_name), current_code_count(0), current_place(NULL), current_type(NULL), current_node_data(NULL) {};
 	void add_non_terminal_children(Node *_non_terminal_node);
 	void add_terminal_children(string _terminal_string_value);
 	NodeData* last_current_node_data();
 	DataType* last_current_type();
+	void add_code_in_map(Instruction* _code);
+	
 };
 
 #endif

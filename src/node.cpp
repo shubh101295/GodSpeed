@@ -15,6 +15,10 @@ void Node::add_terminal_children(string _terminal_string_value){
 	current_node_children.pb(*current_child);
 }
 
+void Node::add_code_in_map(Instruction* _code){
+	current_code_count+=1;
+	current_code[current_code_count]= _code;
+}
 NodeData* Node::last_current_node_data(){
 	NodeData* temp = current_node_data;
 	while(temp->next_data!=NULL)

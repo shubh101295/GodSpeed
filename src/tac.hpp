@@ -1,13 +1,11 @@
 #ifndef _TAC_H
 #define _TAC_H
 
-#include "node.hpp"
 #include "datatypes.hpp"
 #include "place.hpp"
 
 // for storing TAC
 class Instruction {
-public:
 	enum opcode_types {
 		ADD       =   0,
 		SUB       =   1,
