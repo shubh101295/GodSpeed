@@ -19,6 +19,14 @@ void Node::add_code_in_map(Instruction* _code){
 	current_code_count+=1;
 	current_code[current_code_count]= _code;
 }
+
+void Node::add_code_in_map(map<int,Instruction*> _code)
+{
+	// int i=1;
+	for(auto val:_code){
+		add_code_in_map(val.second);
+	}
+}
 NodeData* Node::last_current_node_data(){
 	NodeData* temp = current_node_data;
 	while(temp->next_data!=NULL)

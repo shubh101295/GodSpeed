@@ -57,7 +57,7 @@ struct Node{
 	NodeData* last_current_node_data();
 	DataType* last_current_type();
 	void add_code_in_map(Instruction* _code);
-	
+	void add_code_in_map(map<int,Instruction*> _code);
 };
 
 #endif
