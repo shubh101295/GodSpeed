@@ -89,6 +89,7 @@ SourceFile:
 			 curr->current_node_data->node_child = $4->current_node_data;
 			 $$ = curr;
 			 dump_dot_file("ast.dot", $$);
+			 $$->print_code_in_file("bin/output.tac");
 			 // auto val = st->get_symbol_table_data();
 			 // int x=0;
 			 // string yoyyo = "ghasgtvdegd";
@@ -3007,7 +3008,7 @@ UnaryExpr:
         $$->current_node_data->node_child->next_data = $2->current_node_data;
         $$->current_node_data->value = true;
 		$$->current_place = new Place($1->current_place->place_name + "." + $2->current_place->place_name);
-		// lval
+		// $$->no
 		$$->add_code_in_map($1->current_code);
 
 
