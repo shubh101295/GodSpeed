@@ -1,6 +1,9 @@
 #include<bits/stdc++.h>
 #include "node.hpp"
 #include "datatypes.hpp"
+#include "tac.hpp"
+#include "place.hpp"
+
 using namespace std;
 
 #define pb push_back
@@ -22,10 +25,36 @@ void Node::add_code_in_map(Instruction* _code){
 
 void Node::add_code_in_map(map<int,Instruction*> _code)
 {
-	// int i=1;
-	for(auto val:_code){
-		add_code_in_map(val.second);
+	int i=1;
+	auto it= _code.find(i);
+	while(it!= _code.end())
+	{
+		add_code_in_map((*it).second);
+		i+=1;
+		it= _code.find(i);
 	}
+	// // for(auto val:_code){
+	// 	add_code_in_map(val.second);
+	// // }
+}
+
+void Node::print_code_in_file(string file_name){
+	int i=1;
+	auto it= current_code.find(i);
+	ofstream my_function_dump(file_name);
+
+	while(it!=current_code.end())
+	{
+
+		Instruction* current_instr = ((*it).second);
+		my_function_dump<<((*it).second)->current_opcode<<" ";
+		if(current_instr->address1!=NULL) my_function_dump<<(current_instr->address1->place_name)<<" ";
+		if(current_instr->address2!=NULL) my_function_dump<<(current_instr->address2->place_name)<<" ";
+		if(current_instr->address3!=NULL) my_function_dump<<(current_instr->address3->place_name)<<" ";
+		i+=1;
+		it= current_code.find(i);
+	}
+	
 }
 NodeData* Node::last_current_node_data(){
 	NodeData* temp = current_node_data;
