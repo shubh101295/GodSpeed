@@ -1267,6 +1267,7 @@ CompositeLit:
                 $$->current_node_data->node_child = $1->current_node_data;
                 $$->current_node_data->node_child->next_data->node_child = $2->current_node_data;
                 $$->current_type = $1->current_type->copyClass();
+				$$->current_place = new Place($$->current_type);
                 break;
             case _SLICE:
                 slice = dynamic_cast<SliceType*>($1->current_type);
@@ -1284,6 +1285,7 @@ CompositeLit:
                 $$->current_node_data->node_child = $1->current_node_data;
                 $$->current_node_data->node_child->next_data->node_child = $2->current_node_data;
                 $$->current_type = $1->current_type->copyClass();
+				$$->current_place = new Place($$->current_type);
             default:
                 cerr << "Composite type not yet supported" << endl;
                 exit(1);
@@ -1297,6 +1299,8 @@ LiteralType:
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
+		$$->current_place = $1->current_place;
+		$$->current_code = $1->current_code;
 	}
 	| ArrayType {
 		// cout<<"LiteralType: ArrayType"<<endl;
@@ -1304,18 +1308,24 @@ LiteralType:
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
+		$$->current_place = $1->current_place;
+		$$->current_code = $1->current_code;
 	}
 	| PointerType {
 		$$ = new Node("LiteralType");
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
+		$$->current_place = $1->current_place;
+		$$->current_code = $1->current_code;
 	}
 	| SliceType {
 		$$ = new Node("LiteralType");
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
+		$$->current_place = $1->current_place;
+		$$->current_code = $1->current_code;
 	}
 	| LEFTSQUARE ELIPSIS RIGHTSQUARE Operand {
 		$$ = new Node("LiteralType");
@@ -1327,6 +1337,8 @@ LiteralType:
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
+		$$->current_place = $1->current_place;
+		$$->current_code = $1->current_code;
 	}
 	;
 
@@ -1400,12 +1412,16 @@ LiteralValue:
 		$$->add_non_terminal_children($2);
 		$$->current_type = $2->current_type;
 		$$->current_node_data = $2->current_node_data;
+		$$->current_place = $2->current_place;
+		$$->current_code = $2->current_code;
 	}
 	| LEFTBRACE ElementList COMMA RIGHTBRACE {
 		$$ = new Node("LiteralValue");
 		$$->add_non_terminal_children($2);
 		$$->current_type = $2->current_type;
 		$$->current_node_data = $2->current_node_data;
+		$$->current_place = $2->current_place;
+		$$->current_code = $2->current_code;
 	}
 	;
 SliceType:
