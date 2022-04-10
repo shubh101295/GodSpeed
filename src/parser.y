@@ -1910,6 +1910,21 @@ Expression:
 			string temp = string($2);
 			$$->current_type = $1->current_type;
 
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::MUL,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
+
+
 		}
 	| Expression QUOT Expression {
 			$$ = new Node("Expression");
@@ -1935,6 +1950,20 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = $1->current_type;
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::QUOT,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
 		}
 	| Expression MOD Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
@@ -1961,6 +1990,20 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = $1->current_type;
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::MOD,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
 		}
 	| Expression SHL Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
@@ -1987,6 +2030,20 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = $1->current_type;
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::SHL,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
 		}
 	| Expression SHR Expression {
 			$$ = new Node("Expression");
@@ -2012,6 +2069,20 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = $1->current_type;
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::SHR,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
 		}
 	| Expression AND Expression {
 			$$ = new Node("Expression");
@@ -2037,6 +2108,20 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = $1->current_type;
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::AND,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
 		}
 	| Expression ANDNOT Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
@@ -2063,6 +2148,20 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = $1->current_type;
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::ANDNOT,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
 		}
 	| Expression ADD Expression {
 			$$ = new Node("Expression");
@@ -2088,6 +2187,20 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = $1->current_type;
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::ADD,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
 		}
 	| Expression SUB Expression {
 			$$ = new Node("Expression");
@@ -2113,6 +2226,20 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = $1->current_type;
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::SUB,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
 		}
 	| Expression OR Expression {
 			$$ = new Node("Expression");
@@ -2139,6 +2266,20 @@ Expression:
 			string temp = string($2);
 			$$->current_type = $1->current_type;
 
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::OR,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
+
 		}
 	| Expression XOR Expression {
 			$$ = new Node("Expression");
@@ -2164,8 +2305,22 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = $1->current_type;
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::XOR,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
 		}
-	| Expression LOGAND Expression {
+	| Expression LOGAND Expression { // remaining
 		$$ = new Node("Expression");
 			$$->add_non_terminal_children($1);
 			$$->add_terminal_children(string($2));
@@ -2191,7 +2346,7 @@ Expression:
 			$$->current_type = new BasicType("bool");
 
 		}
-	| Expression LOGOR Expression {
+	| Expression LOGOR Expression { // remaining
 			$$ = new Node("Expression");
 			$$->add_non_terminal_children($1);
 			$$->add_terminal_children(string($2));
@@ -2241,6 +2396,22 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = new BasicType("bool");
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::CMP,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::ISEQ,p1);
+			Instruction* ins4 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
+			$$->add_code_in_map(ins4);
 		}
 	| Expression NEQ Expression {
 			$$ = new Node("Expression");
@@ -2266,6 +2437,22 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = new BasicType("bool");
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::CMP,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::NEQ,p1);
+			Instruction* ins4 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
+			$$->add_code_in_map(ins4);
 		}
 	| Expression GRTEQ Expression {
 			$$ = new Node("Expression");
@@ -2291,6 +2478,22 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = new BasicType("bool");
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::CMP,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::GRTEQ,p1);
+			Instruction* ins4 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
+			$$->add_code_in_map(ins4);
 		}
 	| Expression GRT Expression {
 			$$ = new Node("Expression");
@@ -2316,6 +2519,22 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = new BasicType("bool");
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::CMP,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::GRT,p1);
+			Instruction* ins4 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
+			$$->add_code_in_map(ins4);
 		}
 	| Expression LESSEQ Expression {
 			$$ = new Node("Expression");
@@ -2341,6 +2560,22 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = new BasicType("bool");
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::CMP,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::LESSEQ,p1);
+			Instruction* ins4 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
+			$$->add_code_in_map(ins4);
 		}
 	| Expression LESS Expression {
 			$$ = new Node("Expression");
@@ -2366,6 +2601,22 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = new BasicType("bool");
+
+			$$->current_place = new Place($$->current_type);
+			
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($3->current_code);
+			
+			Place* p1 = new Place($1->current_type);
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::CMP,$3->current_place,p1);
+			Instruction* ins3 = new Instruction(Instruction::LESS,p1);
+			Instruction* ins4 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
+			$$->add_code_in_map(ins4);
 		}
 	| UnaryExpr {
 		// cout<<"Expression: UnaryExpr, Value: ";
@@ -2373,6 +2624,8 @@ Expression:
 			$$->add_non_terminal_children($1);
 			$$->current_type = $1->current_type;
 			$$->current_node_data = $1->current_node_data;
+			$$->current_place = $1->current_place;
+			$$->current_code = $1->current_code;
 			// cout<<"Unary value"<<endl;
 			  cout<<$$->current_node_data->value<<endl;
 			// cout<<"Unary value"<<endl;
@@ -2387,19 +2640,29 @@ UnaryExpr:
 		$$->add_non_terminal_children($2);
 		$$->current_node_data = new NodeData("*unary");
 		$$->current_node_data->node_child = $2->current_node_data;
+		$$->add_code_in_map($2->current_code);
 		if($2->current_type->current_data_type != _POINTER){
 			cout<<"Can not dereference a non-pointer! Exiting..."<<endl;
 			exit(1);
 		}
 		$$->current_type = dynamic_cast<PointerType*>($2->current_type)->type_of_address_pointing_to->copyClass();
+		Place* p1 = new Place($$->current_type);
+		Instruction* ins = new Instruction(Instruction::UREF,$2->current_place,p1);
+		$$->add_code_in_map(ins);
+		$$->current_place = p1;
 	}
 	| AND PrimaryExpr {
-			$$ = new Node("UnaryExpr");
-			$$->add_terminal_children(string($1));
-			$$->add_non_terminal_children($2);
-			$$->current_node_data = new NodeData("&unary");
-			$$->current_node_data->node_child = $2->current_node_data;
-			$$->current_type = new PointerType($2->current_type);
+		$$ = new Node("UnaryExpr");
+		$$->add_terminal_children(string($1));
+		$$->add_non_terminal_children($2);
+		$$->current_node_data = new NodeData("&unary");
+		$$->current_node_data->node_child = $2->current_node_data;
+		$$->current_type = new PointerType($2->current_type);
+		$$->add_code_in_map($2->current_code);
+		Place* p1 = new Place($$->current_type);
+		Instruction* ins = new Instruction(Instruction::UADDR,$2->current_place,p1);
+		$$->add_code_in_map(ins);
+		$$->current_place = p1;
 		}
 	| ADD PrimaryExpr {
 			$$ = new Node("UnaryExpr");
@@ -2408,6 +2671,15 @@ UnaryExpr:
 			$$->current_node_data = new NodeData("+unary");
 			$$->current_node_data->node_child = $2->current_node_data;
 			$$->current_type = $2->current_type->copyClass();
+			$$->add_code_in_map($2->current_code);
+			Place* p1 = new Place($$->current_type);
+
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$2->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::ADD,$2->current_place,p1);
+			
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->current_place = p1;
 		}
 	| SUB PrimaryExpr {
 			$$ = new Node("UnaryExpr");
@@ -2416,6 +2688,15 @@ UnaryExpr:
 			$$->current_node_data = new NodeData("-unary");
 			$$->current_node_data->node_child = $2->current_node_data;
 			$$->current_type = $2->current_type->copyClass();
+			$$->add_code_in_map($2->current_code);
+			Place* p1 = new Place($$->current_type);
+
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$2->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::SUB,$2->current_place,p1);
+			
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->current_place = p1;
 		}
 	| NOT PrimaryExpr {
 			$$ = new Node("UnaryExpr");
@@ -2424,6 +2705,15 @@ UnaryExpr:
 			$$->current_node_data = new NodeData("!unary");
 			$$->current_node_data->node_child = $2->current_node_data;
 			$$->current_type = $2->current_type->copyClass();
+			$$->add_code_in_map($2->current_code);
+			Place* p1 = new Place($$->current_type);
+
+			Instruction* ins1 = new Instruction(Instruction::USTOR,$2->current_place,p1);
+			Instruction* ins2 = new Instruction(Instruction::NOT,$2->current_place,p1);
+			
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->current_place = p1;
 		}
 	| PrimaryExpr {
 		// cout<<"UnaryExpr: PrimaryExpr\n";
@@ -2431,6 +2721,8 @@ UnaryExpr:
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
+		$$->current_place = $1->current_place;
+		$$->current_code = $1->current_code;
 		//cout<<"Primary Value: "<<$$->current_node_data->value<<" "<<$1->current_node_data->value<< endl;
 
 	}
@@ -2539,6 +2831,7 @@ UnaryExpr:
         $$->current_node_data->node_child->next_data = $2->current_node_data;
         $$->current_node_data->value = true;
 		$$->current_place = new Place($1->current_place->place_name + "." + $2->current_place->place_name);
+		// lval
 		$$->add_code_in_map($1->current_code);
 
 
@@ -2583,8 +2876,10 @@ UnaryExpr:
 
  			$$->current_node_data = $1->current_node_data;
  			$$->current_node_data->value = true;
+
 			$$->add_code_in_map($1->current_code);
 			$$->add_code_in_map($2->current_code);
+			//lval
  		}
  	| PrimaryExpr Slice {
 		Node* curr = new Node("PrimaryExpr");
