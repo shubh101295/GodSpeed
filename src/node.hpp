@@ -19,23 +19,24 @@ struct NodeData {
 	NodeData *next_data;
 	NodeData *node_child;
 	bool value;
+	string lval;
 
-	NodeData(string _data_name): data_name(_data_name), next_data(NULL),node_child(NULL), value(false) { cout<<"NodeData "<<_data_name<<"\n";};
+	NodeData(string _data_name): data_name(_data_name), next_data(NULL),node_child(NULL), value(false), lval("<no_lval>") { cout<<"NodeData "<<_data_name<<"\n";};
 	NodeData* last_next_child();
 };
 
 struct NodeChildren {
 	bool is_terminal_node;
 	Node *non_terminal_node;
-	string terminal_string_value; 
+	string terminal_string_value;
 
-	NodeChildren(bool _is_terminal_node,Node *_non_terminal_node,string _terminal_string_value): 
+	NodeChildren(bool _is_terminal_node,Node *_non_terminal_node,string _terminal_string_value):
 			is_terminal_node(_is_terminal_node),non_terminal_node(_non_terminal_node),
 			terminal_string_value(_terminal_string_value) {};
-	NodeChildren(string _terminal_string_value): 
+	NodeChildren(string _terminal_string_value):
 			is_terminal_node(true),non_terminal_node(NULL),
-			terminal_string_value(_terminal_string_value) {}; 	
-	NodeChildren(Node *_non_terminal_node): 
+			terminal_string_value(_terminal_string_value) {};
+	NodeChildren(Node *_non_terminal_node):
 			is_terminal_node(false),non_terminal_node(_non_terminal_node),
 			terminal_string_value("") {};
 };

@@ -36,10 +36,10 @@ class Instruction {
 		XOR       =   25
 
 	};
-	
+
 	Place * address1;
 	Place *address2;
-	Place *address3; 
+	Place *address3;
 	opcode_types current_opcode;
 
 	Instruction(Instruction::opcode_types _current_opcodes,Place* _address1=NULL,Place* _address2=NULL,Place* _address3=NULL):
