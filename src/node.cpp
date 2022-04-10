@@ -51,6 +51,7 @@ void Node::print_code_in_file(string file_name){
 		if(current_instr->address1!=NULL) my_function_dump<<(current_instr->address1->place_name)<<" ";
 		if(current_instr->address2!=NULL) my_function_dump<<(current_instr->address2->place_name)<<" ";
 		if(current_instr->address3!=NULL) my_function_dump<<(current_instr->address3->place_name)<<" ";
+		my_function_dump<<"\n";
 		i+=1;
 		it= current_code.find(i);
 	}
