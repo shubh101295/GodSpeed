@@ -221,6 +221,8 @@ TopLevelDeclList:
 		// 	cout<<"NULL"<<endl;
 		// }
 		($$->last_current_node_data())->next_data = $2->current_node_data;
+		$$->add_code_in_map($1->current_code);
+		$$->add_code_in_map($2->current_code);
 	}
 	| TopLevelDecl SCOLON {
 		Node* curr = new Node("TopLevelDeclList");
@@ -228,6 +230,7 @@ TopLevelDeclList:
 		curr->add_non_terminal_children($1);
 		$$ = curr;
 		$$->current_node_data = $1->current_node_data;
+		$$->add_code_in_map($1->current_code);
 	}
 	;
 
@@ -237,6 +240,8 @@ TopLevelDecl:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| FunctionDecl {
@@ -245,6 +250,8 @@ TopLevelDecl:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| MethodDecl {
@@ -262,16 +269,21 @@ Block:
 		curr->add_non_terminal_children($3);
 		curr->current_type = $3->current_type;
 		curr->current_node_data = $3->current_node_data;
+		curr->current_place = $3->current_place;
+		curr->current_code = $3->current_code;
 		$$ = curr;
     }
     ;
 
+//remTAC check correctness
 Condition:
 	Expression {
 		Node* curr = new Node("Condition");
 		curr->add_non_terminal_children($1);
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	;
@@ -286,20 +298,22 @@ StatementList:
 		$$ = curr;
 		$$->current_node_data = $1->current_node_data;
 		($$->current_node_data->last_next_child())->next_data = $2->current_node_data;
-		
+		$$->add_code_in_map($1->current_code);
+		$$->add_code_in_map($2->current_code);
+
 		// for checking if the fallthrough statement is the last one
 		if(fallthrough_expression_count){
 			// cout<<"INC fallthrough_expression_count\n";
 			fallthrough_expression_count+=1;
 
-		} 
+		}
 		if (fallthrough_expression_count>2)
 		{
 			cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
 			exit(1);
 			// fallthrough_expression_count+=1;
 		}
-	
+
 	}
 	| Statement SCOLON {
 		cout<<"Statement SCOLON\n";
@@ -314,8 +328,9 @@ StatementList:
 		}
 		// cout<<"HERE\n";
 		$$->current_node_data->node_child = $1->current_node_data;
+		$$->add_code_in_map($1->current_code);
 		// cout<<"HERE\n";
-	
+
 	}
 	;
 
@@ -326,6 +341,8 @@ Statement:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| LabeledStmt {
@@ -334,6 +351,8 @@ Statement:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| SimpleStmt {
@@ -341,8 +360,10 @@ Statement:
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
-		
+
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		// cout<<"Statement:	SimpleStmt "<<($1->current_node_data==NULL)<<"\n";
 		$$ = curr;
 	}
@@ -352,6 +373,8 @@ Statement:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| BreakStmt {
@@ -360,6 +383,8 @@ Statement:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| ContinueStmt {
@@ -368,6 +393,8 @@ Statement:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| GotoStmt {
@@ -376,6 +403,8 @@ Statement:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| SwitchStmt {
@@ -384,6 +413,8 @@ Statement:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| FallthroughStmt {
@@ -391,6 +422,8 @@ Statement:
 		Node* curr = new Node("Statement");
 		curr->add_non_terminal_children($1);
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| Block {
@@ -399,6 +432,8 @@ Statement:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| IfStmt {
@@ -407,6 +442,8 @@ Statement:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| ForStmt {
@@ -415,6 +452,8 @@ Statement:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	;
@@ -425,6 +464,8 @@ Declaration:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| VarDecl {
@@ -432,6 +473,8 @@ Declaration:
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	;
@@ -447,9 +490,9 @@ Declaration:
 
 // might change
 FunctionDecl:
-	FUNC IDENTIFIER OpenBlock Signature FunctionBody 
+	FUNC IDENTIFIER OpenBlock Signature FunctionBody
 	{
-		st->add_in_symbol_table({"0;",string($2)},$4->current_type); 
+		st->add_in_symbol_table({"0;",string($2)},$4->current_type);
 		st->output_csv_for_function(string($2),st->get_current_scope());
 	} CloseBlock {
 		// cout<<"FunctionDecl: FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock \n";
@@ -467,7 +510,7 @@ FunctionDecl:
 
 	}
 	| FUNC IDENTIFIER OpenBlock Signature {
-		st->add_in_symbol_table({"0;",string($2)},$4->current_type);	
+		st->add_in_symbol_table({"0;",string($2)},$4->current_type);
 		st->output_csv_for_function(string($2),st->get_current_scope());
 	} CloseBlock  {
 		Node* curr = new Node("FunctionDecl");
@@ -630,7 +673,7 @@ Assignment:
 				// cout<<"HERE 2\n";
 				name = (temp_left_data->node_child)? temp_left_data->node_child->data_name:temp_left_data->data_name;
 				// if(name==j) cout<<"UNCHANGED!\n";
-			}	
+			}
 
 				// cout<<name<<" "<<"HERE 4\n";
 			if(right_type && right_type->getDataType() == "undefined"){
@@ -638,10 +681,10 @@ Assignment:
 				exit(1);
 			}
 					// cout<<"HERE 4\n";
-		
+
 			if(!st->get_type(name)){
 						// cout<<"HERE 16\n";
-		
+
 				cout<<"[Undeclared Identifier] "<<name<<" not declared yet!";
 				exit(1);
 			}
@@ -650,9 +693,9 @@ Assignment:
 				// cout<<(left_type==NULL)<<" "<<(right_type==NULL)<<"\n";
 				// cout<<left_type->getDataType()<<"\n";
 				// cout<<right_type->getDataType()<<"\n";
-								
+
 				if(left_type->getDataType() != right_type->getDataType()){
-				
+
 					cout<<"[Type Mismatch]"<<name<<" Expected type ( " <<left_type->getDataType()<<" ) whereas found ( "<<right_type->getDataType()<<" ) \n";
 					exit(1);
 				}
@@ -672,7 +715,7 @@ Assignment:
 		cout<<string($2)<<"------\n";
 		// printf("%sSHUBH\n",string($2));
 		NodeData * temp_node_data = new NodeData(string($2));
-		
+
 		// cout<<"temp_node_data "<<(temp_node_data==NULL) <<"    "<<(temp_node_data!=NULL)<<"\n";
 		$$->current_node_data = temp_node_data;
 
@@ -1423,7 +1466,7 @@ ContinueStmt:
 			cout<<"[INVALID CONTINUE] Tried to continue when not inside a loop!";
 			exit(1);
 		}
-		
+
 	}
 	// | CONTINUE IDENTIFIER {
 	// 	Node* curr = new Node("ContinueStmt");
@@ -1524,7 +1567,7 @@ ExprCaseClauseList:
 		// cout<<(($$->current_node_data->last_next_child())==NULL)<<"\n";
 		($$->current_node_data->last_next_child())->next_data = $2->current_node_data;
 		// cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
-		
+
 	}
 	| ExprCaseClause {
 		// cout<<"ExprCaseClauseList: ExprCaseClause\n";
@@ -1590,7 +1633,7 @@ ExprSwitchCase:
 		is_inside_case = true;
 		has_default_statement = true;
 		$$->current_node_data = $2->current_node_data;
-		$$->current_type = $2->current_type;	
+		$$->current_type = $2->current_type;
 	}
 	;
 
@@ -1598,12 +1641,12 @@ FallthroughStmt:
 	FALLTHROUGH {
 		if (is_inside_case==false){
 			cout<<"[FALLTHROUGH] fallthrough can only be used inside switch cases\n";
-			exit(1); 
+			exit(1);
 		}
 		// if(is_last_statement==false)
 		// {
 		// 	cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
-		// 	exit(1); 
+		// 	exit(1);
 		// }
 		// cout<<"SET fallthrough_expression_count ==1\n";
 		if (fallthrough_expression_count)
@@ -2617,7 +2660,7 @@ UnaryExpr:
 		DataType* temp = head;
 		for(auto x: fxn->return_type){
 			head -> next_type = x;
-			head = head->next_type; 
+			head = head->next_type;
 		}
 		$$->current_type = temp->next_type;
 	}
@@ -2959,7 +3002,7 @@ FieldDecl:
 		DataType* tp = $2->current_type;
 		tp->next_type = NULL;
 
-		
+
 		map< string, DataType*> m;
 
 		for(NodeData* lp = $1->current_node_data; lp != NULL; lp = lp->next_data){
@@ -3171,10 +3214,10 @@ int main (int argc, char **argv) {
         {"Scanln", new FunctionType(vector<DataType *>{new BasicType("string")},
                                     vector<DataType *>{new BasicType("int")})}
     };
-     
+
 
     auto fmt_struct = new StructType(fmt_functions);
-    
+
     tt->add_in_type_table("void", new BasicType("void"));
     tt->add_in_type_table("int", new BasicType("int"));
     tt->add_in_type_table("bool", new BasicType("bool"));
