@@ -22,6 +22,7 @@
 	SymbolTable* st = new SymbolTable();
 	TypesTable* tt = new TypesTable();
 	BreakLabels* bl = new BreakLabels();
+	Labels *l = new Labels();
 	SwitchCaseList* scl= NULL;
 
 	// for switch statements
@@ -2470,6 +2471,25 @@ Expression:
 			string temp = string($2);
 			$$->current_type = new BasicType("bool");
 
+			$$->current_place = new Place($$->current_type);
+
+			$$->add_code_in_map($1->current_code);
+
+			Place* p1 = new Place(l->get_new_label());
+
+			Instruction* ins1 = new Instruction(Instruction::CMP,new Place("$0"),$1->current_place);
+			Instruction* ins2 = new Instruction(Instruction::USTOR,$1->current_place,$$->current_place);
+			Instruction* ins3 = new Instruction(Instruction::JE,p1);
+			$$->add_code_in_map($3->current_code);
+			Instruction* ins4 = new Instruction(Instruction::USTOR,$3->current_place,$$->current_place);
+			Instruction* ins5 = new Instruction(Instruction::LBL,p1);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
+			$$->add_code_in_map(ins4);
+			$$->add_code_in_map(ins5);
+
 		}
 	| Expression LOGOR Expression { // remaining
 			$$ = new Node("Expression");
@@ -2495,6 +2515,25 @@ Expression:
 
 			string temp = string($2);
 			$$->current_type = new BasicType("bool");
+
+			$$->current_place = new Place($$->current_type);
+
+			$$->add_code_in_map($1->current_code);
+
+			Place* p1 = new Place(l->get_new_label());
+
+			Instruction* ins1 = new Instruction(Instruction::CMP,new Place("$0"),$1->current_place);
+			Instruction* ins2 = new Instruction(Instruction::USTOR,$1->current_place,$$->current_place);
+			Instruction* ins3 = new Instruction(Instruction::JNE,p1);
+			$$->add_code_in_map($3->current_code);
+			Instruction* ins4 = new Instruction(Instruction::USTOR,$3->current_place,$$->current_place);
+			Instruction* ins5 = new Instruction(Instruction::LBL,p1);
+
+			$$->add_code_in_map(ins1);
+			$$->add_code_in_map(ins2);
+			$$->add_code_in_map(ins3);
+			$$->add_code_in_map(ins4);
+			$$->add_code_in_map(ins5);
 		}
 	| Expression ISEQ Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;

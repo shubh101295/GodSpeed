@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 35 "src/parser.y" /* yacc.c:1909  */
+#line 36 "src/parser.y" /* yacc.c:1909  */
 
 	#include "node.hpp"
 	// #include "dot_generator.hpp"
@@ -127,7 +127,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 40 "src/parser.y" /* yacc.c:1909  */
+#line 41 "src/parser.y" /* yacc.c:1909  */
 
 	Node* nt;
 	char* sval;

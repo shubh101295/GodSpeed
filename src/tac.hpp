@@ -35,8 +35,10 @@ class Instruction {
 		ORNOT     =   24,
 		XOR       =   25,
 		DECL      =   26,
-		ARGDECL	  =   27
-
+		ARGDECL	  =   27,
+		JNE       =   28,
+		JE        =   29,
+		LBL       =   30
 	};
 
 	Place * address1;
