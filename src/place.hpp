@@ -8,8 +8,8 @@ static int place_id=0;
 class Place {
 
 public:
-    string place_name; 
-    DataType *current_type; 
+    string place_name;
+    DataType *current_type;
     Place *next_place;
 
     Place(DataType *_current_type=NULL): current_type(_current_type),place_name(";"+to_string(place_id)),next_place(NULL) { place_id+=1; };

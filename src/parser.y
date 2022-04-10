@@ -539,6 +539,7 @@ MethodDecl:
 		curr->add_terminal_children(string($3));
 		curr->add_non_terminal_children($4);
 		curr->add_non_terminal_children($5);
+		curr->add_code_in_map($5->current_code);
 		$$=curr;
 	}
 	;
@@ -739,6 +740,7 @@ Assignment:
 			left_type = left_type->next_type;
 			right_type = right_type->next_type;
 			right_data = right_data?right_data->next_data:right_data;
+			right_place = right_place? right_place->next_place: right_place;
 		}
 		NodeData* parLeft = new NodeData("list");
 		NodeData* parRight = new NodeData("list");
@@ -756,18 +758,22 @@ Assignment:
 	}
 	;
 
+//remTAC: scopeEXpr
 ShortVarDecl:
 	IdentifierList INFER_EQ ExpressionList {
 		// cout<<"ShortVarDecl : IdentifierList INFER_EQ ExpressionList"<<endl;
 		$$ = new Node("ShortVarDecl");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($3);
+		$$->add_code_in_map($3->current_code);
 
 		NodeData* left_data = $1->current_node_data;
 		NodeData* right_data = $3->current_node_data;
 
 		DataType* left_type = $1->current_type;
 		DataType* right_type = $3->current_type;
+
+		Place* right_place = $3->current_place;
 
 		bool newVar = false;
 
@@ -810,9 +816,13 @@ ShortVarDecl:
 				st->add_in_symbol_table({st->get_current_scope(),name}, right_type);
 			}
 
+			Instruction* ins = new Instruction(Instruction::USTOR, right_place, new Place(left_data->data_name, right_type));
+			$$->add_code_in_map(ins);
+
 			left_data = left_data -> next_data;
 			right_type = right_type->next_type;
 			right_data = right_data? right_data->next_data:right_data;
+			right_place = right_place? right_place->next_place: right_place;
 		}
 		if(!newVar){
 			cout<<"No new variables found to left of :="<<endl;
@@ -835,12 +845,16 @@ VarDecl:
 		$$->add_non_terminal_children($2);
 		$$->current_type = $2->current_type;
 		$$->current_node_data = $2->current_node_data;
+		$$->current_place = $2->current_place;
+		$$->current_code = $2->current_code;
 	}
 	| VAR LEFTPARAN VarSpecList RIGHTPARAN {
 		$$ = new Node("VarDecl");
 		$$->add_non_terminal_children($3);
 		$$->current_type = $3->current_type;
 		$$->current_node_data = $3->current_node_data;
+		$$->current_place = $3->current_place;
+		$$->current_code = $3->current_code;
 	}
 	;
 
@@ -852,6 +866,8 @@ VarSpecList:
 		$$->add_non_terminal_children($2);
 		$$->current_node_data = $1->current_node_data;
 		($$->current_node_data->last_next_child())->next_data = $2->current_node_data;
+		$$->add_code_in_map($1->current_code);
+		$$->add_code_in_map($2->current_code);
 		// might need to add type checks
 	}
 	| VarSpec SCOLON {
@@ -859,6 +875,7 @@ VarSpecList:
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
+		$$->add_code_in_map($1->current_code);
 	}
 	;
 
@@ -876,6 +893,8 @@ VarSpec:
 			}
 			st->add_in_symbol_table({st->get_current_scope(),curr->data_name},$2->current_type);
 			// cout<<curr->data_name<<"    "<< $2->current_type<<"   "<<$2->current_type->getDataType()<<"\n";
+			Instruction* ins = new Instruction(Instruction::DECL, new Place(st->get_current_scope() + curr->data_name));
+			$$->add_code_in_map(ins);
 			DataType * temp = $2->current_type->copyClass();
 			// cout<<temp<<" "<<temp->getDataType()<<"  " <<temp->getDataType()<<"\n";
 			// cout<<"VarSpec:	IdentifierList Type \n ";
@@ -899,6 +918,8 @@ VarSpec:
 				exit(1);
 			}
 			st->add_in_symbol_table({st->get_current_scope(),curr->data_name},$2->current_type);
+			Instruction* ins = new Instruction(Instruction::DECL, new Place(st->get_current_scope() + curr->data_name));
+			$$->add_code_in_map(ins);
 			$$->current_type = $2->current_type;
 			curr = curr->next_data;
 		}
@@ -946,6 +967,8 @@ VarSpec:
 			}
 			else{
 				st->add_in_symbol_table({st->get_current_scope(),name}, right_type);
+				Instruction* ins = new Instruction(Instruction::DECL, new Place(st->get_current_scope() + name));
+				$$->add_code_in_map(ins);
 			}
 
 			left_data = left_data -> next_data;
@@ -1007,10 +1030,14 @@ Signature:
 		DataType* curr = $1 -> current_type;
 		NodeData* dcurr = $1 -> current_node_data;
 
+		int i = 0;
 		while(curr){
 			DataType* temp = curr->copyClass();
 			temp -> next_type = NULL;
 			arguments.push_back(temp);
+
+			Instruction* ins = new Instruction(Instruction::ARGDECL, std::to_string(i++), st->get_current_scope() + dcurr->data_name);
+			$$->add_code_in_map(ins);
 
 			curr = curr->next_type;
 			dcurr = dcurr -> next_data;
@@ -1034,10 +1061,14 @@ Signature:
 		DataType* curr = $1 -> current_type;
 		NodeData* dcurr = $1 -> current_node_data;
 
+		int i = 0;
 		while(curr){
 			DataType* temp = curr->copyClass();
 			temp -> next_type = NULL;
 			arguments.push_back(temp);
+
+			Instruction* ins = new Instruction(Instruction::ARGDECL, std::to_string(i++), st->get_current_scope() + dcurr->data_name);
+			$$->add_code_in_map(ins);
 
 			curr = curr->next_type;
 			dcurr = dcurr -> next_data;

@@ -33,7 +33,9 @@ class Instruction {
 		ANDNOT    =   22,
 		OR        =   23,
 		ORNOT     =   24,
-		XOR       =   25
+		XOR       =   25,
+		DECL      =   26,
+		ARGDECL	  =   27
 
 	};
 
@@ -46,6 +48,12 @@ class Instruction {
 		current_opcode(_current_opcodes) {
 			address1 = _address1;
 			address2 = _address2;
+			address3 = _address3;
+		};
+	Instruction(Instruction::opcode_types _current_opcodes, string loc, string val, Place* _address3=NULL):
+		current_opcode(_current_opcodes) {
+			address1 = new Place(loc);
+			address2 = new Place(val);
 			address3 = _address3;
 		};
 };
