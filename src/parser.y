@@ -2436,7 +2436,7 @@ UnaryExpr:
 	}
 
  	;
-
+// remaining
  PrimaryExpr:
  	Operand  {
  		// cout<<" PrimaryExpr: Operand, Value:";
@@ -2444,6 +2444,9 @@ UnaryExpr:
 		curr->add_non_terminal_children($1);
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
+
 		$$ = curr;
 		cout<<$$->current_node_data->value<<endl;
 		//cout<<"Operand Value:"<<$$->current_node_data->value<<endl;
@@ -2453,9 +2456,12 @@ UnaryExpr:
 		curr->add_non_terminal_children($1);
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
+
 		$$ = curr;
 	}
- 	| PrimaryExpr Selector {
+ 	| PrimaryExpr Selector { // remaining lval
  		// cout<<"PrimaryExpr: PrimaryExpr Selector\n";
 		$$ = new Node("PrimaryExpr");
 		$$->add_non_terminal_children($1);
@@ -2464,6 +2470,7 @@ UnaryExpr:
 		$$->current_node_data->node_child = $1->current_node_data;
 		$$->current_node_data->node_child->next_data = $2->current_node_data;
 		$$->current_node_data->value = true;
+
 		// cout<<"Primary Expr Value Selector: "<<$$->current_node_data->value<<endl;
 		auto temp_type = $1->current_type;
 		if(temp_type==NULL) {
@@ -2531,10 +2538,12 @@ UnaryExpr:
 	    $$->current_node_data->node_child = $1->current_node_data;
         $$->current_node_data->node_child->next_data = $2->current_node_data;
         $$->current_node_data->value = true;
+		$$->current_place = new Place($1->current_place->place_name + "." + $2->current_place->place_name);
+		$$->add_code_in_map($1->current_code);
 
 
 	}
- 	| PrimaryExpr Index {
+ 	| PrimaryExpr Index { //remaining lval
  		cout<<"PrimaryExpr: PrimaryExpr Index"<<endl;
  		$$ = new Node("PrimaryExpr");
  		$$->add_non_terminal_children($1);
@@ -2574,6 +2583,8 @@ UnaryExpr:
 
  			$$->current_node_data = $1->current_node_data;
  			$$->current_node_data->value = true;
+			$$->add_code_in_map($1->current_code);
+			$$->add_code_in_map($2->current_code);
  		}
  	| PrimaryExpr Slice {
 		Node* curr = new Node("PrimaryExpr");
@@ -2581,7 +2592,7 @@ UnaryExpr:
 		curr->add_non_terminal_children($2);
 		$$ = curr;
 	}
- 	| PrimaryExpr Arguments {
+ 	| PrimaryExpr Arguments { // remaining
 		$$ = new Node("PrimaryExpr");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
@@ -2667,6 +2678,7 @@ Selector:
 		curr->add_terminal_children($2);
 
 		curr->current_node_data = new NodeData(string($2));
+		curr->current_place = new Place(string($2));
 
 		$$ = curr;
 	}
@@ -2679,6 +2691,8 @@ Index:
 
 		curr->current_type = $2->current_type;
 		curr->current_node_data = $2->current_node_data;
+		curr->current_place = $2->current_place;
+		curr->current_code = $2->current_code;
 
 		$$ = curr;
 	}
@@ -2728,6 +2742,7 @@ Slice:
 	}
 	 ;
 
+//remaining
 MakeExpr:
 	MAKE LEFTPARAN Type COMMA Expression COMMA Expression RIGHTPARAN {
 		Node* curr = new Node("MakeExpr");
@@ -2791,6 +2806,20 @@ Arguments:
 
 		curr->current_node_data = $2->current_node_data;
 		curr->current_type = $2->current_type;
+		curr->current_place = $2->current_place;
+		curr->current_code = $2->current_code;
+
+		Place *temp = $2->current_place, *p1, *p2;
+		Instruction* inst;
+        int i=0;
+
+        while (temp != NULL) {
+			p1 = new Place(std::to_string(i++));
+			p2 = new Place(temp->place_name);
+			inst = new Instruction(Instruction::PUSHARG,p1,p2);
+            curr->add_code_in_map(inst);
+            temp = temp->next_place;
+        }
 
 		$$ = curr;
 	}
@@ -2801,6 +2830,21 @@ Arguments:
 
 		curr->current_node_data = $2->current_node_data;
 		curr->current_type = $2->current_type;
+		curr->current_place = $2->current_place;
+		curr->current_code = $2->current_code;
+
+		Place *temp = $2->current_place, *p1, *p2;
+		Instruction* inst;
+        int i=0;
+		
+        while (temp != NULL) {
+			p1 = new Place(std::to_string(i++));
+			p2 = new Place(temp->place_name);
+			inst = new Instruction(Instruction::PUSHARG,p1,p2);
+            curr->add_code_in_map(inst);
+            temp = temp->next_place;
+        }
+
 
 		$$ = curr;
 	}
@@ -2815,7 +2859,10 @@ ExpressionList:
 
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
-		 cout<<$$->current_node_data->value<<endl;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
+
+		cout<<$$->current_node_data->value<<endl;
 		$$ = curr;
 	}
 	| ExpressionList COMMA Expression {
@@ -2826,6 +2873,10 @@ ExpressionList:
 		($$->last_current_node_data())->next_data = $3->current_node_data;
 		$$->current_type = $1->current_type;
 		($$->last_current_type())->next_type = $3->current_type;
+		$$->current_place = $1->current_place;
+		($$->last_current_place())->next_place = $3->current_place;
+		$$->add_code_in_map($1->current_code);
+		$$->add_code_in_map($3->current_code);
 
 	}
 	;
@@ -2842,6 +2893,8 @@ TypeDecl:
 
 		$$->current_node_data = $2->current_node_data;
 		$$->current_type = $2->current_type;
+		$$->current_place = $2->current_place;
+		$$->current_code = $2->current_code;
 	}
 	;
 // remaining
@@ -2867,6 +2920,8 @@ TypeSpec:
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
+		// curr->current_place = $1->current_place;
+		$$->current_code = $1->current_code;
 	}
 	;
 
@@ -2904,6 +2959,8 @@ StructType:
 
 		curr->current_node_data = $3->current_node_data;
 		curr->current_type = $3->current_type;
+		curr->current_place = $3->current_place;
+		curr->current_code = $3->current_code;
 
 		$$ = curr;
 	}
@@ -3000,6 +3057,8 @@ PointerType:
 
 		curr->current_type = $2->current_type;
 		curr->current_node_data = $2->current_node_data;
+		curr->current_place = $2->current_place;
+		curr->current_code = $2->current_code;
 		if($2->current_type->getDataType() == "undefined")
 		{
 			$2->current_type = new BasicType($2->current_node_data->data_name);
@@ -3069,6 +3128,8 @@ Literal:
 		 curr->add_non_terminal_children($1);
 		 curr->current_node_data = $1->current_node_data;
 		 curr->current_type = $1->current_type;
+		 curr->current_place = $1->current_place;
+		 curr->current_code = $1->current_code;
 		 $$ = curr;
 		 cout<<($$->current_type)<<"\n";
 		 }
@@ -3077,6 +3138,8 @@ Literal:
 		 curr->add_non_terminal_children($1);
 		 curr->current_node_data = $1->current_node_data;
 		 curr->current_type = $1->current_type;
+		 curr->current_place = $1->current_place;
+		 curr->current_code = $1->current_code;
 		 $$ = curr;
 		 }
 	;
@@ -3087,6 +3150,7 @@ BasicLit:
 		 curr->add_terminal_children(string($1));
 		 curr->current_node_data = new NodeData($1);
 		 curr->current_type = new BasicType("int");
+		 curr->current_place = new Place(string($1),curr->current_type);
 		 $$ = curr;
 		 }
 	| FLOAT_VAL {
@@ -3094,6 +3158,7 @@ BasicLit:
 		 curr->add_terminal_children(string($1));
 		 curr->current_node_data = new NodeData($1);
 		 curr->current_type = new BasicType("float");
+		 curr->current_place = new Place(string($1),curr->current_type);
 		 $$ = curr;
 		 }
 	| BYTE_VAL  {
@@ -3101,6 +3166,7 @@ BasicLit:
 		 curr->add_terminal_children($1);
 		 curr->current_node_data = new NodeData(string($1));
 		 curr->current_type = new BasicType("byte");
+		 curr->current_place = new Place(string($1),curr->current_type);
 		 $$ = curr;
 		 }
 	| String {
@@ -3108,6 +3174,7 @@ BasicLit:
 		 curr->add_non_terminal_children($1);
 		 curr->current_node_data = $1->current_node_data;
 		 curr->current_type = new BasicType("string");
+		 curr->current_place = new Place($1->current_place->place_name,curr->current_type);
 		 $$ = curr;
 		// cout<<"BasicLit:String ";
 		 cout<<($$->current_type)<<"\n";
@@ -3117,6 +3184,7 @@ BasicLit:
 		 curr->add_terminal_children(string($1));
 		 curr->current_node_data = new NodeData($1);
 		 curr->current_type = new BasicType("bool");
+		 curr->current_place = new Place(string($1),curr->current_type);
 		 $$ = curr;
 		 }
 	| FALSE     {
@@ -3124,6 +3192,7 @@ BasicLit:
 		 curr->add_terminal_children(string($1));
 		 curr->current_node_data = new NodeData($1);
 		 curr->current_type = new BasicType("bool");
+		 curr->current_place = new Place(string($1),curr->current_type);
 		 $$ = curr;
 		 }
 	;
@@ -3133,6 +3202,7 @@ String:
 			 curr->add_terminal_children(string($1));
 			 curr->current_node_data = new NodeData($1);
 			 curr->current_type = new BasicType("string");
+			 curr->current_place = new Place(string($1),curr->current_type);
 			 $$ = curr;}
 	| INTERPRETED_STRING {
 			cout<<"INTERPRETED_STRING: "<<string($1)<<endl;
@@ -3140,6 +3210,7 @@ String:
 			 curr->add_terminal_children(string($1));
 			 curr->current_node_data = new NodeData($1);
 			 curr->current_type = new BasicType("string");
+			 curr->current_place = new Place(string($1),curr->current_type);
 			 $$ = curr;
 		}
 	;

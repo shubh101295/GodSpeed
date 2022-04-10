@@ -67,3 +67,20 @@ NodeData* NodeData::last_next_child(){
 
 	return temp;
 }
+
+Place* Node::last_current_place(){
+	cout<<"B2\n";
+	Place* temp = current_place;
+	cout<<"B2\n";
+	while(temp->next_place!=NULL)
+	{
+		cout<<"B2\n";
+		cout<<(temp==NULL)<<"\n";
+		cout<<(temp->next_place==NULL)<<"\n";
+		temp = temp->next_place;
+		cout<<(temp==NULL)<<"\n";
+		cout<<(temp->next_place==NULL)<<"AA\n";
+	}
+	cout<<"B24\n";
+	return temp;
+}
