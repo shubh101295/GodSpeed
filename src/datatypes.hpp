@@ -19,7 +19,7 @@ class DataType {
 public:
 
 	dataTypes current_data_type;
-	DataType* next_type;
+	DataType* next_type=NULL;
 	
 	virtual DataType* copyClass() { return new DataType();}; 
 	virtual string getDataType() {return "NO TYPE";};

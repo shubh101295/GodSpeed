@@ -172,6 +172,12 @@ void BreakLabels::remove_last_break_label(){
 	break_labels_list_position-=1;
 }
 
+string Labels::get_new_label(){
+	label_count+=1;
+	string _label = "Label:"+to_string(label_count);
+	return _label;
+}
+
 void SwitchCaseList::add_case_label(bool _is_default,bool _has_fallthrough){
 	if(_is_default && has_default) {
 		cout<<"HAS MORE THAN 1 DEFAULT CASES\n";

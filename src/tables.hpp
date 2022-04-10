@@ -55,6 +55,14 @@ public:
 	void           remove_last_break_label();
 };
 
+class Labels{
+private:
+	int            label_count;
+public:
+	Labels(): label_count(0) {};
+	string           get_new_label();
+};
+
 struct CaseLabel{
 	bool is_default;
 	string case_name;
