@@ -38,7 +38,9 @@ class Instruction {
 		ARGDECL	  =   27,
 		JNE       =   28,
 		JE        =   29,
-		LBL       =   30
+		LBL       =   30,
+		RET 	  =   31
+
 	};
 
 	Place * address1;

@@ -1440,6 +1440,8 @@ ElementList:
 		curr->add_non_terminal_children($1);
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| ElementList COMMA KeyedElement {
@@ -1449,11 +1451,14 @@ ElementList:
 
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
+		curr->current_place = $1->current_place;
+
+		$$ = curr;
 
 		($$->last_current_node_data())->next_data = $3->current_node_data;
 		($$->last_current_type())->next_type = $3->current_type;
+		($$->last_current_place())->next_place = $3->current_place;
 
-		$$ = curr;
 	}
 	;
 
@@ -1463,6 +1468,8 @@ KeyedElement:
 		curr->add_non_terminal_children($1);
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| Key COLON Element {
@@ -1493,6 +1500,8 @@ Element:
 		curr->add_non_terminal_children($1);
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	| LiteralValue {
@@ -1500,15 +1509,19 @@ Element:
 		curr->add_non_terminal_children($1);
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
+		curr->current_place = $1->current_place;
+		curr->current_code = $1->current_code;
 		$$ = curr;
 	}
 	;
 
 // remaining
+//remTAC: scopeExpr
 ReturnStmt:
 	RETURN {
 		$$ = new Node("ReturnStmt");
 		$$ -> current_node_data = new NodeData(string($1));
+		$$->add_code_in_map(new Instruction(Instruction::RET));
 
 	}
 	| RETURN ExpressionList {
@@ -1516,7 +1529,6 @@ ReturnStmt:
 		$$ -> add_non_terminal_children($2);
 		$$->current_node_data = new NodeData(string($1));
 		$$->current_node_data->node_child = $2->current_node_data;
-
 	}
 	;
 
