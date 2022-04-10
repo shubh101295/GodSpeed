@@ -6,11 +6,35 @@
 
 // for storing TAC
 class Instruction {
+	public:
 	enum opcode_types {
 		ADD       =   0,
 		SUB       =   1,
 		MUL       =   2,
-		DIC       =   3
+		DIC       =   3,
+		PUSHARG   =   4,
+		MAKE      =   5,
+		UADDR	  =   6,
+		UREF	  =   7,
+		USTOR     =   8,
+		NOT       =   9,
+		QUOT      =   10,
+		MOD       =   11,
+		CMP       =   12,
+		ISEQ      =   13,
+		NEQ       =   14,
+		LESSEQ    =   15,
+		GRTEQ     =   16,
+		LESS      =   17,
+		GRT       =   18,
+		SHL       =   19,
+		SHR       =   20,
+		AND       =   21,
+		ANDNOT    =   22,
+		OR        =   23,
+		ORNOT     =   24,
+		XOR       =   25
+
 	};
 	
 	Place * address1;

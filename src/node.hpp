@@ -56,8 +56,10 @@ struct Node{
 	void add_terminal_children(string _terminal_string_value);
 	NodeData* last_current_node_data();
 	DataType* last_current_type();
+	Place* last_current_place();
 	void add_code_in_map(Instruction* _code);
 	void add_code_in_map(map<int,Instruction*> _code);
+	void print_code_in_file(string file_name);
 };
 
 #endif
