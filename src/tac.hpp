@@ -35,7 +35,8 @@ class Instruction {
 		ORNOT     =   24,
 		XOR       =   25,
 		DECL      =   26,
-		ARGDECL	  =   27
+		ARGDECL	  =   27,
+		RET 	  =   28
 
 	};
 
