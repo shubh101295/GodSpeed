@@ -30,6 +30,11 @@
 	// bool is_last_statement = false;
 	int fallthrough_expression_count = 0;
 	bool has_default_statement = false;
+	int label_id = 0;
+	string generate_label()
+	{
+		return "label" + to_string(label_id);
+	}
 %}
 
 %define parse.error verbose
@@ -1533,6 +1538,7 @@ ReturnStmt:
 	}
 	;
 
+//remTAC: Please check if break label top element retrieved correctly.
 BreakStmt:
 	BREAK {
 		Node* curr = new Node("BreakStmt");
@@ -1557,6 +1563,7 @@ BreakStmt:
 	;
 
 
+//remTAC: Please check if break label top element retrieved correctly.
 ContinueStmt:
 	CONTINUE {
 		Node* curr = new Node("ContinueStmt");
@@ -1589,6 +1596,7 @@ GotoStmt:
 	}
 	;
 
+//remTAC: look after this.
 SwitchStmt:
 	ExprSwitchStmt {
 		// cout<<"SwitchStmt: ExprSwitchStmt\n";
@@ -1763,6 +1771,7 @@ FallthroughStmt:
 
 	;
 
+//remTAC: scopeExprClosed
 IfStmt:
 	IF OpenBlock Expression Block CloseBlock {
 		$$ = new Node("IfStmt");
@@ -1781,6 +1790,13 @@ IfStmt:
 			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$3->current_type->getDataType()<<endl;
 			exit(1);
 		}
+
+		$$->add_code_in_map($3->current_code);
+		Instruction* ins = new Instruction(Instruction::JEQZ, $3->current_place, new Place(generate_label()));
+		$$->add_code_in_map(ins);
+		$$->add_code_in_map($4->current_code);
+		$$->add_code_in_map(new Instruction(Instruction::LBL, generate_label()));
+		label_id++;
 	}
 	|IF OpenBlock SimpleStmt SCOLON Expression Block CloseBlock {
 		$$ = new Node("IfStmt");
@@ -1803,6 +1819,14 @@ IfStmt:
 			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$5->current_type->getDataType()<<endl;
 			exit(1);
 		}
+
+		$$->add_code_in_map($3->current_code);
+		$$->add_code_in_map($5->current_code);
+		Instruction* ins = new Instruction(Instruction::JEQZ, $5->current_place, new Place(generate_label()));
+		$$->add_code_in_map(ins);
+		$$->add_code_in_map($6->current_code);
+		$$->add_code_in_map(new Instruction(Instruction::LBL, generate_label()));
+		label_id++;
 	}
 	|IF OpenBlock Expression Block ELSE IfStmt CloseBlock {
 		$$ = new Node("IfStmt");
@@ -1825,6 +1849,21 @@ IfStmt:
 			exit(1);
 		}
 
+		string label_if = generate_label(); label_id++;
+		string label_else = generate_label(); label_id++;
+
+		$$->add_code_in_map($3->current_code);
+		Instruction* ins1 = new Instruction(Instruction::JEQZ, $3->current_place, new Place(label_if));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($4->current_code);
+		Instruction* ins2 = new Instruction(Instruction::JMP, new Place(label_else));
+		$$->add_code_in_map(ins2);
+		Instruction* ins3 = new Instruction(Instruction::LBL, new Place(label_if));
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map($6->current_code);
+		Instruction* ins4 = new Instruction(Instruction::JMP, new Place(label_else));
+		$$->add_code_in_map(ins4);
+
 	}
 	|IF OpenBlock Expression Block ELSE Block CloseBlock {
 		$$ = new Node("IfStmt");
@@ -1846,6 +1885,21 @@ IfStmt:
 			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$3->current_type->getDataType()<<endl;
 			exit(1);
 		}
+
+		string label_if = generate_label(); label_id++;
+		string label_else = generate_label(); label_id++;
+
+		$$->add_code_in_map($3->current_code);
+		Instruction* ins1 = new Instruction(Instruction::JEQZ, $3->current_place, new Place(label_if));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($4->current_code);
+		Instruction* ins2 = new Instruction(Instruction::JMP, new Place(label_else));
+		$$->add_code_in_map(ins2);
+		Instruction* ins3 = new Instruction(Instruction::LBL, new Place(label_if));
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map($6->current_code);
+		Instruction* ins4 = new Instruction(Instruction::JMP, new Place(label_else));
+		$$->add_code_in_map(ins4);
 
 	}
 	|IF OpenBlock SimpleStmt SCOLON Expression Block ELSE IfStmt CloseBlock {
@@ -1872,6 +1926,22 @@ IfStmt:
 			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$5->current_type->getDataType()<<endl;
 			exit(1);
 		}
+
+		string label_if = generate_label(); label_id++;
+		string label_else = generate_label(); label_id++;
+
+		$$->add_code_in_map($3->current_code);
+		$$->add_code_in_map($5->current_code);
+		Instruction* ins1 = new Instruction(Instruction::JEQZ, $5->current_place, new Place(label_if));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($6->current_code);
+		Instruction* ins2 = new Instruction(Instruction::JMP, new Place(label_else));
+		$$->add_code_in_map(ins2);
+		Instruction* ins3 = new Instruction(Instruction::LBL, new Place(label_if));
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map($8->current_code);
+		Instruction* ins4 = new Instruction(Instruction::JMP, new Place(label_else));
+		$$->add_code_in_map(ins4);
 	}
 	|IF OpenBlock SimpleStmt SCOLON Expression Block ELSE Block CloseBlock {
 		$$ = new Node("IfStmt");
@@ -1897,6 +1967,22 @@ IfStmt:
 			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$5->current_type->getDataType()<<endl;
 			exit(1);
 		}
+
+		string label_if = generate_label(); label_id++;
+		string label_else = generate_label(); label_id++;
+
+		$$->add_code_in_map($3->current_code);
+		$$->add_code_in_map($5->current_code);
+		Instruction* ins1 = new Instruction(Instruction::JEQZ, $5->current_place, new Place(label_if));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($6->current_code);
+		Instruction* ins2 = new Instruction(Instruction::JMP, new Place(label_else));
+		$$->add_code_in_map(ins2);
+		Instruction* ins3 = new Instruction(Instruction::LBL, new Place(label_if));
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map($8->current_code);
+		Instruction* ins4 = new Instruction(Instruction::JMP, new Place(label_else));
+		$$->add_code_in_map(ins4);
 	}
 	;
 
@@ -1972,6 +2058,7 @@ ForStmt:
 //	}
 //	;
 
+//remTAC: handle this nicely.
 forMarker:
 	{
 		$$ = new Node("");

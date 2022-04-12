@@ -40,7 +40,8 @@ class Instruction {
 		JE        =   29,
 		LBL       =   30,
 		RET 	  =   31,
-		JMP		  =   32
+		JMP		  =   32,
+		JEQZ 	  =   33
 
 	};
 
@@ -57,9 +58,16 @@ class Instruction {
 		};
 	Instruction(Instruction::opcode_types _current_opcodes, string loc, string val, Place* _address3=NULL):
 		current_opcode(_current_opcodes) {
-			address1 = new Place(loc);
-			address2 = new Place(val);
+			address1 = new Place(loc, NULL);
+			address2 = new Place(val, NULL);
 			address3 = _address3;
+		};
+
+	Instruction(Instruction::opcode_types _current_opcodes, string loc):
+		current_opcode(_current_opcodes) {
+			address1 = new Place(loc, NULL);
+			address2 = NULL;
+			address3 = NULL;
 		};
 };
 
