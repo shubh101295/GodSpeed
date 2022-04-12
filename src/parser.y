@@ -496,7 +496,7 @@ Declaration:
 	// }
 
 // might change
-//remTAC: FunctionDEcl
+//remTAC: scopeExpr
 FunctionDecl:
 	FUNC IDENTIFIER OpenBlock Signature FunctionBody
 	{
@@ -516,6 +516,15 @@ FunctionDecl:
 		$$-> current_node_data->node_child = $5->current_node_data;
 		dump_dot_file("./bin/"+string($2)+".dot", $$);
 
+		Instruction* ins1 = new Instruction(Instruction::LBL, string($2));
+		$$->add_code_in_map(ins1);
+		Instruction* ins2 = new Instruction(Instruction::NEWFUNC);
+		$$->add_code_in_map(ins2);
+		$$->add_code_in_map($4->current_code);
+		$$->add_code_in_map($5->current_code);
+		Instruction* ins3 = new Instruction(Instruction::NEWFUNCEND);
+		$$->add_code_in_map(ins3);
+
 	}
 	| FUNC IDENTIFIER OpenBlock Signature {
 		st->add_in_symbol_table({"0;",string($2)},$4->current_type);
@@ -531,7 +540,6 @@ FunctionDecl:
 	}
 	;
 
-//remTAC: MethodDECL me Functionbody wut
 MethodDecl:
 	FUNC Receiver IDENTIFIER Signature {
 		Node *curr = new Node("MethodDecl");
@@ -540,7 +548,7 @@ MethodDecl:
 		curr->add_non_terminal_children($4);
 		$$=curr;
 	}
-	| FUNC Receiver IDENTIFIER Signature FunctionBody {
+	/* | FUNC Receiver IDENTIFIER Signature FunctionBody {
 		Node *curr = new Node("MethodDecl");
 		curr->add_non_terminal_children($2);
 		curr->add_terminal_children(string($3));
@@ -548,7 +556,7 @@ MethodDecl:
 		curr->add_non_terminal_children($5);
 		curr->add_code_in_map($5->current_code);
 		$$=curr;
-	}
+	} */
 	;
 
 LabeledStmt:
@@ -1985,7 +1993,7 @@ IfStmt:
 		$$->add_code_in_map(ins4);
 	}
 	;
-
+//remTAC: code for forMArker. need to fixed for hsubh.
 ForStmt:
 	FOR forMarker Block forMarkerEnd
 	{
@@ -1997,6 +2005,16 @@ ForStmt:
 		it=it->node_child;
 		it->node_child = $3->current_node_data;
 
+		string label = generate_label();
+		label_id++;
+
+		Instruction* ins = new Instruction(Instruction::LBL, new Place(label));
+		$$->add_code_in_map(ins);
+		$$->add_code_in_map($3->current_code);
+		$$->add_code_in_map($2->current_code);
+		Instruction* ins1 = new Instruction(Instruction::JMP, new Place(label));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($4->current_code);
 	}
 	| FOR OpenBlock SimpleStmt SCOLON forMarker EmptyExpr SCOLON SimpleStmt Block forMarkerEnd CloseBlock {
 		$$ = new Node("ForStmt");
@@ -2009,6 +2027,25 @@ ForStmt:
 		it->node_child = new NodeData("ForBody");
 		it->node_child->node_child = $9->current_node_data;
 
+		string label_loop_start = generate_label(); label_id++;
+		string label_loop_end = generate_label(); label_id++;
+
+		$$->add_code_in_map($3->current_code);
+		$$->add_code_in_map($5->current_code);
+		Instruction* ins1 = new Instruction(Instruction::LBL, new Place(label_loop_start));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($6->current_code);
+		Instruction* ins2 = new Instruction(Instruction::CMP, new Place("0"), $6->current_place);
+		$$->add_code_in_map(ins2);
+		Instruction* ins3 = new Instruction(Instruction::JE, label_loop_end);
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map($9->current_code);
+		$$->add_code_in_map($8->current_code);
+		Instruction* ins4 = new Instruction(Instruction::JMP, label_loop_start);
+		$$->add_code_in_map(ins4);
+		$$->add_code_in_map($10->current_code);
+		Instruction* ins5 = new Instruction(Instruction::LBL, new Place(label_loop_end));
+		$$->add_code_in_map(ins5);
 	}
 	| FOR OpenBlock SimpleStmt SCOLON forMarker ExpressionStmt SCOLON SimpleStmt Block forMarkerEnd CloseBlock {
 		$$ = new Node("ForStmt");
@@ -2021,6 +2058,26 @@ ForStmt:
 		NodeData* it= $$->current_node_data;
 		it->node_child = new NodeData("ForBody");
 		it->node_child->node_child = $9->current_node_data;
+
+		string label_loop_start = generate_label(); label_id++;
+		string label_loop_end = generate_label(); label_id++;
+
+		$$->add_code_in_map($3->current_code);
+		Instruction* ins1 = new Instruction(Instruction::LBL, new Place(label_loop_start));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($6->current_code);
+		Instruction* ins2 = new Instruction(Instruction::CMP, new Place("0"), $6->current_place);
+		$$->add_code_in_map(ins2);
+		Instruction* ins3 = new Instruction(Instruction::JE, label_loop_end);
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map($9->current_code);
+		$$->add_code_in_map($5->current_code);
+		$$->add_code_in_map($8->current_code);
+		Instruction* ins4 = new Instruction(Instruction::JMP, label_loop_start);
+		$$->add_code_in_map(ins4);
+		$$->add_code_in_map($10->current_code);
+		Instruction* ins5 = new Instruction(Instruction::LBL, new Place(label_loop_end));
+		$$->add_code_in_map(ins5);
 	}
 	| FOR OpenBlock Condition forMarker Block forMarkerEnd CloseBlock {
 		$$ = new Node("ForStmt");
@@ -2034,6 +2091,24 @@ ForStmt:
 		it->next_data= new NodeData("ForBody");
 		it = it->next_data;
 		it->node_child= $5->current_node_data;
+
+		string label_loop_start = generate_label(); label_id++;
+		string label_loop_end = generate_label(); label_id++;
+
+		Instruction* ins1 = new Instruction(Instruction::LBL, new Place(label_loop_start));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($3->current_code);
+		Instruction* ins2 = new Instruction(Instruction::CMP, "0", $3->current_place->place_name);
+		$$->add_code_in_map(ins2);
+		Instruction* ins3 = new Instruction(Instruction::JE, label_loop_end);
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map($5->current_code);
+		$$->add_code_in_map($4->current_code);
+		Instruction* ins4 = new Instruction(Instruction::JMP, label_loop_start);
+		$$->add_code_in_map(ins4);
+		$$->add_code_in_map($6->current_code);
+		Instruction* ins5 = new Instruction(Instruction::LBL, new Place(label_loop_end));
+		$$->add_code_in_map(ins5);
 	}
 	//| FOR OpenBlock EmptyStmt Empty forMarker Expression Empty EmptyStmt Block forMarkerEnd CloseBlock {
 	//	$$ = new Node("ForStmt");

@@ -41,8 +41,9 @@ class Instruction {
 		LBL       =   30,
 		RET 	  =   31,
 		JMP		  =   32,
-		JEQZ 	  =   33
-
+		JEQZ 	  =   33,
+		NEWFUNC   =   34,
+		NEWFUNCEND =  35
 	};
 
 	Place * address1;
