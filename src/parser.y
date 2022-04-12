@@ -1542,6 +1542,8 @@ BreakStmt:
 			exit(1);
 		}
 		$$ = curr;
+		Instruction* ins = new Instruction(Instruction::JMP, new Place(bl->return_top_label()));
+		$$->add_code_in_map(ins);
 	}
 	| BREAK IDENTIFIER {
 		Node * curr = new Node("BreakStmt");
@@ -1549,6 +1551,8 @@ BreakStmt:
 		curr->current_node_data = new NodeData (string($1));
 		curr->current_node_data->node_child = new NodeData(string($2));
 		$$ = curr;
+		Instruction* ins = new Instruction(Instruction::JMP, new Place("<unimplemented>"));
+		$$->add_code_in_map(ins);
 	}
 	;
 
@@ -1562,7 +1566,8 @@ ContinueStmt:
 			cout<<"[INVALID CONTINUE] Tried to continue when not inside a loop!";
 			exit(1);
 		}
-
+		Instruction* ins = new Instruction(Instruction::JMP, new Place(bl->return_top_label()));
+		$$->add_code_in_map(ins);
 	}
 	// | CONTINUE IDENTIFIER {
 	// 	Node* curr = new Node("ContinueStmt");

@@ -39,7 +39,8 @@ class Instruction {
 		JNE       =   28,
 		JE        =   29,
 		LBL       =   30,
-		RET 	  =   31
+		RET 	  =   31,
+		JMP		  =   32
 
 	};
 

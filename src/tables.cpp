@@ -13,7 +13,7 @@ void SymbolTable::update_current_scope() {
 }
 
 string SymbolTable::get_current_scope() {
-	return current_scope;	
+	return current_scope;
 }
 
 void SymbolTable::enter_new_scope() {
@@ -66,7 +66,7 @@ void SymbolTable::output_csv_for_function(string name_of_function, string prefix
 			cout<<temp.first.first<<",    "<<temp.first.second<<",    \n";
 			cout<<temp.second->getDataType()<<"\n";
 		 	my_function_dump<<temp.first.first<<",    "<<temp.first.second<<",    "<<temp.second->getDataType()<<"\n";
-			// my_function_dump	
+			// my_function_dump
 		}
 	 	// cout<<temp.second<<"\n";
 	 	// cout<<temp.second->getDataType()<<"\n";
@@ -120,7 +120,7 @@ DataType * SymbolTable::get_value_from_key(string _variable_name){
 	{
 		return symbol_table[new_key];
 	}
-	return NULL;	
+	return NULL;
 }
 
 DataType* SymbolTable::get_type(string variable_name){
@@ -159,7 +159,7 @@ void BreakLabels::add_new_break_label(){
 	string _break_label = "Label"+to_string(break_label_count);
 	if(break_labels_list_position>break_labels_list.size())
 	{
-		break_labels_list.resize(break_labels_list_position);	
+		break_labels_list.resize(break_labels_list_position);
 	}
 	break_labels_list[break_labels_list_position-1]=_break_label;
 }
@@ -170,6 +170,10 @@ bool BreakLabels::is_empty(){
 
 void BreakLabels::remove_last_break_label(){
 	break_labels_list_position-=1;
+}
+
+string BreakLabels::return_top_label(){
+	return break_labels_list[break_labels_list_position - 1];
 }
 
 string Labels::get_new_label(){
