@@ -2230,6 +2230,9 @@ Expression:
 
 			Place* p1 = new Place($1->current_type);
 			cout<<"MAI YAHA HU\n";
+			cout<<($1->current_place==NULL)<<"  Expression MUL Expression1 \n";
+			cout<<($$->current_place==NULL)<<"  Expression MUL Expression2 \n";
+			
 			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
 			Instruction* ins2 = new Instruction("MUL",$3->current_place,p1);
 			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
