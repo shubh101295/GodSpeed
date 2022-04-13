@@ -17,7 +17,7 @@ string SymbolTable::get_current_scope() {
 }
 
 void SymbolTable::enter_new_scope() {
-	cout<<"Inside SymbolTable::enter_new_scope\n";
+	// cout<<"Inside SymbolTable::enter_new_scope\n";
 	current_block_inside_count+=1;
 	if(current_block_inside_count>=current_block_numbers.size())
 	{
@@ -38,7 +38,7 @@ void SymbolTable::enter_new_scope() {
 void SymbolTable::exit_latest_scope(){
 	// delete all from current scope left
 	current_block_inside_count-=1;
-	cout<<"EXit SymbolTable::enter_new_scope\n";
+	// cout<<"EXit SymbolTable::enter_new_scope\n";
 	update_current_scope();
 }
 
@@ -53,12 +53,12 @@ bool isPrefix(string s1,string s2)
 
 void SymbolTable::output_csv_for_function(string name_of_function, string prefix){
 	ofstream my_function_dump("./bin/"+name_of_function+".csv");
-	cout<<"A FORM output_csv_for_function\n";
+	// cout<<"A FORM output_csv_for_function\n";
 	my_function_dump<<"Scope,    variable_name,    variable_type\n";
 	// cout<<symbol_table[{"0;",name_of_function}]<<"\n";
 	my_function_dump<<"0;,    "<<name_of_function<<",    "<<symbol_table[{"0;",name_of_function}]->getDataType()<<"\n";
 	// for(auto val:)
-	cout<<"In output_csv_for_function \n";
+	// cout<<"In output_csv_for_function \n";
 	for (auto temp:symbol_table)
 	{
 		if(isPrefix(prefix,temp.first.first))
