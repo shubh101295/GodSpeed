@@ -30,6 +30,11 @@
 	// bool is_last_statement = false;
 	int fallthrough_expression_count = 0;
 	bool has_default_statement = false;
+	int label_id = 0;
+	string generate_label()
+	{
+		return "label" + to_string(label_id);
+	}
 %}
 
 %define parse.error verbose
@@ -87,7 +92,11 @@ SourceFile:
 			 curr->add_non_terminal_children($4);
 			 curr->current_node_data = new NodeData("SourceFile");
 			 curr->current_node_data->node_child = $4->current_node_data;
+			 cout<<"SourceFile:	PackageClause SCOLON ImportDeclList TopLevelDeclList\n";
+			 curr->add_code_in_map($4->current_code);
+			 
 			 $$ = curr;
+			 
 			 dump_dot_file("ast.dot", $$);
 			 $$->print_code_in_file("bin/output.tac");
 			 // auto val = st->get_symbol_table_data();
@@ -120,7 +129,7 @@ CloseBlock:
 PackageClause:
 	PACKAGE PackageName {
 		Node* curr = new Node("PackageClause");
-		// cout<<"PackageClause:	PACKAGE PackageName \n";
+		 cout<<"PackageClause:	PACKAGE PackageName \n";
 		curr -> add_non_terminal_children($2);
 		$$ = curr;
 	}
@@ -129,7 +138,7 @@ PackageClause:
 PackageName:
 	IDENTIFIER {
 		Node* curr = new Node("PackageName");
-		// cout<<"PackageName: IDENTIFIER - "<<string($1)<<"\n";
+		 cout<<"PackageName: IDENTIFIER - "<<string($1)<<"\n";
 		curr -> add_terminal_children(string($1));
 		$$ = curr;
 	}
@@ -144,7 +153,7 @@ ImportDeclList:
 	}
 	| ImportDecl SCOLON {
 		Node* curr = new Node("ImportDeclList");
-		// cout<<"ImportDeclList: ImportDecl SCOLON \n";
+		 cout<<"ImportDeclList: ImportDecl SCOLON \n";
 		curr->add_non_terminal_children($1);
 		$$ = curr;
 	}
@@ -153,7 +162,7 @@ ImportDeclList:
 ImportDecl:
 	IMPORT LEFTPARAN ImportSpecList RIGHTPARAN {
 		Node* curr = new Node("ImportDecl");
-		// cout<<"ImportDecl:IMPORT LEFTPARAN ImportSpecList RIGHTPARAN\n";
+		 cout<<"ImportDecl:IMPORT LEFTPARAN ImportSpecList RIGHTPARAN\n";
 		curr->add_non_terminal_children($3);
 		$$ = curr;
 	}
@@ -163,7 +172,7 @@ ImportDecl:
 	}
 	| IMPORT ImportSpec {
 		Node* curr = new Node("ImportDecl");
-		// cout<<"ImportDecl: IMPORT ImportSpec \n";
+		 cout<<"ImportDecl: IMPORT ImportSpec \n";
 		curr->add_non_terminal_children($2);
 		$$ = curr;
 	}
@@ -196,7 +205,7 @@ ImportSpec:
 		$$ = curr;
 	}
 	| ImportPath {
-		// cout<<"ImportSpec: ImportPath\n";
+		 cout<<"ImportSpec: ImportPath\n";
 		Node* curr = new Node("ImportSpec");
 		curr->add_non_terminal_children($1);
 		$$ = curr;
@@ -206,7 +215,7 @@ ImportSpec:
 ImportPath:
 	String {
 		Node* curr = new Node("ImportPath");
-		// cout<<"ImportPath: String\n";
+		 cout<<"ImportPath: String\n";
 		curr->add_non_terminal_children($1);
 		$$ = curr;
 	}
@@ -214,7 +223,7 @@ ImportPath:
 
 TopLevelDeclList:
 	TopLevelDeclList TopLevelDecl SCOLON  {
-		// cout<<"TopLevelDeclList: TopLevelDeclList TopLevelDecl SCOLON\n";
+		 cout<<"TopLevelDeclList: TopLevelDeclList TopLevelDecl SCOLON\n";
 		$$ = new Node("TopLevelDeclList");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
@@ -225,14 +234,16 @@ TopLevelDeclList:
 		($$->last_current_node_data())->next_data = $2->current_node_data;
 		$$->add_code_in_map($1->current_code);
 		$$->add_code_in_map($2->current_code);
+		cout<<"YO\n";
 	}
 	| TopLevelDecl SCOLON {
 		Node* curr = new Node("TopLevelDeclList");
-		// cout<<"TopLevelDeclList: TopLevelDecl SCOLON\n";
+		 cout<<"TopLevelDeclList: TopLevelDecl SCOLON\n";
 		curr->add_non_terminal_children($1);
 		$$ = curr;
 		$$->current_node_data = $1->current_node_data;
 		$$->add_code_in_map($1->current_code);
+		cout<<"YO2\n";
 	}
 	;
 
@@ -248,7 +259,7 @@ TopLevelDecl:
 	}
 	| FunctionDecl {
 		Node* curr = new Node("TopLevelDecl");
-		// cout<<"TopLevelDecl : FunctionDecl\n";
+		 cout<<"TopLevelDecl : FunctionDecl\n";
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
@@ -293,7 +304,7 @@ Condition:
 StatementList:
 	StatementList Statement SCOLON {
 
-		// cout<<"StatementList: 	StatementList Statement SCOLON\n";
+		 cout<<"StatementList: 	StatementList Statement SCOLON\n";
 		Node* curr = new Node("StatementList");
 		curr->add_non_terminal_children($1);
 		curr->add_non_terminal_children($2);
@@ -491,7 +502,7 @@ Declaration:
 	// }
 
 // might change
-//remTAC: FunctionDEcl
+//remTAC: scopeExpr
 FunctionDecl:
 	FUNC IDENTIFIER OpenBlock Signature FunctionBody
 	{
@@ -511,6 +522,15 @@ FunctionDecl:
 		$$-> current_node_data->node_child = $5->current_node_data;
 		dump_dot_file("./bin/"+string($2)+".dot", $$);
 
+		Instruction* ins1 = new Instruction("LBL", string($2));
+		$$->add_code_in_map(ins1);
+		Instruction* ins2 = new Instruction("NEWFUNC");
+		$$->add_code_in_map(ins2);
+		$$->add_code_in_map($4->current_code);
+		$$->add_code_in_map($5->current_code);
+		Instruction* ins3 = new Instruction("NEWFUNCEND");
+		$$->add_code_in_map(ins3);
+
 	}
 	| FUNC IDENTIFIER OpenBlock Signature {
 		st->add_in_symbol_table({"0;",string($2)},$4->current_type);
@@ -526,7 +546,6 @@ FunctionDecl:
 	}
 	;
 
-//remTAC: MethodDECL me Functionbody wut
 MethodDecl:
 	FUNC Receiver IDENTIFIER Signature {
 		Node *curr = new Node("MethodDecl");
@@ -535,7 +554,7 @@ MethodDecl:
 		curr->add_non_terminal_children($4);
 		$$=curr;
 	}
-	| FUNC Receiver IDENTIFIER Signature FunctionBody {
+	/* | FUNC Receiver IDENTIFIER Signature FunctionBody {
 		Node *curr = new Node("MethodDecl");
 		curr->add_non_terminal_children($2);
 		curr->add_terminal_children(string($3));
@@ -543,7 +562,7 @@ MethodDecl:
 		curr->add_non_terminal_children($5);
 		curr->add_code_in_map($5->current_code);
 		$$=curr;
-	}
+	} */
 	;
 
 LabeledStmt:
@@ -640,7 +659,7 @@ IncDecStmt:
 		$$->current_node_data = new NodeData(string($2) + "unary");
 		$$->current_node_data->node_child = $1->current_node_data;
 		$$->add_code_in_map($1->current_code);
-		Instruction* ins1 = new Instruction(Instruction::ADD, new Place("1"), $1->current_place);
+		Instruction* ins1 = new Instruction("ADD", new Place("1"), $1->current_place);
 		$$->add_code_in_map(ins1);
 
 	}
@@ -651,7 +670,7 @@ IncDecStmt:
 		$$->current_node_data = new NodeData(string($2) + "unary");
 		$$->current_node_data->node_child = $1->current_node_data;
 		$$->add_code_in_map($1->current_code);
-		Instruction* ins1 = new Instruction(Instruction::SUB, new Place("1"), $1->current_place);
+		Instruction* ins1 = new Instruction("SUB", new Place("1"), $1->current_place);
 		$$->add_code_in_map(ins1);
 	}
 	;
@@ -735,7 +754,7 @@ Assignment:
 				}
 
 			}
-			Instruction* ins = new Instruction(Instruction::USTOR, right_place, new Place(left_data->lval, right_type));
+			Instruction* ins = new Instruction("USTOR", right_place, new Place(left_data->lval, right_type));
 			$$->add_code_in_map(ins);
 				// cout<<"HERE 4\n";
 			left_data = left_data->next_data;
@@ -818,7 +837,7 @@ ShortVarDecl:
 				st->add_in_symbol_table({st->get_current_scope(),name}, right_type);
 			}
 
-			Instruction* ins = new Instruction(Instruction::USTOR, right_place, new Place(left_data->data_name, right_type));
+			Instruction* ins = new Instruction("USTOR", right_place, new Place(left_data->data_name, right_type));
 			$$->add_code_in_map(ins);
 
 			left_data = left_data -> next_data;
@@ -883,6 +902,7 @@ VarSpecList:
 
 VarSpec:
 	IdentifierList Type {
+		cout<<"VarSpec: IdentifierList Type\n";
 		$$ = new Node("VarSpec");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
@@ -895,7 +915,7 @@ VarSpec:
 			}
 			st->add_in_symbol_table({st->get_current_scope(),curr->data_name},$2->current_type);
 			// cout<<curr->data_name<<"    "<< $2->current_type<<"   "<<$2->current_type->getDataType()<<"\n";
-			Instruction* ins = new Instruction(Instruction::DECL, new Place(st->get_current_scope() + curr->data_name));
+			Instruction* ins = new Instruction("DECL", new Place(st->get_current_scope() + curr->data_name));
 			$$->add_code_in_map(ins);
 			DataType * temp = $2->current_type->copyClass();
 			// cout<<temp<<" "<<temp->getDataType()<<"  " <<temp->getDataType()<<"\n";
@@ -920,7 +940,7 @@ VarSpec:
 				exit(1);
 			}
 			st->add_in_symbol_table({st->get_current_scope(),curr->data_name},$2->current_type);
-			Instruction* ins = new Instruction(Instruction::DECL, new Place(st->get_current_scope() + curr->data_name));
+			Instruction* ins = new Instruction("DECL", new Place(st->get_current_scope() + curr->data_name));
 			$$->add_code_in_map(ins);
 			$$->current_type = $2->current_type;
 			curr = curr->next_data;
@@ -969,7 +989,7 @@ VarSpec:
 			}
 			else{
 				st->add_in_symbol_table({st->get_current_scope(),name}, right_type);
-				Instruction* ins = new Instruction(Instruction::DECL, new Place(st->get_current_scope() + name));
+				Instruction* ins = new Instruction("DECL", new Place(st->get_current_scope() + name));
 				$$->add_code_in_map(ins);
 			}
 
@@ -1038,7 +1058,7 @@ Signature:
 			temp -> next_type = NULL;
 			arguments.push_back(temp);
 
-			Instruction* ins = new Instruction(Instruction::ARGDECL, std::to_string(i++), st->get_current_scope() + dcurr->data_name);
+			Instruction* ins = new Instruction("ARGDECL", std::to_string(i++), st->get_current_scope() + dcurr->data_name);
 			$$->add_code_in_map(ins);
 
 			curr = curr->next_type;
@@ -1069,7 +1089,7 @@ Signature:
 			temp -> next_type = NULL;
 			arguments.push_back(temp);
 
-			Instruction* ins = new Instruction(Instruction::ARGDECL, std::to_string(i++), st->get_current_scope() + dcurr->data_name);
+			Instruction* ins = new Instruction("ARGDECL", std::to_string(i++), st->get_current_scope() + dcurr->data_name);
 			$$->add_code_in_map(ins);
 
 			curr = curr->next_type;
@@ -1522,7 +1542,7 @@ ReturnStmt:
 	RETURN {
 		$$ = new Node("ReturnStmt");
 		$$ -> current_node_data = new NodeData(string($1));
-		$$->add_code_in_map(new Instruction(Instruction::RET));
+		$$->add_code_in_map(new Instruction("RET"));
 
 	}
 	| RETURN ExpressionList {
@@ -1533,6 +1553,7 @@ ReturnStmt:
 	}
 	;
 
+//remTAC: Please check if break label top element retrieved correctly.
 BreakStmt:
 	BREAK {
 		Node* curr = new Node("BreakStmt");
@@ -1542,6 +1563,8 @@ BreakStmt:
 			exit(1);
 		}
 		$$ = curr;
+		Instruction* ins = new Instruction("JMP", new Place(bl->return_top_label()));
+		$$->add_code_in_map(ins);
 	}
 	| BREAK IDENTIFIER {
 		Node * curr = new Node("BreakStmt");
@@ -1549,10 +1572,13 @@ BreakStmt:
 		curr->current_node_data = new NodeData (string($1));
 		curr->current_node_data->node_child = new NodeData(string($2));
 		$$ = curr;
+		Instruction* ins = new Instruction("JMP", new Place("<unimplemented>"));
+		$$->add_code_in_map(ins);
 	}
 	;
 
 
+//remTAC: Please check if break label top element retrieved correctly.
 ContinueStmt:
 	CONTINUE {
 		Node* curr = new Node("ContinueStmt");
@@ -1562,7 +1588,8 @@ ContinueStmt:
 			cout<<"[INVALID CONTINUE] Tried to continue when not inside a loop!";
 			exit(1);
 		}
-
+		Instruction* ins = new Instruction("JMP", new Place(bl->return_top_label()));
+		$$->add_code_in_map(ins);
 	}
 	// | CONTINUE IDENTIFIER {
 	// 	Node* curr = new Node("ContinueStmt");
@@ -1584,6 +1611,7 @@ GotoStmt:
 	}
 	;
 
+//remTAC: look after this.
 SwitchStmt:
 	ExprSwitchStmt {
 		// cout<<"SwitchStmt: ExprSwitchStmt\n";
@@ -1758,6 +1786,7 @@ FallthroughStmt:
 
 	;
 
+//remTAC: scopeExprClosed
 IfStmt:
 	IF OpenBlock Expression Block CloseBlock {
 		$$ = new Node("IfStmt");
@@ -1776,6 +1805,13 @@ IfStmt:
 			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$3->current_type->getDataType()<<endl;
 			exit(1);
 		}
+
+		$$->add_code_in_map($3->current_code);
+		Instruction* ins = new Instruction("JEQZ", $3->current_place, new Place(generate_label()));
+		$$->add_code_in_map(ins);
+		$$->add_code_in_map($4->current_code);
+		$$->add_code_in_map(new Instruction("LBL", generate_label()));
+		label_id++;
 	}
 	|IF OpenBlock SimpleStmt SCOLON Expression Block CloseBlock {
 		$$ = new Node("IfStmt");
@@ -1798,6 +1834,14 @@ IfStmt:
 			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$5->current_type->getDataType()<<endl;
 			exit(1);
 		}
+
+		$$->add_code_in_map($3->current_code);
+		$$->add_code_in_map($5->current_code);
+		Instruction* ins = new Instruction("JEQZ", $5->current_place, new Place(generate_label()));
+		$$->add_code_in_map(ins);
+		$$->add_code_in_map($6->current_code);
+		$$->add_code_in_map(new Instruction("LBL", generate_label()));
+		label_id++;
 	}
 	|IF OpenBlock Expression Block ELSE IfStmt CloseBlock {
 		$$ = new Node("IfStmt");
@@ -1820,6 +1864,21 @@ IfStmt:
 			exit(1);
 		}
 
+		string label_if = generate_label(); label_id++;
+		string label_else = generate_label(); label_id++;
+
+		$$->add_code_in_map($3->current_code);
+		Instruction* ins1 = new Instruction("JEQZ", $3->current_place, new Place(label_if));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($4->current_code);
+		Instruction* ins2 = new Instruction("JMP", new Place(label_else));
+		$$->add_code_in_map(ins2);
+		Instruction* ins3 = new Instruction("LBL", new Place(label_if));
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map($6->current_code);
+		Instruction* ins4 = new Instruction("JMP", new Place(label_else));
+		$$->add_code_in_map(ins4);
+
 	}
 	|IF OpenBlock Expression Block ELSE Block CloseBlock {
 		$$ = new Node("IfStmt");
@@ -1841,6 +1900,21 @@ IfStmt:
 			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$3->current_type->getDataType()<<endl;
 			exit(1);
 		}
+
+		string label_if = generate_label(); label_id++;
+		string label_else = generate_label(); label_id++;
+
+		$$->add_code_in_map($3->current_code);
+		Instruction* ins1 = new Instruction("JEQZ", $3->current_place, new Place(label_if));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($4->current_code);
+		Instruction* ins2 = new Instruction("JMP", new Place(label_else));
+		$$->add_code_in_map(ins2);
+		Instruction* ins3 = new Instruction("LBL", new Place(label_if));
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map($6->current_code);
+		Instruction* ins4 = new Instruction("JMP", new Place(label_else));
+		$$->add_code_in_map(ins4);
 
 	}
 	|IF OpenBlock SimpleStmt SCOLON Expression Block ELSE IfStmt CloseBlock {
@@ -1867,6 +1941,22 @@ IfStmt:
 			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$5->current_type->getDataType()<<endl;
 			exit(1);
 		}
+
+		string label_if = generate_label(); label_id++;
+		string label_else = generate_label(); label_id++;
+
+		$$->add_code_in_map($3->current_code);
+		$$->add_code_in_map($5->current_code);
+		Instruction* ins1 = new Instruction("JEQZ", $5->current_place, new Place(label_if));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($6->current_code);
+		Instruction* ins2 = new Instruction("JMP", new Place(label_else));
+		$$->add_code_in_map(ins2);
+		Instruction* ins3 = new Instruction("LBL", new Place(label_if));
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map($8->current_code);
+		Instruction* ins4 = new Instruction("JMP", new Place(label_else));
+		$$->add_code_in_map(ins4);
 	}
 	|IF OpenBlock SimpleStmt SCOLON Expression Block ELSE Block CloseBlock {
 		$$ = new Node("IfStmt");
@@ -1892,9 +1982,25 @@ IfStmt:
 			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$5->current_type->getDataType()<<endl;
 			exit(1);
 		}
+
+		string label_if = generate_label(); label_id++;
+		string label_else = generate_label(); label_id++;
+
+		$$->add_code_in_map($3->current_code);
+		$$->add_code_in_map($5->current_code);
+		Instruction* ins1 = new Instruction("JEQZ", $5->current_place, new Place(label_if));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($6->current_code);
+		Instruction* ins2 = new Instruction("JMP", new Place(label_else));
+		$$->add_code_in_map(ins2);
+		Instruction* ins3 = new Instruction("LBL", new Place(label_if));
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map($8->current_code);
+		Instruction* ins4 = new Instruction("JMP", new Place(label_else));
+		$$->add_code_in_map(ins4);
 	}
 	;
-
+//remTAC: code for forMArker. need to fixed for hsubh.
 ForStmt:
 	FOR forMarker Block forMarkerEnd
 	{
@@ -1906,6 +2012,16 @@ ForStmt:
 		it=it->node_child;
 		it->node_child = $3->current_node_data;
 
+		string label = generate_label();
+		label_id++;
+
+		Instruction* ins = new Instruction("LBL", new Place(label));
+		$$->add_code_in_map(ins);
+		$$->add_code_in_map($3->current_code);
+		$$->add_code_in_map($2->current_code);
+		Instruction* ins1 = new Instruction("JMP", new Place(label));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($4->current_code);
 	}
 	| FOR OpenBlock SimpleStmt SCOLON forMarker EmptyExpr SCOLON SimpleStmt Block forMarkerEnd CloseBlock {
 		$$ = new Node("ForStmt");
@@ -1918,6 +2034,25 @@ ForStmt:
 		it->node_child = new NodeData("ForBody");
 		it->node_child->node_child = $9->current_node_data;
 
+		string label_loop_start = generate_label(); label_id++;
+		string label_loop_end = generate_label(); label_id++;
+
+		$$->add_code_in_map($3->current_code);
+		$$->add_code_in_map($5->current_code);
+		Instruction* ins1 = new Instruction("LBL", new Place(label_loop_start));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($6->current_code);
+		Instruction* ins2 = new Instruction("CMP", new Place("0"), $6->current_place);
+		$$->add_code_in_map(ins2);
+		Instruction* ins3 = new Instruction("JE", label_loop_end);
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map($9->current_code);
+		$$->add_code_in_map($8->current_code);
+		Instruction* ins4 = new Instruction("JMP", label_loop_start);
+		$$->add_code_in_map(ins4);
+		$$->add_code_in_map($10->current_code);
+		Instruction* ins5 = new Instruction("LBL", new Place(label_loop_end));
+		$$->add_code_in_map(ins5);
 	}
 	| FOR OpenBlock SimpleStmt SCOLON forMarker ExpressionStmt SCOLON SimpleStmt Block forMarkerEnd CloseBlock {
 		$$ = new Node("ForStmt");
@@ -1930,6 +2065,26 @@ ForStmt:
 		NodeData* it= $$->current_node_data;
 		it->node_child = new NodeData("ForBody");
 		it->node_child->node_child = $9->current_node_data;
+
+		string label_loop_start = generate_label(); label_id++;
+		string label_loop_end = generate_label(); label_id++;
+
+		$$->add_code_in_map($3->current_code);
+		Instruction* ins1 = new Instruction("LBL", new Place(label_loop_start));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($6->current_code);
+		Instruction* ins2 = new Instruction("CMP", new Place("0"), $6->current_place);
+		$$->add_code_in_map(ins2);
+		Instruction* ins3 = new Instruction("JE", label_loop_end);
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map($9->current_code);
+		$$->add_code_in_map($5->current_code);
+		$$->add_code_in_map($8->current_code);
+		Instruction* ins4 = new Instruction("JMP", label_loop_start);
+		$$->add_code_in_map(ins4);
+		$$->add_code_in_map($10->current_code);
+		Instruction* ins5 = new Instruction("LBL", new Place(label_loop_end));
+		$$->add_code_in_map(ins5);
 	}
 	| FOR OpenBlock Condition forMarker Block forMarkerEnd CloseBlock {
 		$$ = new Node("ForStmt");
@@ -1943,6 +2098,24 @@ ForStmt:
 		it->next_data= new NodeData("ForBody");
 		it = it->next_data;
 		it->node_child= $5->current_node_data;
+
+		string label_loop_start = generate_label(); label_id++;
+		string label_loop_end = generate_label(); label_id++;
+
+		Instruction* ins1 = new Instruction("LBL", new Place(label_loop_start));
+		$$->add_code_in_map(ins1);
+		$$->add_code_in_map($3->current_code);
+		Instruction* ins2 = new Instruction("CMP", "0", $3->current_place->place_name);
+		$$->add_code_in_map(ins2);
+		Instruction* ins3 = new Instruction("JE", label_loop_end);
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map($5->current_code);
+		$$->add_code_in_map($4->current_code);
+		Instruction* ins4 = new Instruction("JMP", label_loop_start);
+		$$->add_code_in_map(ins4);
+		$$->add_code_in_map($6->current_code);
+		Instruction* ins5 = new Instruction("LBL", new Place(label_loop_end));
+		$$->add_code_in_map(ins5);
 	}
 	//| FOR OpenBlock EmptyStmt Empty forMarker Expression Empty EmptyStmt Block forMarkerEnd CloseBlock {
 	//	$$ = new Node("ForStmt");
@@ -1967,6 +2140,7 @@ ForStmt:
 //	}
 //	;
 
+//remTAC: handle this nicely.
 forMarker:
 	{
 		$$ = new Node("");
@@ -2055,9 +2229,10 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::MUL,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			cout<<"MAI YAHA HU\n";
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("MUL",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2096,9 +2271,9 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::QUOT,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("QUOT",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2136,9 +2311,9 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::MOD,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("MOD",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2176,9 +2351,9 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::SHL,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("SHL",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2215,9 +2390,9 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::SHR,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("SHR",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2254,9 +2429,9 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::AND,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("AND",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2294,9 +2469,9 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::ANDNOT,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("ANDNOT",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2333,9 +2508,9 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::ADD,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("ADD",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2372,9 +2547,9 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::SUB,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("SUB",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2411,9 +2586,9 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::OR,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("OR",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2451,9 +2626,9 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::XOR,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("XOR",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2490,12 +2665,12 @@ Expression:
 
 			Place* p1 = new Place(l->get_new_label());
 
-			Instruction* ins1 = new Instruction(Instruction::CMP,new Place("$0"),$1->current_place);
-			Instruction* ins2 = new Instruction(Instruction::USTOR,$1->current_place,$$->current_place);
-			Instruction* ins3 = new Instruction(Instruction::JE,p1);
+			Instruction* ins1 = new Instruction("CMP",new Place("$0"),$1->current_place);
+			Instruction* ins2 = new Instruction("USTOR",$1->current_place,$$->current_place);
+			Instruction* ins3 = new Instruction("JE",p1);
 			$$->add_code_in_map($3->current_code);
-			Instruction* ins4 = new Instruction(Instruction::USTOR,$3->current_place,$$->current_place);
-			Instruction* ins5 = new Instruction(Instruction::LBL,p1);
+			Instruction* ins4 = new Instruction("USTOR",$3->current_place,$$->current_place);
+			Instruction* ins5 = new Instruction("LBL",p1);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2535,12 +2710,12 @@ Expression:
 
 			Place* p1 = new Place(l->get_new_label());
 
-			Instruction* ins1 = new Instruction(Instruction::CMP,new Place("$0"),$1->current_place);
-			Instruction* ins2 = new Instruction(Instruction::USTOR,$1->current_place,$$->current_place);
-			Instruction* ins3 = new Instruction(Instruction::JNE,p1);
+			Instruction* ins1 = new Instruction("CMP",new Place("$0"),$1->current_place);
+			Instruction* ins2 = new Instruction("USTOR",$1->current_place,$$->current_place);
+			Instruction* ins3 = new Instruction("JNE",p1);
 			$$->add_code_in_map($3->current_code);
-			Instruction* ins4 = new Instruction(Instruction::USTOR,$3->current_place,$$->current_place);
-			Instruction* ins5 = new Instruction(Instruction::LBL,p1);
+			Instruction* ins4 = new Instruction("USTOR",$3->current_place,$$->current_place);
+			Instruction* ins5 = new Instruction("LBL",p1);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2580,10 +2755,10 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::CMP,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::ISEQ,p1);
-			Instruction* ins4 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("CMP",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("ISEQ",p1);
+			Instruction* ins4 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2621,10 +2796,10 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::CMP,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::NEQ,p1);
-			Instruction* ins4 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("CMP",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("NEQ",p1);
+			Instruction* ins4 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2662,10 +2837,10 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::CMP,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::GRTEQ,p1);
-			Instruction* ins4 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("CMP",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("GRTEQ",p1);
+			Instruction* ins4 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2703,10 +2878,10 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::CMP,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::GRT,p1);
-			Instruction* ins4 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("CMP",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("GRT",p1);
+			Instruction* ins4 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2744,10 +2919,10 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::CMP,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::LESSEQ,p1);
-			Instruction* ins4 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("CMP",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("LESSEQ",p1);
+			Instruction* ins4 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2785,10 +2960,10 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$1->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::CMP,$3->current_place,p1);
-			Instruction* ins3 = new Instruction(Instruction::LESS,p1);
-			Instruction* ins4 = new Instruction(Instruction::USTOR,p1,$$->current_place);
+			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins2 = new Instruction("CMP",$3->current_place,p1);
+			Instruction* ins3 = new Instruction("LESS",p1);
+			Instruction* ins4 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2824,7 +2999,7 @@ UnaryExpr:
 		}
 		$$->current_type = dynamic_cast<PointerType*>($2->current_type)->type_of_address_pointing_to->copyClass();
 		Place* p1 = new Place($$->current_type);
-		Instruction* ins = new Instruction(Instruction::UREF,$2->current_place,p1);
+		Instruction* ins = new Instruction("UREF",$2->current_place,p1);
 		$$->add_code_in_map(ins);
 		$$->current_place = p1;
 	}
@@ -2837,7 +3012,7 @@ UnaryExpr:
 		$$->current_type = new PointerType($2->current_type);
 		$$->add_code_in_map($2->current_code);
 		Place* p1 = new Place($$->current_type);
-		Instruction* ins = new Instruction(Instruction::UADDR,$2->current_place,p1);
+		Instruction* ins = new Instruction("UADDR",$2->current_place,p1);
 		$$->add_code_in_map(ins);
 		$$->current_place = p1;
 		}
@@ -2851,8 +3026,8 @@ UnaryExpr:
 			$$->add_code_in_map($2->current_code);
 			Place* p1 = new Place($$->current_type);
 
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$2->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::ADD,$2->current_place,p1);
+			Instruction* ins1 = new Instruction("USTOR",$2->current_place,p1);
+			Instruction* ins2 = new Instruction("ADD",$2->current_place,p1);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2868,8 +3043,8 @@ UnaryExpr:
 			$$->add_code_in_map($2->current_code);
 			Place* p1 = new Place($$->current_type);
 
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$2->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::SUB,$2->current_place,p1);
+			Instruction* ins1 = new Instruction("USTOR",$2->current_place,p1);
+			Instruction* ins2 = new Instruction("SUB",$2->current_place,p1);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -2885,8 +3060,8 @@ UnaryExpr:
 			$$->add_code_in_map($2->current_code);
 			Place* p1 = new Place($$->current_type);
 
-			Instruction* ins1 = new Instruction(Instruction::USTOR,$2->current_place,p1);
-			Instruction* ins2 = new Instruction(Instruction::NOT,$2->current_place,p1);
+			Instruction* ins1 = new Instruction("USTOR",$2->current_place,p1);
+			Instruction* ins2 = new Instruction("NOT",$2->current_place,p1);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
@@ -3288,7 +3463,7 @@ Arguments:
         while (temp != NULL) {
 			p1 = new Place(std::to_string(i++));
 			p2 = new Place(temp->place_name);
-			inst = new Instruction(Instruction::PUSHARG,p1,p2);
+			inst = new Instruction("PUSHARG",p1,p2);
             curr->add_code_in_map(inst);
             temp = temp->next_place;
         }
@@ -3312,7 +3487,7 @@ Arguments:
         while (temp != NULL) {
 			p1 = new Place(std::to_string(i++));
 			p2 = new Place(temp->place_name);
-			inst = new Instruction(Instruction::PUSHARG,p1,p2);
+			inst = new Instruction("PUSHARG",p1,p2);
             curr->add_code_in_map(inst);
             temp = temp->next_place;
         }

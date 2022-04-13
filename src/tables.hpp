@@ -53,6 +53,7 @@ public:
 	void           add_new_break_label();
 	bool 		   is_empty();
 	void           remove_last_break_label();
+	string		   return_top_label();
 };
 
 class Labels{
@@ -76,7 +77,7 @@ class SwitchCaseList{
 	bool has_default;
 
 public:
-	SwitchCaseList(): has_default(false) {}; 
+	SwitchCaseList(): has_default(false) {};
 	void              add_case_label(bool _is_default,bool _has_fallthrough);
 
 };

@@ -21,7 +21,7 @@ struct NodeData {
 	bool value;
 	string lval;
 
-	NodeData(string _data_name): data_name(_data_name), next_data(NULL),node_child(NULL), value(false), lval("<no_lval>") { cout<<"NodeData "<<_data_name<<"\n";};
+	NodeData(string _data_name): data_name(_data_name), next_data(NULL),node_child(NULL), value(false), lval("<no_lval>") { /*cout<<"NodeData "<<_data_name<<"\n";*/ };
 	NodeData* last_next_child();
 };
 
