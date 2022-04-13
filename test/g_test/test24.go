@@ -2,14 +2,18 @@ package main
 
 import "fmt"
 
-func area(length int, width int)int{
-    Ar := length* width
-    return Ar
+// func area(length int, width int)int{
+//     Ar := length* width
+//     return Ar
 
-}
+// }
 
 func main() {
 	var c int = 3
+	var d int = 4
+	var e int
+
+	e = c * d
 	// type Point struct{
 	// 	X[1] int
 	// 	Y int

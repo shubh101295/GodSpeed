@@ -19,6 +19,7 @@ class Instruction {
 			address2 = _address2;
 			address3 = _address3;
 		};
+		
 	Instruction(string _current_opcode, string loc, string val, Place* _address3=NULL):
 		current_opcode(_current_opcode) {
 			address1 = new Place(loc, NULL);

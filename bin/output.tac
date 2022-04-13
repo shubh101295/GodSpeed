@@ -1,13 +1,10 @@
-LBL area 
-NEWFUNC 
-ARGDECL 0 0;1;length 
-ARGDECL 1 0;1;width 
-USTOR ;6 
-MUL ;6 
-USTOR ;6 ;5 
-USTOR ;5 Ar 
-NEWFUNCEND 
 LBL main 
 NEWFUNC 
-DECL 0;2;2;c 
+DECL 0;1;1;c 
+DECL 0;1;1;d 
+DECL 0;1;1;e 
+USTOR ;7 
+MUL ;7 
+USTOR ;7 ;6 
+USTOR ;6 <no_lval> 
 NEWFUNCEND 
