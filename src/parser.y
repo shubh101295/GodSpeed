@@ -517,7 +517,7 @@ FunctionDecl:
 		$$-> current_node_data->node_child = $5->current_node_data;
 		dump_dot_file("./bin/"+string($2)+".dot", $$);
 
-		Instruction* ins1 = new Instruction("LBL", string($2));
+		Instruction* ins1 = new Instruction("LBL", new Place(string($2), NULL));
 		$$->add_code_in_map(ins1);
 		Instruction* ins2 = new Instruction("NEWFUNC");
 		$$->add_code_in_map(ins2);
@@ -1052,8 +1052,9 @@ Signature:
 			DataType* temp = curr->copyClass();
 			temp -> next_type = NULL;
 			arguments.push_back(temp);
-
-			Instruction* ins = new Instruction("ARGDECL", std::to_string(i++), st->get_current_scope() + dcurr->data_name);
+			Place* p1 = new Place(std::to_string(i++));
+			Place* p2 = new Place(st->get_current_scope() + dcurr->data_name);
+			Instruction* ins = new Instruction("ARGDECL", p1, p2);
 			$$->add_code_in_map(ins);
 
 			curr = curr->next_type;
@@ -1084,7 +1085,9 @@ Signature:
 			temp -> next_type = NULL;
 			arguments.push_back(temp);
 
-			Instruction* ins = new Instruction("ARGDECL", std::to_string(i++), st->get_current_scope() + dcurr->data_name);
+			Place* p1 = new Place(std::to_string(i++));
+			Place* p2 = new Place(st->get_current_scope() + dcurr->data_name);
+			Instruction* ins = new Instruction("ARGDECL", p1, p2);
 			$$->add_code_in_map(ins);
 
 			curr = curr->next_type;
@@ -1805,7 +1808,7 @@ IfStmt:
 		Instruction* ins = new Instruction("JEQZ", $3->current_place, new Place(jmp_label));
 		$$->add_code_in_map(ins);
 		$$->add_code_in_map($4->current_code);
-		$$->add_code_in_map(new Instruction("LBL", jmp_label));
+		$$->add_code_in_map(new Instruction("LBL", new Place(jmp_label)));
 	}
 	|IF OpenBlock SimpleStmt SCOLON Expression Block CloseBlock {
 		$$ = new Node("IfStmt");
@@ -1834,7 +1837,7 @@ IfStmt:
 		Instruction* ins = new Instruction("JEQZ", $5->current_place, new Place(jmp_label));
 		$$->add_code_in_map(ins);
 		$$->add_code_in_map($6->current_code);
-		$$->add_code_in_map(new Instruction("LBL", jmp_label));
+		$$->add_code_in_map(new Instruction("LBL", new Place(jmp_label)));
 	}
 	|IF OpenBlock Expression Block ELSE IfStmt CloseBlock {
 		$$ = new Node("IfStmt");
@@ -2036,11 +2039,11 @@ ForStmt:
 		$$->add_code_in_map($6->current_code);
 		Instruction* ins2 = new Instruction("CMP", new Place("0"), $6->current_place);
 		$$->add_code_in_map(ins2);
-		Instruction* ins3 = new Instruction("JE", label_loop_end);
+		Instruction* ins3 = new Instruction("JE", new Place(label_loop_end));
 		$$->add_code_in_map(ins3);
 		$$->add_code_in_map($9->current_code);
 		$$->add_code_in_map($8->current_code);
-		Instruction* ins4 = new Instruction("JMP", label_loop_start);
+		Instruction* ins4 = new Instruction("JMP", new Place(label_loop_start));
 		$$->add_code_in_map(ins4);
 		$$->add_code_in_map($10->current_code);
 		Instruction* ins5 = new Instruction("LBL", new Place(label_loop_end));
@@ -2067,12 +2070,12 @@ ForStmt:
 		$$->add_code_in_map($6->current_code);
 		Instruction* ins2 = new Instruction("CMP", new Place("0"), $6->current_place);
 		$$->add_code_in_map(ins2);
-		Instruction* ins3 = new Instruction("JE", label_loop_end);
+		Instruction* ins3 = new Instruction("JE", new Place(label_loop_end));
 		$$->add_code_in_map(ins3);
 		$$->add_code_in_map($9->current_code);
 		$$->add_code_in_map($5->current_code);
 		$$->add_code_in_map($8->current_code);
-		Instruction* ins4 = new Instruction("JMP", label_loop_start);
+		Instruction* ins4 = new Instruction("JMP", new Place(label_loop_start));
 		$$->add_code_in_map(ins4);
 		$$->add_code_in_map($10->current_code);
 		Instruction* ins5 = new Instruction("LBL", new Place(label_loop_end));
@@ -2097,13 +2100,13 @@ ForStmt:
 		Instruction* ins1 = new Instruction("LBL", new Place(label_loop_start));
 		$$->add_code_in_map(ins1);
 		$$->add_code_in_map($3->current_code);
-		Instruction* ins2 = new Instruction("CMP", "0", $3->current_place->place_name);
+		Instruction* ins2 = new Instruction("CMP", new Place("0"), new Place($3->current_place->place_name));
 		$$->add_code_in_map(ins2);
-		Instruction* ins3 = new Instruction("JE", label_loop_end);
+		Instruction* ins3 = new Instruction("JE", new Place(label_loop_end));
 		$$->add_code_in_map(ins3);
 		$$->add_code_in_map($5->current_code);
 		$$->add_code_in_map($4->current_code);
-		Instruction* ins4 = new Instruction("JMP", label_loop_start);
+		Instruction* ins4 = new Instruction("JMP", new Place(label_loop_start));
 		$$->add_code_in_map(ins4);
 		$$->add_code_in_map($6->current_code);
 		Instruction* ins5 = new Instruction("LBL", new Place(label_loop_end));

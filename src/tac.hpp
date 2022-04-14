@@ -20,21 +20,6 @@ class Instruction {
 			address2 = _address2;
 			address3 = _address3;
 		};
-		
-	Instruction(string _current_opcode, string loc, string val, Place* _address3=NULL):
-		current_opcode(_current_opcode) {
-			address1 = new Place(loc, NULL);
-			address2 = new Place(val, NULL);
-			address3 = _address3;
-		};
-
-	Instruction(string _current_opcode, string loc):
-		current_opcode(_current_opcode) {
-			address1 = new Place(loc, NULL);
-			address2 = NULL;
-			address3 = NULL;
-		};
-
 	void update_instruction_with_scope(Instruction* instr,SymbolTable *st);
 };
 
