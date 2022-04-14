@@ -749,6 +749,7 @@ Assignment:
 				}
 
 			}
+			cout<<"HUM YAHAN HAI in line 752\n";
 			Instruction* ins = new Instruction("USTOR", right_place, new Place(left_data->lval, right_type));
 			$$->add_code_in_map(ins);
 				// cout<<"HERE 4\n";
@@ -1421,7 +1422,7 @@ OperandName:
 		$$->current_node_data = new NodeData(string($1));
 		$$->current_node_data->value = true;
 		// cout<<"OperandName4:	IDENTIFIER - "<<string($1)<<"\n";
-
+		$$->current_place = new Place(string($1));
 		$$->current_type = st->get_type(string($1))?st->get_type(string($1)):new BasicType("undefined");
 		// cout<<"OperandName5:	IDENTIFIER - "<<string($1)<<"\n";
 
@@ -2230,6 +2231,7 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
+			//cout<<$1->current_type
 			cout<<"MAI YAHA HU\n";
 			cout<<($1->current_place==NULL)<<"  Expression MUL Expression1 \n";
 			cout<<($$->current_place==NULL)<<"  Expression MUL Expression2 \n";
@@ -2981,6 +2983,7 @@ Expression:
 			$$->current_type = $1->current_type;
 			$$->current_node_data = $1->current_node_data;
 			$$->current_place = $1->current_place;
+			cout<<"INSIDE 2984 UnaryExpr "<<($$->current_place==NULL)<<"\n";
 			$$->current_code = $1->current_code;
 			// cout<<"Unary value"<<endl;
 			  cout<<$$->current_node_data->value<<endl;
