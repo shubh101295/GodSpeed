@@ -31,4 +31,6 @@ JNE
 JE
 LBL
 RET
+CALL
+POP
 ```

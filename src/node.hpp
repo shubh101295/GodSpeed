@@ -9,7 +9,6 @@
 #include "tables.hpp"
 using namespace std;
 
-void update_instructions_with_scope(std::map<int, Instruction*>* instr ,SymbolTable *st);
 struct Node;
 struct NodeChildren;
 struct NodeData;
@@ -62,5 +61,7 @@ struct Node{
 	void add_code_in_map(map<int,Instruction*> _code);
 	void print_code_in_file(string file_name);
 };
+
+void update_instructions_with_scope(std::map<int, Instruction*>* instr ,SymbolTable *st);
 
 #endif

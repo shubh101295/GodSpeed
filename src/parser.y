@@ -3103,7 +3103,7 @@ UnaryExpr:
 
 		$$ = curr;
 	}
- 	| PrimaryExpr Selector { // remaining lval
+ 	| PrimaryExpr Selector { 
  		// cout<<"PrimaryExpr: PrimaryExpr Selector\n";
 		$$ = new Node("PrimaryExpr");
 		$$->add_non_terminal_children($1);
@@ -3181,7 +3181,7 @@ UnaryExpr:
         $$->current_node_data->node_child->next_data = $2->current_node_data;
         $$->current_node_data->value = true;
 		$$->current_place = new Place($1->current_place->place_name + "." + $2->current_place->place_name);
-		// $$->no
+		$$->current_node_data->lval = $$->current_place->place_name;
 		$$->add_code_in_map($1->current_code);
 
 
@@ -3276,6 +3276,24 @@ UnaryExpr:
 			head = head->next_type;
 		}
 		$$->current_type = temp->next_type;
+		$$->current_place =  new Place("");
+
+		$$->add_code_in_map($2->current_code);
+		Instruction* ins = new Instruction("CALL",$1->current_place);
+		$$->add_code_in_map(ins);
+		// update_instructions_with_scope(&($$->current_code),st);
+
+		Place* pp = $$->current_place;
+
+		for(DataType* tp = $$->current_type; tp != NULL; tp = tp->next_type){
+			pp->next_place = new Place(tp);
+			Instruction* ins = new Instruction("POP",pp->next_place);
+			pp = pp->next_place;
+			$$->add_code_in_map(ins);
+		}
+		$$->current_place = $$->current_place->next_place;
+		// remaining
+		$$->current_node_data->value = false;
 	}
  	| OperandName StructLiteral {
 		Node* curr = new Node("PrimaryExpr");
@@ -3400,6 +3418,11 @@ MakeExpr:
 
 		curr->current_node_data->node_child = $5->current_node_data;
 		curr->current_node_data->node_child->next_data = $7->current_node_data;
+		
+		auto mk_lbl = l->get_new_label();
+		curr->current_place = new Place(mk_lbl);
+		Instruction* ins = new Instruction("MAKE",curr->current_place, new Place($3->current_type->getDataType()));
+		curr->add_code_in_map(ins);
 
 		$$ = curr;
 	}
@@ -3412,6 +3435,12 @@ MakeExpr:
 		curr->current_node_data = new NodeData("Make");
 
 		curr->current_node_data->node_child = $5->current_node_data;
+
+		auto mk_lbl = l->get_new_label();
+		curr->current_place = new Place(mk_lbl);
+		Instruction* ins = new Instruction("MAKE",curr->current_place, new Place($3->current_type->getDataType()));
+		curr->add_code_in_map(ins);
+
 		$$ = curr;
 	}
 	| MAKE LEFTPARAN Type RIGHTPARAN {
@@ -3420,6 +3449,12 @@ MakeExpr:
 
 		curr->current_type = $3->current_type;
 		curr->current_node_data = new NodeData("Make");
+
+		auto mk_lbl = l->get_new_label();
+		curr->current_place = new Place(mk_lbl);
+		Instruction* ins = new Instruction("MAKE",curr->current_place, new Place($3->current_type->getDataType()));
+		curr->add_code_in_map(ins);
+
 		$$ = curr;
 	}
 	| NEW LEFTPARAN Type RIGHTPARAN {
@@ -3428,6 +3463,11 @@ MakeExpr:
 
 		curr->current_type = new PointerType($3->current_type);
 		curr->current_node_data = new NodeData("New");
+
+		curr->current_place = new Place(curr->current_type);
+		Instruction* ins = new Instruction("NEW",new Place($3->current_type->getDataType()),new Place(curr->current_place->place_name));
+		curr->add_code_in_map(ins);
+
 		$$ = curr;
 	}
 	;
