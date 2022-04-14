@@ -1,17 +1,25 @@
 #include "tac.hpp"
 
-void Instruction::update_instruction_with_scope(Instruction* instr,SymbolTable* st){
-	if(instr->address1!=NULL)
+void Instruction::update_instructions_with_scope(map<int,Instruction*>* instr,SymbolTable* st){
+	int i=1;
+	auto it= (*instr).find(i);
+	while(it!=(*instr).end())
 	{
-		instr->address1->place_name = st->get_scope_for_variable(instr->address1->place_name) + instr->address1->place_name;
-	}		
-	if(instr->address2!=NULL)
-	{
-		instr->address2->place_name = st->get_scope_for_variable(instr->address2->place_name) + instr->address2->place_name;
-	}		
-	if(instr->address3!=NULL)
-	{
-		instr->address3->place_name = st->get_scope_for_variable(instr->address3->place_name) + instr->address3->place_name;
-	}		
-	
+		auto current_instr = it->second;
+		if(current_instr->address1!=NULL)
+		{
+			current_instr->address1->place_name = st->get_scope_for_variable(current_instr->address1->place_name) + current_instr->address1->place_name;
+		}		
+		if(current_instr->address2!=NULL)
+		{
+			current_instr->address2->place_name = st->get_scope_for_variable(current_instr->address2->place_name) + current_instr->address2->place_name;
+		}		
+		if(current_instr->address3!=NULL)
+		{
+			current_instr->address3->place_name = st->get_scope_for_variable(current_instr->address3->place_name) + current_instr->address3->place_name;
+		}	
+		i+=1;
+		it= (*instr).find(i);
+	}
 }
+
