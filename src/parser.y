@@ -641,7 +641,7 @@ ExpressionStmt:
 		$$->current_node_data = $1->current_node_data;
 		$$->current_place = $1->current_place;
 		$$->current_code = $1->current_code;
-		//scopeExpr from amigo.
+		update_instructions_with_scope(&($$->current_code),st);
 	}
 	;
 
@@ -656,6 +656,7 @@ IncDecStmt:
 		$$->add_code_in_map($1->current_code);
 		Instruction* ins1 = new Instruction("ADD", new Place("1"), $1->current_place);
 		$$->add_code_in_map(ins1);
+		update_instructions_with_scope(&($$->current_code),st);
 
 	}
 	| Expression MINUSMINUS {
@@ -667,6 +668,7 @@ IncDecStmt:
 		$$->add_code_in_map($1->current_code);
 		Instruction* ins1 = new Instruction("SUB", new Place("1"), $1->current_place);
 		$$->add_code_in_map(ins1);
+		update_instructions_with_scope(&($$->current_code),st);
 	}
 	;
 
@@ -2682,6 +2684,7 @@ Expression:
 			$$->add_code_in_map(ins4);
 			$$->add_code_in_map(ins5);
 
+			update_instructions_with_scope(&($$->current_code),st);
 		}
 	| Expression LOGOR Expression { 
 			$$ = new Node("Expression");
@@ -2726,6 +2729,8 @@ Expression:
 			$$->add_code_in_map(ins3);
 			$$->add_code_in_map(ins4);
 			$$->add_code_in_map(ins5);
+
+			update_instructions_with_scope(&($$->current_code),st);
 		}
 	| Expression ISEQ Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
@@ -2768,6 +2773,8 @@ Expression:
 			$$->add_code_in_map(ins2);
 			$$->add_code_in_map(ins3);
 			$$->add_code_in_map(ins4);
+
+			update_instructions_with_scope(&($$->current_code),st);
 		}
 	| Expression NEQ Expression {
 			$$ = new Node("Expression");
@@ -2809,6 +2816,8 @@ Expression:
 			$$->add_code_in_map(ins2);
 			$$->add_code_in_map(ins3);
 			$$->add_code_in_map(ins4);
+
+			update_instructions_with_scope(&($$->current_code),st);
 		}
 	| Expression GRTEQ Expression {
 			$$ = new Node("Expression");
@@ -2850,6 +2859,8 @@ Expression:
 			$$->add_code_in_map(ins2);
 			$$->add_code_in_map(ins3);
 			$$->add_code_in_map(ins4);
+
+			update_instructions_with_scope(&($$->current_code),st);
 		}
 	| Expression GRT Expression {
 			$$ = new Node("Expression");
@@ -2891,6 +2902,8 @@ Expression:
 			$$->add_code_in_map(ins2);
 			$$->add_code_in_map(ins3);
 			$$->add_code_in_map(ins4);
+
+			update_instructions_with_scope(&($$->current_code),st);
 		}
 	| Expression LESSEQ Expression {
 			$$ = new Node("Expression");
@@ -2932,6 +2945,8 @@ Expression:
 			$$->add_code_in_map(ins2);
 			$$->add_code_in_map(ins3);
 			$$->add_code_in_map(ins4);
+
+			update_instructions_with_scope(&($$->current_code),st);
 		}
 	| Expression LESS Expression {
 			$$ = new Node("Expression");
@@ -2973,6 +2988,8 @@ Expression:
 			$$->add_code_in_map(ins2);
 			$$->add_code_in_map(ins3);
 			$$->add_code_in_map(ins4);
+
+			update_instructions_with_scope(&($$->current_code),st);
 		}
 	| UnaryExpr {
 		 cout<<"Expression: UnaryExpr, Value: ";
@@ -3237,6 +3254,16 @@ UnaryExpr:
 			$$->add_code_in_map($1->current_code);
 			$$->add_code_in_map($2->current_code);
 			//lval
+
+			string p_lval = $1->current_node_data->lval;
+			p_lval =  st->get_scope_for_variable(p_lval) + p_lval;
+
+			string i_lval = $2->current_place->place_name;
+			i_lval =  st->get_scope_for_variable(i_lval) + i_lval;
+
+			$$->current_place = new Place(p_lval + "[" + i_lval + "]");
+			$$->current_node_data->lval = $$->current_place->place_name;
+			
  		}
  	| PrimaryExpr Slice {
 		Node* curr = new Node("PrimaryExpr");
