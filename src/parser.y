@@ -616,7 +616,6 @@ SimpleStmt:
 	}
 	;
 
-//remTAC: Check correctness, map already initalized, so no need for initting TAC object.
 EmptyStmt:{
 		$$ = new Node("EmptyStmt");
 		$$->current_node_data = new NodeData("");
@@ -641,7 +640,7 @@ ExpressionStmt:
 		$$->current_node_data = $1->current_node_data;
 		$$->current_place = $1->current_place;
 		$$->current_code = $1->current_code;
-		//scopeExpr from amigo.
+		update_instructions_with_scope(&($$->current_code), st);
 	}
 	;
 
@@ -656,6 +655,7 @@ IncDecStmt:
 		$$->add_code_in_map($1->current_code);
 		Instruction* ins1 = new Instruction("ADD", new Place("1"), $1->current_place);
 		$$->add_code_in_map(ins1);
+		update_instructions_with_scope(&($$->current_code), st);
 
 	}
 	| Expression MINUSMINUS {
@@ -667,6 +667,7 @@ IncDecStmt:
 		$$->add_code_in_map($1->current_code);
 		Instruction* ins1 = new Instruction("SUB", new Place("1"), $1->current_place);
 		$$->add_code_in_map(ins1);
+		update_instructions_with_scope(&($$->current_code), st);
 	}
 	;
 
@@ -771,6 +772,7 @@ Assignment:
 		$$->current_node_data = temp_node_data;
 
 		$$->current_node_data->node_child = parLeft;
+		update_instructions_with_scope(&($$->current_code), st);
 	}
 	;
 
@@ -851,6 +853,7 @@ ShortVarDecl:
 		parLeft->next_data = parRight;
 		$$->current_node_data = new NodeData(string($2));
 		$$->current_node_data->node_child = parLeft;
+		update_instructions_with_scope(&($$->current_code), st);
 
 	}
 	;
