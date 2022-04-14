@@ -2641,7 +2641,7 @@ Expression:
 			$$->add_code_in_map(ins2);
 			$$->add_code_in_map(ins3);
 		}
-	| Expression LOGAND Expression { 
+	| Expression LOGAND Expression {
 		$$ = new Node("Expression");
 			$$->add_non_terminal_children($1);
 			$$->add_terminal_children(string($2));
@@ -2686,7 +2686,7 @@ Expression:
 			$$->add_code_in_map(ins5);
 
 		}
-	| Expression LOGOR Expression { 
+	| Expression LOGOR Expression {
 			$$ = new Node("Expression");
 			$$->add_non_terminal_children($1);
 			$$->add_terminal_children(string($2));
