@@ -20,7 +20,7 @@ class Instruction {
 			address2 = _address2;
 			address3 = _address3;
 		};
-	void update_instruction_with_scope(Instruction* instr,SymbolTable *st);
+	void update_instructions_with_scope(std::map<int, Instruction*>* instr ,SymbolTable *st);
 };
 
 #endif
