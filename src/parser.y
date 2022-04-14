@@ -2144,7 +2144,7 @@ ForStmt:
 forMarker:
 	{
 		$$ = new Node("");
-		bl -> add_new_break_label();
+		bl -> add_new_break_label(l->get_new_label());
 	}
 
 	;

@@ -114,6 +114,21 @@ int SymbolTable::scope_level(string variable_name){
 	return -1;
 }
 
+string SymbolTable::get_scope_for_variable(string variable_name) {
+	string temp_scope = "";
+	vector<string> temp_scopes;
+	for( int i=0;i<=current_block_inside_count;i++) {
+		temp_scope+=to_string(current_block_numbers[i])+";";
+		temp_scopes.pb(temp_scope);
+	}
+	reverse(temp_scopes.begin(),temp_scopes.end());
+	int ans=0;
+	for(auto val:temp_scopes){
+		if (symbol_table.find({val,variable_name})!=symbol_table.end()) return val;
+		ans+=1;
+	}
+	return "NOT IN SCOPE";
+}
 DataType * SymbolTable::get_value_from_key(string _variable_name){
 	pair<string,string> new_key = {current_scope,_variable_name};
 	if(symbol_table.find(new_key)!=symbol_table.end())
@@ -153,15 +168,15 @@ map<string, DataType*> TypesTable::get_type_table_data() {
 	return type_table;
 }
 
-void BreakLabels::add_new_break_label(){
+void BreakLabels::add_new_break_label(string _current_break_label){
 	break_labels_list_position+=1;
-	break_label_count+=1;
-	string _break_label = "Label"+to_string(break_label_count);
+	// break_label_count+=1;
+	// string _break_label = "Label"+to_string(break_label_count);
 	if(break_labels_list_position>break_labels_list.size())
 	{
 		break_labels_list.resize(break_labels_list_position);
 	}
-	break_labels_list[break_labels_list_position-1]=_break_label;
+	break_labels_list[break_labels_list_position-1]=_current_break_label;
 }
 
 bool BreakLabels::is_empty(){
