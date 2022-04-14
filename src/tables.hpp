@@ -32,7 +32,7 @@ public:
 	DataType*      get_value_from_key(string _variable_name);
 	DataType*      get_type(string variable_name);
 	void           erase_in_symbol_table(pair<string,string> old_key);
-
+	string         get_scope_for_variable(string variable_name);
 };
 
 class TypesTable{
@@ -47,10 +47,10 @@ class BreakLabels{
 private:
 	vector<string> break_labels_list;
 	int            break_labels_list_position;
-	int            break_label_count;
+	// int            break_label_count;
 public:
-	BreakLabels(): break_labels_list_position(0), break_label_count(0) {};
-	void           add_new_break_label();
+	BreakLabels(): break_labels_list_position(0) {};
+	void           add_new_break_label(string _current_break_label);
 	bool 		   is_empty();
 	void           remove_last_break_label();
 	string		   return_top_label();

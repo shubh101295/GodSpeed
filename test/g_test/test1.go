@@ -23,7 +23,7 @@ import (
 
 func main() {
 	var a,b int 
-    
+    a = 2
 	// var in Input
 	// in.TransactionId = "13457"
 	// in.Index = 0
