@@ -525,7 +525,7 @@ FunctionDecl:
 		$$->add_code_in_map($5->current_code);
 		Instruction* ins3 = new Instruction("NEWFUNCEND");
 		$$->add_code_in_map(ins3);
-
+		update_instructions_with_scope(&($$->current_code), st);
 	}
 	| FUNC IDENTIFIER OpenBlock Signature {
 		st->add_in_symbol_table({"0;",string($2)},$4->current_type);
@@ -1386,6 +1386,8 @@ Operand:
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
+		$$->current_place = $1->current_place;
+		$$->current_code = $1->current_code;
 		// cout<<"Operand Value "<<$$->current_node_data->value<<endl;
 	}
 	| OperandName {
@@ -1394,6 +1396,8 @@ Operand:
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
+		$$->current_place = $1->current_place;
+		$$->current_code = $1->current_code;
 		// cout<<"Value: "<<$$->current_node_data->value<<endl;
 	}
 	| LEFTPARAN Expression RIGHTPARAN {
@@ -1401,6 +1405,8 @@ Operand:
 		$$->add_non_terminal_children($2);
 		$$->current_node_data = $2->current_node_data;
 		$$->current_type = $2->current_type;
+		$$->current_place = $2->current_place;
+		$$->current_code = $2->current_code;
 	}
 	;
 
@@ -3104,7 +3110,7 @@ UnaryExpr:
 
 		$$ = curr;
 	}
- 	| PrimaryExpr Selector { 
+ 	| PrimaryExpr Selector {
  		// cout<<"PrimaryExpr: PrimaryExpr Selector\n";
 		$$ = new Node("PrimaryExpr");
 		$$->add_non_terminal_children($1);
@@ -3282,7 +3288,7 @@ UnaryExpr:
 		$$->add_code_in_map($2->current_code);
 		Instruction* ins = new Instruction("CALL",$1->current_place);
 		$$->add_code_in_map(ins);
-		// update_instructions_with_scope(&($$->current_code),st);
+		update_instructions_with_scope(&($$->current_code),st);
 
 		Place* pp = $$->current_place;
 
