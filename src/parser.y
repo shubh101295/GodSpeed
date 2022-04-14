@@ -2641,7 +2641,7 @@ Expression:
 			$$->add_code_in_map(ins2);
 			$$->add_code_in_map(ins3);
 		}
-	| Expression LOGAND Expression { // remaining
+	| Expression LOGAND Expression { 
 		$$ = new Node("Expression");
 			$$->add_non_terminal_children($1);
 			$$->add_terminal_children(string($2));
@@ -2686,7 +2686,7 @@ Expression:
 			$$->add_code_in_map(ins5);
 
 		}
-	| Expression LOGOR Expression { // remaining
+	| Expression LOGOR Expression { 
 			$$ = new Node("Expression");
 			$$->add_non_terminal_children($1);
 			$$->add_terminal_children(string($2));
@@ -3081,6 +3081,7 @@ UnaryExpr:
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
 		$$->current_place = $1->current_place;
+		cout << ($1->current_place==NULL) << "Hi\n";
 		$$->current_code = $1->current_code;
 		//cout<<"Primary Value: "<<$$->current_node_data->value<<" "<<$1->current_node_data->value<< endl;
 
@@ -3414,7 +3415,7 @@ Slice:
 	}
 	 ;
 
-//remaining
+
 MakeExpr:
 	MAKE LEFTPARAN Type COMMA Expression COMMA Expression RIGHTPARAN {
 		Node* curr = new Node("MakeExpr");
