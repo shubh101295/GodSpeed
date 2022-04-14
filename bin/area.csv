@@ -1,5 +1,0 @@
-Scope,    variable_name,    variable_type
-0;,    area,     func(int, int) (int)
-0;1;,    length,    int
-0;1;,    width,    int
-0;1;1;,    Ar,    int
