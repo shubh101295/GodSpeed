@@ -3281,7 +3281,7 @@ UnaryExpr:
 		$$->add_code_in_map($2->current_code);
 		Instruction* ins = new Instruction("CALL",$1->current_place);
 		$$->add_code_in_map(ins);
-		//Instruction::update_instructions_with_scope($$->current_code,st);
+		// update_instructions_with_scope(&($$->current_code),st);
 
 		Place* pp = $$->current_place;
 

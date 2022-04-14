@@ -64,7 +64,7 @@ void Node::print_code_in_file(string file_name){
 		i+=1;
 		it= current_code.find(i);
 	}
-	
+
 }
 NodeData* Node::last_current_node_data(){
 	NodeData* temp = current_node_data;

@@ -1,6 +1,6 @@
 #include "tac.hpp"
 
-void Instruction::update_instructions_with_scope(map<int,Instruction*>* instr,SymbolTable* st){
+void update_instructions_with_scope(map<int,Instruction*>* instr,SymbolTable* st){
 	int i=1;
 	auto it= (*instr).find(i);
 	while(it!=(*instr).end())
