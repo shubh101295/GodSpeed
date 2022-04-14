@@ -30,11 +30,6 @@
 	// bool is_last_statement = false;
 	int fallthrough_expression_count = 0;
 	bool has_default_statement = false;
-	int label_id = 0;
-	string generate_label()
-	{
-		return "label" + to_string(label_id);
-	}
 %}
 
 %define parse.error verbose
