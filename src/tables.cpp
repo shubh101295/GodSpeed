@@ -127,7 +127,7 @@ string SymbolTable::get_scope_for_variable(string variable_name) {
 		if (symbol_table.find({val,variable_name})!=symbol_table.end()) return val;
 		ans+=1;
 	}
-	return "NOT IN SCOPE";
+	return "";
 }
 DataType * SymbolTable::get_value_from_key(string _variable_name){
 	pair<string,string> new_key = {current_scope,_variable_name};

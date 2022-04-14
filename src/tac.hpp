@@ -35,7 +35,7 @@ class Instruction {
 			address3 = NULL;
 		};
 
-	void update_instruction_with_scope(Instruction* instr,SymbolTable *st);
+	void update_instructions_with_scope(map<int,Instruction*>* instr,SymbolTable* st);
 };
 
 #endif
