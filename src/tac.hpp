@@ -3,6 +3,7 @@
 
 #include "datatypes.hpp"
 #include "place.hpp"
+#include "tables.hpp"
 
 // for storing TAC
 class Instruction {
@@ -33,6 +34,8 @@ class Instruction {
 			address2 = NULL;
 			address3 = NULL;
 		};
+
+	void update_instruction_with_scope(Instruction* instr,SymbolTable *st);
 };
 
 #endif

@@ -2974,7 +2974,7 @@ Expression:
 			$$->add_code_in_map(ins4);
 		}
 	| UnaryExpr {
-		// cout<<"Expression: UnaryExpr, Value: ";
+		 cout<<"Expression: UnaryExpr, Value: ";
 			$$ = new Node("Expression");
 			$$->add_non_terminal_children($1);
 			$$->current_type = $1->current_type;
@@ -3071,7 +3071,7 @@ UnaryExpr:
 			$$->current_place = p1;
 		}
 	| PrimaryExpr {
-		// cout<<"UnaryExpr: PrimaryExpr\n";
+		 cout<<"UnaryExpr: PrimaryExpr\n";
 		$$ = new Node("UnaryExpr");
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
@@ -3086,7 +3086,7 @@ UnaryExpr:
 // remaining
  PrimaryExpr:
  	Operand  {
- 		// cout<<" PrimaryExpr: Operand, Value:";
+ 		 cout<<" PrimaryExpr: Operand, Value:";
 		Node* curr = new Node("PrimaryExpr");
 		curr->add_non_terminal_children($1);
 		curr->current_node_data = $1->current_node_data;
