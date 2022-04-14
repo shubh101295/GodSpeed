@@ -3273,6 +3273,21 @@ UnaryExpr:
 			head = head->next_type;
 		}
 		$$->current_type = temp->next_type;
+		$$->current_place =  new Place("");
+
+		$$->add_code_in_map($2->current_code);
+		Instruction* ins = new Instruction("CALL",$1->current_place);
+		$$->add_code_in_map(ins);
+		// remaining scope expr
+
+		Place* pp = $$->current_place;
+
+		for(DataType* tp = $$->current_type; tp != NULL; tp = tp->next_type){
+			pp->next_place = new Place(tp);
+			Instruction* ins = new Instruction("POP",pp->next_place);
+			pp = pp->next_place;
+			$$->add_code_in_map(ins);
+		}
 	}
  	| OperandName StructLiteral {
 		Node* curr = new Node("PrimaryExpr");
