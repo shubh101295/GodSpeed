@@ -6,10 +6,10 @@
 #include "datatypes.hpp"
 #include "place.hpp"
 #include "tac.hpp"
+#include "tables.hpp"
 using namespace std;
 
-
-
+void update_instructions_with_scope(std::map<int, Instruction*>* instr ,SymbolTable *st);
 struct Node;
 struct NodeChildren;
 struct NodeData;
