@@ -30,11 +30,6 @@
 	// bool is_last_statement = false;
 	int fallthrough_expression_count = 0;
 	bool has_default_statement = false;
-	int label_id = 0;
-	string generate_label()
-	{
-		return "label" + to_string(label_id);
-	}
 %}
 
 %define parse.error verbose
@@ -94,9 +89,9 @@ SourceFile:
 			 curr->current_node_data->node_child = $4->current_node_data;
 			 cout<<"SourceFile:	PackageClause SCOLON ImportDeclList TopLevelDeclList\n";
 			 curr->add_code_in_map($4->current_code);
-			 
+
 			 $$ = curr;
-			 
+
 			 dump_dot_file("ast.dot", $$);
 			 $$->print_code_in_file("bin/output.tac");
 			 // auto val = st->get_symbol_table_data();
@@ -1805,13 +1800,12 @@ IfStmt:
 			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$3->current_type->getDataType()<<endl;
 			exit(1);
 		}
-
+		string jmp_label = l->get_new_label();
 		$$->add_code_in_map($3->current_code);
-		Instruction* ins = new Instruction("JEQZ", $3->current_place, new Place(generate_label()));
+		Instruction* ins = new Instruction("JEQZ", $3->current_place, new Place(jmp_label));
 		$$->add_code_in_map(ins);
 		$$->add_code_in_map($4->current_code);
-		$$->add_code_in_map(new Instruction("LBL", generate_label()));
-		label_id++;
+		$$->add_code_in_map(new Instruction("LBL", jmp_label));
 	}
 	|IF OpenBlock SimpleStmt SCOLON Expression Block CloseBlock {
 		$$ = new Node("IfStmt");
@@ -1834,14 +1828,13 @@ IfStmt:
 			cout<<"Boolean Expression expected inside If Statement, Received: ( "<<$5->current_type->getDataType()<<endl;
 			exit(1);
 		}
-
+		string jmp_label = l->get_new_label();
 		$$->add_code_in_map($3->current_code);
 		$$->add_code_in_map($5->current_code);
-		Instruction* ins = new Instruction("JEQZ", $5->current_place, new Place(generate_label()));
+		Instruction* ins = new Instruction("JEQZ", $5->current_place, new Place(jmp_label));
 		$$->add_code_in_map(ins);
 		$$->add_code_in_map($6->current_code);
-		$$->add_code_in_map(new Instruction("LBL", generate_label()));
-		label_id++;
+		$$->add_code_in_map(new Instruction("LBL", jmp_label));
 	}
 	|IF OpenBlock Expression Block ELSE IfStmt CloseBlock {
 		$$ = new Node("IfStmt");
@@ -1864,8 +1857,8 @@ IfStmt:
 			exit(1);
 		}
 
-		string label_if = generate_label(); label_id++;
-		string label_else = generate_label(); label_id++;
+		string label_if = l->get_new_label();
+		string label_else = l->get_new_label();
 
 		$$->add_code_in_map($3->current_code);
 		Instruction* ins1 = new Instruction("JEQZ", $3->current_place, new Place(label_if));
@@ -1901,8 +1894,8 @@ IfStmt:
 			exit(1);
 		}
 
-		string label_if = generate_label(); label_id++;
-		string label_else = generate_label(); label_id++;
+		string label_if = l->get_new_label();
+		string label_else = l->get_new_label();
 
 		$$->add_code_in_map($3->current_code);
 		Instruction* ins1 = new Instruction("JEQZ", $3->current_place, new Place(label_if));
@@ -1942,8 +1935,8 @@ IfStmt:
 			exit(1);
 		}
 
-		string label_if = generate_label(); label_id++;
-		string label_else = generate_label(); label_id++;
+		string label_if = l->get_new_label();
+		string label_else = l->get_new_label();
 
 		$$->add_code_in_map($3->current_code);
 		$$->add_code_in_map($5->current_code);
@@ -1983,8 +1976,8 @@ IfStmt:
 			exit(1);
 		}
 
-		string label_if = generate_label(); label_id++;
-		string label_else = generate_label(); label_id++;
+		string label_if = l->get_new_label();
+		string label_else = l->get_new_label();
 
 		$$->add_code_in_map($3->current_code);
 		$$->add_code_in_map($5->current_code);
@@ -2012,8 +2005,7 @@ ForStmt:
 		it=it->node_child;
 		it->node_child = $3->current_node_data;
 
-		string label = generate_label();
-		label_id++;
+		string label = l->get_new_label();
 
 		Instruction* ins = new Instruction("LBL", new Place(label));
 		$$->add_code_in_map(ins);
@@ -2034,8 +2026,8 @@ ForStmt:
 		it->node_child = new NodeData("ForBody");
 		it->node_child->node_child = $9->current_node_data;
 
-		string label_loop_start = generate_label(); label_id++;
-		string label_loop_end = generate_label(); label_id++;
+		string label_loop_start = l->get_new_label();
+		string label_loop_end = l->get_new_label();
 
 		$$->add_code_in_map($3->current_code);
 		$$->add_code_in_map($5->current_code);
@@ -2066,8 +2058,8 @@ ForStmt:
 		it->node_child = new NodeData("ForBody");
 		it->node_child->node_child = $9->current_node_data;
 
-		string label_loop_start = generate_label(); label_id++;
-		string label_loop_end = generate_label(); label_id++;
+		string label_loop_start = l->get_new_label();
+		string label_loop_end = l->get_new_label();
 
 		$$->add_code_in_map($3->current_code);
 		Instruction* ins1 = new Instruction("LBL", new Place(label_loop_start));
@@ -2099,8 +2091,8 @@ ForStmt:
 		it = it->next_data;
 		it->node_child= $5->current_node_data;
 
-		string label_loop_start = generate_label(); label_id++;
-		string label_loop_end = generate_label(); label_id++;
+		string label_loop_start = l->get_new_label();
+		string label_loop_end = l->get_new_label();
 
 		Instruction* ins1 = new Instruction("LBL", new Place(label_loop_start));
 		$$->add_code_in_map(ins1);
@@ -2140,7 +2132,7 @@ ForStmt:
 //	}
 //	;
 
-//remTAC: handle this nicely.
+//remTAC: Fix next labels, shubh
 forMarker:
 	{
 		$$ = new Node("");
@@ -2232,7 +2224,7 @@ Expression:
 			cout<<"MAI YAHA HU\n";
 			cout<<($1->current_place==NULL)<<"  Expression MUL Expression1 \n";
 			cout<<($$->current_place==NULL)<<"  Expression MUL Expression2 \n";
-			
+
 			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
 			Instruction* ins2 = new Instruction("MUL",$3->current_place,p1);
 			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
