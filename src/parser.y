@@ -1425,7 +1425,7 @@ OperandName:
 		$$->current_place = new Place(string($1));
 		$$->current_type = st->get_type(string($1))?st->get_type(string($1)):new BasicType("undefined");
 		// cout<<"OperandName5:	IDENTIFIER - "<<string($1)<<"\n";
-
+		 $$->current_node_data->lval = $$->current_place->place_name;
 	}
 	;
 
