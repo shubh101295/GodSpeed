@@ -3,12 +3,14 @@ package main
 import "fmt"
 
 func main() {
-
-	i:=0
+	var a int = 1
+	i:=1
 	j:=0
-	if(j==0) {
-		i+=1
-	} 
+	i += i - 1
+	j/=1
+	// if(j==0) {
+	// 	i-=1
+	// }
 	// else {
 	// 	j++
 	// }
@@ -29,6 +31,5 @@ func main() {
 	// 	}
 	// 	i -= 1;
 	// }
-	
-}
 
+}
