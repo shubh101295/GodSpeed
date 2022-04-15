@@ -6,7 +6,7 @@ using namespace std;
 #define se second
 
 string ArrayType::getDataType(){
-	return "["+to_string(array_size)+"] " + array_index_type->getDataType();
+	return "["+to_string(array_size)+"]" + array_index_type->getDataType();
 }
 
 // DataType* ArrayType::copyClass() {
