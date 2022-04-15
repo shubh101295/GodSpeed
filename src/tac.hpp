@@ -5,6 +5,8 @@
 #include "place.hpp"
 #include "tables.hpp"
 
+string operator_to_tac(string op);
+
 // for storing TAC
 class Instruction {
 	public:

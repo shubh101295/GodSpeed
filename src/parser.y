@@ -35,6 +35,7 @@
 %define parse.error verbose
 %code requires{
 	#include "node.hpp"
+	#include "tac.hpp"
 	// #include "dot_generator.hpp"
 }
 
@@ -750,9 +751,26 @@ Assignment:
 				}
 
 			}
-			cout<<"HUM YAHAN HAI in line 752\n";
-			Instruction* ins = new Instruction("USTOR", right_place, new Place(left_data->lval, right_type));
-			$$->add_code_in_map(ins);
+			cout<<"HUM YAHAN HAI in line 752"<<string($2)<<"\n";
+			if(string($2) == "=")
+			{
+				cout<<"inside assignment operator, generating a store instruction\n";
+				Instruction* ins = new Instruction("USTOR", right_place, new Place(left_data->lval, right_type));
+				$$->add_code_in_map(ins);
+			}
+			else if(string($2).length() >= 2)
+			{
+				string operation = operator_to_tac(string($2));
+				cout<<"inside += operator, generate " <<operation<<" instruction\n";
+				Place* p1 = new Place($1->current_type);
+				Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
+				Instruction* ins2 = new Instruction(operation,$3->current_place,p1);
+				Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
+				$$->add_code_in_map(ins1);
+				$$->add_code_in_map(ins2);
+				$$->add_code_in_map(ins3);
+			}
+
 				// cout<<"HERE 4\n";
 			left_data = left_data->next_data;
 			left_type = left_type->next_type;
@@ -927,6 +945,12 @@ VarSpec:
 		$$->current_node_data = new NodeData("");
 	}
 	| IdentifierList Type ASSGN_OP ExpressionList {
+		if(string($3) != "=")
+		{
+			cout<<"Coding an assign operation other than =, quitting.\n";
+			exit(1);
+		}
+
 		$$ = new Node("VarSpec");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
@@ -953,6 +977,11 @@ VarSpec:
 		$$->current_node_data->node_child = parLeft;
 	}
 	| IdentifierList ASSGN_OP ExpressionList {
+		if(string($2) != "=")
+		{
+			cout<<"Coding an assign operation other than =, quitting.\n";
+			exit(1);
+		}
 		$$ = new Node("VarSpec");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($3);
