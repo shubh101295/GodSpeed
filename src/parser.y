@@ -1821,6 +1821,7 @@ IfStmt:
 		$$->add_code_in_map(new Instruction("LBL", new Place(jmp_label)));
 	}
 	|IF OpenBlock SimpleStmt SCOLON Expression Block CloseBlock {
+		cout << "Simple Stmt\n";
 		$$ = new Node("IfStmt");
 		$$->add_non_terminal_children($3);
 		$$->add_non_terminal_children($5);
@@ -1870,19 +1871,19 @@ IfStmt:
 			exit(1);
 		}
 
-		string label_if = l->get_new_label();
 		string label_else = l->get_new_label();
+		string label_after_else = l->get_new_label();
 
 		$$->add_code_in_map($3->current_code);
-		Instruction* ins1 = new Instruction("JEQZ", $3->current_place, new Place(label_if));
+		Instruction* ins1 = new Instruction("JEQZ", $3->current_place, new Place(label_else));
 		$$->add_code_in_map(ins1);
 		$$->add_code_in_map($4->current_code);
-		Instruction* ins2 = new Instruction("JMP", new Place(label_else));
+		Instruction* ins2 = new Instruction("JMP", new Place(label_after_else));
 		$$->add_code_in_map(ins2);
-		Instruction* ins3 = new Instruction("LBL", new Place(label_if));
+		Instruction* ins3 = new Instruction("LBL", new Place(label_else));
 		$$->add_code_in_map(ins3);
 		$$->add_code_in_map($6->current_code);
-		Instruction* ins4 = new Instruction("JMP", new Place(label_else));
+		Instruction* ins4 = new Instruction("LBL", new Place(label_after_else));
 		$$->add_code_in_map(ins4);
 
 	}
@@ -1907,19 +1908,19 @@ IfStmt:
 			exit(1);
 		}
 
-		string label_if = l->get_new_label();
 		string label_else = l->get_new_label();
+		string label_after_else = l->get_new_label();
 
 		$$->add_code_in_map($3->current_code);
-		Instruction* ins1 = new Instruction("JEQZ", $3->current_place, new Place(label_if));
+		Instruction* ins1 = new Instruction("JEQZ", $3->current_place, new Place(label_else));
 		$$->add_code_in_map(ins1);
 		$$->add_code_in_map($4->current_code);
-		Instruction* ins2 = new Instruction("JMP", new Place(label_else));
+		Instruction* ins2 = new Instruction("JMP", new Place(label_after_else));
 		$$->add_code_in_map(ins2);
-		Instruction* ins3 = new Instruction("LBL", new Place(label_if));
+		Instruction* ins3 = new Instruction("LBL", new Place(label_else));
 		$$->add_code_in_map(ins3);
 		$$->add_code_in_map($6->current_code);
-		Instruction* ins4 = new Instruction("JMP", new Place(label_else));
+		Instruction* ins4 = new Instruction("LBL", new Place(label_after_else));
 		$$->add_code_in_map(ins4);
 
 	}

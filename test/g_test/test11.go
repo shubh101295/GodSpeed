@@ -4,14 +4,18 @@ import "fmt"
 
 func main() {
 
-	i:=0
-	j:=0
-	if(j==0) {
-		i+=1
-	} 
-	// else {
-	// 	j++
-	// }
+	// i:=0
+	// j:=0
+	// c := false
+	// d := true
+	
+	if e := true ; e {
+		j := 3
+	}
+
+	k := 5
+	k++
+	
 	// for j<=50 {
  //       j+=1
 	//    if(j>=20){
