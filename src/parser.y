@@ -914,7 +914,7 @@ VarSpec:
 			}
 			st->add_in_symbol_table({st->get_current_scope(),curr->data_name},$2->current_type);
 			// cout<<curr->data_name<<"    "<< $2->current_type<<"   "<<$2->current_type->getDataType()<<"\n";
-			Instruction* ins = new Instruction("DECL", new Place(st->get_current_scope() + curr->data_name));
+			Instruction* ins = new Instruction("DECL", new Place(st->get_current_scope() + curr->data_name +$2->current_type->getDataType()));
 			$$->add_code_in_map(ins);
 			DataType * temp = $2->current_type->copyClass();
 			// cout<<temp<<" "<<temp->getDataType()<<"  " <<temp->getDataType()<<"\n";
