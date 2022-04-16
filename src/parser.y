@@ -932,7 +932,7 @@ VarSpec:
 			}
 			st->add_in_symbol_table({st->get_current_scope(),curr->data_name},$2->current_type);
 			// cout<<curr->data_name<<"    "<< $2->current_type<<"   "<<$2->current_type->getDataType()<<"\n";
-			Instruction* ins = new Instruction("DECL", new Place(st->get_current_scope() + curr->data_name +$2->current_type->getDataType()));
+			Instruction* ins = new Instruction("DECL", new Place(st->get_current_scope() + curr->data_name + " " + $2->current_type->getDataType()));
 			$$->add_code_in_map(ins);
 			DataType * temp = $2->current_type->copyClass();
 			// cout<<temp<<" "<<temp->getDataType()<<"  " <<temp->getDataType()<<"\n";
@@ -956,18 +956,67 @@ VarSpec:
 		$$->add_non_terminal_children($2);
 		$$->add_non_terminal_children($4);
 
-		NodeData *curr = $1->current_node_data;
-		while(curr){
-			if(!st->scope_level(curr->data_name)){
-				cout<<curr->data_name<<" already declared in this scope!";
+		DataType* right_type = $4->current_type;
+
+		NodeData* left_data = $1->current_node_data;
+		NodeData* right_data = $4->current_node_data;
+
+		Place* right_place = $4->current_place;
+
+		while(left_data || right_type){
+			if(!left_data || !right_type){
+				cout<<"[unpacking error], '=' operator expected same number of operands on LHS and RHS";
 				exit(1);
 			}
-			st->add_in_symbol_table({st->get_current_scope(),curr->data_name},$2->current_type);
-			Instruction* ins = new Instruction("DECL", new Place(st->get_current_scope() + curr->data_name));
+			string name = left_data->data_name;
+			auto temp_left_data = left_data;
+			if(left_data->data_name.substr(1) == "unary"){
+				temp_left_data = left_data->node_child;
+			}
+			if(!temp_left_data->value && temp_left_data->node_child){
+				cout<<"[]"<<"Unexpected non identifier on the left of '=' operator";
+				exit(1);
+			}
+
+			if(temp_left_data -> value){
+				// cout<<"Here 1"<<endl;
+				string j = name;
+				// cout<<"HERE 2\n";
+				name = (temp_left_data->node_child)? temp_left_data->node_child->data_name:temp_left_data->data_name;
+				// if(name==j) cout<<"UNCHANGED!\n";
+			}
+
+				// cout<<name<<" "<<"HERE 4\n";
+			if(right_type && right_type->getDataType() == "undefined"){
+				cout<<"[Undeclared Identifier]"<<"Identifier in RHS undeclared"<<endl;
+				exit(1);
+			}
+			
+			if(!st->scope_level(left_data->data_name)){
+				cout<<left_data->data_name<<" already declared in this scope!";
+				exit(1);
+			}
+			st->add_in_symbol_table({st->get_current_scope(),name},$2->current_type);
+			auto p1 = new Place(st->get_current_scope() + name + " "+$2->current_type->getDataType());
+			Instruction* ins = new Instruction("DECL", p1 );
+
 			$$->add_code_in_map(ins);
 			$$->current_type = $2->current_type;
-			curr = curr->next_data;
+
+			if(right_type->getDataType() != $2->current_type->getDataType()){
+
+					cout<<"[Type Mismatch]"<<name<<" Expected type ( " <<$2->current_type->getDataType()<<" ) whereas found ( "<<right_type->getDataType()<<" ) \n";
+					exit(1);
+				}
+			//cout<<"inside assignment operator, generating a store instruction\n";
+			ins = new Instruction("USTOR", right_place, new Place(st->get_current_scope() + name));
+			$$->add_code_in_map(ins);
+			left_data = left_data->next_data;
+			right_type = right_type->next_type;
+			right_data = right_data?right_data->next_data:right_data;
+			right_place = right_place? right_place->next_place: right_place;
 		}
+		
 		NodeData* parLeft = new NodeData("list");
 		NodeData* parRight = new NodeData("list");
 		parLeft->node_child = $1->current_node_data;
@@ -986,45 +1035,62 @@ VarSpec:
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($3);
 
+		DataType* right_type = $3->current_type;
+
 		NodeData* left_data = $1->current_node_data;
 		NodeData* right_data = $3->current_node_data;
 
-		DataType* left_type = $1->current_type;
-		DataType* right_type = $3->current_type;
+		Place* right_place = $3->current_place;
 
-		bool newVar = false;
-		while(left_data || right_type || right_data){
-			if(!left_data || !right_type || !right_data){
+		while(left_data || right_type){
+			if(!left_data || !right_type){
 				cout<<"[unpacking error], '=' operator expected same number of operands on LHS and RHS";
-
 				exit(1);
 			}
-
 			string name = left_data->data_name;
-			if(left_data->node_child){
+			auto temp_left_data = left_data;
+			if(left_data->data_name.substr(1) == "unary"){
+				temp_left_data = left_data->node_child;
+			}
+			if(!temp_left_data->value && temp_left_data->node_child){
 				cout<<"[]"<<"Unexpected non identifier on the left of '=' operator";
 				exit(1);
 			}
 
+			if(temp_left_data -> value){
+				// cout<<"Here 1"<<endl;
+				string j = name;
+				// cout<<"HERE 2\n";
+				name = (temp_left_data->node_child)? temp_left_data->node_child->data_name:temp_left_data->data_name;
+				// if(name==j) cout<<"UNCHANGED!\n";
+			}
+
+				// cout<<name<<" "<<"HERE 4\n";
 			if(right_type && right_type->getDataType() == "undefined"){
 				cout<<"[Undeclared Identifier]"<<"Identifier in RHS undeclared"<<endl;
 				exit(1);
 			}
-
-			if(!st->scope_level(name)){
-				cout<<"Redeclaration of variable: "<<name<<endl;
+			
+			if(!st->scope_level(left_data->data_name)){
+				cout<<left_data->data_name<<" already declared in this scope!";
 				exit(1);
 			}
-			else{
-				st->add_in_symbol_table({st->get_current_scope(),name}, right_type);
-				Instruction* ins = new Instruction("DECL", new Place(st->get_current_scope() + name));
-				$$->add_code_in_map(ins);
-			}
+			st->add_in_symbol_table({st->get_current_scope(),name},right_type);
+			auto p1 = new Place(st->get_current_scope() + name + " "+right_type->getDataType());
+			Instruction* ins = new Instruction("DECL", p1 );
 
-			left_data = left_data -> next_data;
-			right_type = right_type -> next_type;
-			right_data = right_data? right_data->next_data : right_data;
+			$$->add_code_in_map(ins);
+			//$$->current_type = $2->current_type;
+
+			//cout<<"inside assignment operator, generating a store instruction\n";
+			ins = new Instruction("USTOR", right_place, new Place(st->get_current_scope() + name));
+			$$->add_code_in_map(ins);
+			left_data = left_data->next_data;
+			right_type = right_type->next_type;
+			right_data = right_data?right_data->next_data:right_data;
+			right_place = right_place? right_place->next_place: right_place;
 		}
+
 		NodeData* parLeft = new NodeData("list");
 		NodeData* parRight = new NodeData("list");
 		parLeft->node_child = $1->current_node_data;
@@ -1033,7 +1099,7 @@ VarSpec:
 		$$->current_node_data = new NodeData(":=");
 		$$->current_node_data->node_child = parLeft;
 
-	}
+	} 
 	;
 
 //ConstDecl:
@@ -1261,7 +1327,7 @@ ParameterDecl:
 
 IdentifierList:
 	IdentifierList COMMA IDENTIFIER {
-		// cout<<"IdentifierList COMMA IDENTIFIER"<<endl;
+		cout<<"IdentifierList COMMA IDENTIFIER"<<endl;
 		$$ = new Node("IdentifierList");
 		$$->add_non_terminal_children($1);
 		$$->add_terminal_children(string($3));
@@ -1272,7 +1338,7 @@ IdentifierList:
 
 	}
 	| IDENTIFIER {
-		// cout<<"Identifier"<<endl;
+		cout<<"IdentifierList: Identifier"<<endl;
 		$$ = new Node("IdentifierList");
 		$$ -> add_terminal_children(string($1));
 		$$->current_node_data = new NodeData(string($1));
