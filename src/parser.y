@@ -763,9 +763,9 @@ Assignment:
 				string operation = operator_to_tac(string($2));
 				cout<<"inside += operator, generate " <<operation<<" instruction\n";
 				Place* p1 = new Place($1->current_type);
-				Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
-				Instruction* ins2 = new Instruction(operation,$3->current_place,p1);
-				Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
+				Instruction* ins1 = new Instruction("USTOR", $1->current_place, p1);
+				Instruction* ins2 = new Instruction(operation, $3->current_place, p1);
+				Instruction* ins3 = new Instruction("USTOR", p1, $1->current_place);
 				$$->add_code_in_map(ins1);
 				$$->add_code_in_map(ins2);
 				$$->add_code_in_map(ins3);
@@ -991,7 +991,7 @@ VarSpec:
 				cout<<"[Undeclared Identifier]"<<"Identifier in RHS undeclared"<<endl;
 				exit(1);
 			}
-			
+
 			if(!st->scope_level(left_data->data_name)){
 				cout<<left_data->data_name<<" already declared in this scope!";
 				exit(1);
@@ -1016,7 +1016,7 @@ VarSpec:
 			right_data = right_data?right_data->next_data:right_data;
 			right_place = right_place? right_place->next_place: right_place;
 		}
-		
+
 		NodeData* parLeft = new NodeData("list");
 		NodeData* parRight = new NodeData("list");
 		parLeft->node_child = $1->current_node_data;
@@ -1070,7 +1070,7 @@ VarSpec:
 				cout<<"[Undeclared Identifier]"<<"Identifier in RHS undeclared"<<endl;
 				exit(1);
 			}
-			
+
 			if(!st->scope_level(left_data->data_name)){
 				cout<<left_data->data_name<<" already declared in this scope!";
 				exit(1);
@@ -1099,7 +1099,7 @@ VarSpec:
 		$$->current_node_data = new NodeData(":=");
 		$$->current_node_data->node_child = parLeft;
 
-	} 
+	}
 	;
 
 //ConstDecl:

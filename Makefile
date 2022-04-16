@@ -22,9 +22,8 @@ clean:
 	rm ./bin/*.csv
 	rm ./bin/*.dot
 	rm ./bin/output.tac
-	rm ast.node ast.edge ast.dot *.png
 	rm ./bin/*.png
-	
+	rm ast.node ast.edge ast.dot *.png
+
 clean_csv:
 	rm ./bin/*.csv
-	
