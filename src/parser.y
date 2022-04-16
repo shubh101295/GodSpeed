@@ -763,12 +763,15 @@ Assignment:
 				string operation = operator_to_tac(string($2));
 				cout<<"inside += operator, generate " <<operation<<" instruction\n";
 				Place* p1 = new Place($1->current_type);
+				Place* p2 = new Place($1->current_type);
 				Instruction* ins1 = new Instruction("USTOR", $1->current_place, p1);
 				Instruction* ins2 = new Instruction(operation, $3->current_place, p1);
-				Instruction* ins3 = new Instruction("USTOR", p1, $1->current_place);
+				Instruction* ins3 = new Instruction("USTOR", p1, p2);
+				Instruction* ins4 = new Instruction("USTOR", p2, $1->current_place);
 				$$->add_code_in_map(ins1);
 				$$->add_code_in_map(ins2);
 				$$->add_code_in_map(ins3);
+				$$->add_code_in_map(ins4);
 			}
 
 				// cout<<"HERE 4\n";
