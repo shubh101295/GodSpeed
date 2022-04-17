@@ -653,9 +653,18 @@ IncDecStmt:
 		$$->add_terminal_children(string($2));
 		$$->current_node_data = new NodeData(string($2) + "unary");
 		$$->current_node_data->node_child = $1->current_node_data;
+		Place* p1 = new Place($1->current_type);
+		Place* p2 = new Place($1->current_type);
+
 		$$->add_code_in_map($1->current_code);
-		Instruction* ins1 = new Instruction("ADD", new Place("1"), $1->current_place);
+		Instruction* ins1 = new Instruction("USTOR", $1->current_place, p1);
+		Instruction* ins2 = new Instruction("ADD", new Place("1"), p1);
+		Instruction* ins3 = new Instruction("USTOR", p1, p2);
+		Instruction* ins4 = new Instruction("USTOR", p2, $1->current_place);
 		$$->add_code_in_map(ins1);
+		$$->add_code_in_map(ins2);
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map(ins4);
 		update_instructions_with_scope(&($$->current_code), st);
 
 	}
@@ -665,9 +674,18 @@ IncDecStmt:
 		$$->add_terminal_children(string($2));
 		$$->current_node_data = new NodeData(string($2) + "unary");
 		$$->current_node_data->node_child = $1->current_node_data;
+		Place* p1 = new Place($1->current_type);
+		Place* p2 = new Place($1->current_type);
+
 		$$->add_code_in_map($1->current_code);
-		Instruction* ins1 = new Instruction("SUB", new Place("1"), $1->current_place);
+		Instruction* ins1 = new Instruction("USTOR", $1->current_place, p1);
+		Instruction* ins2 = new Instruction("SUB", new Place("1"), p1);
+		Instruction* ins3 = new Instruction("USTOR", p1, p2);
+		Instruction* ins4 = new Instruction("USTOR", p2, $1->current_place);
 		$$->add_code_in_map(ins1);
+		$$->add_code_in_map(ins2);
+		$$->add_code_in_map(ins3);
+		$$->add_code_in_map(ins4);
 		update_instructions_with_scope(&($$->current_code), st);
 	}
 	;
