@@ -12,17 +12,21 @@ func main() {
     // executes till i<4 condition is true
     // post statement is i++
     k:=5
+    k--
     // h := 1
     // h = h * 5
     // j := 1
     // j *= 5
-    // for i := 0; i < 4; i++{
+    // for i := 0; i < 4; i+=1{
     //   k+=1
     // }
     // for {
     //   k+=1
     // }
-    for k < 10 {
-       k += 1
-    }
+    // for i := 0; i < 3; i++ {
+    //     for j := 0; j < 2; j++ {
+    //         k = i * j
+    //         break
+    //     }
+    // }
 }
