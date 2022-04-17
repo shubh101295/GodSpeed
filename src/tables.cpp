@@ -188,12 +188,13 @@ void BreakLabels::remove_last_break_label(){
 }
 
 string BreakLabels::return_top_label(){
+	cout<<"HERE in break_labels_list_position "<<break_labels_list_position<<"\n";
 	return break_labels_list[break_labels_list_position - 1];
 }
 
 string Labels::get_new_label(){
 	label_count+=1;
-	string _label = "Label:"+to_string(label_count);
+	string _label = "Label"+to_string(label_count);
 	return _label;
 }
 

@@ -22,6 +22,7 @@
 	SymbolTable* st = new SymbolTable();
 	TypesTable* tt = new TypesTable();
 	BreakLabels* bl = new BreakLabels();
+	BreakLabels* cl = new BreakLabels(); // this one is for the continue labels
 	Labels *l = new Labels();
 	SwitchCaseList* scl= NULL;
 
@@ -52,7 +53,7 @@
 %token <sval> LEFTPARAN LEFTBRACE LEFTSQUARE COLON DOT COMMA RAW_STRING INTERPRETED_STRING BYTE_VAL IDENTIFIER
 %token <sval> ASSGN_OP
 
-%type <nt> SourceFile Expression forMarker forMarkerEnd EmptyExpr
+%type <nt> SourceFile Expression forMarker EmptyExpr
 %type <nt> Block StatementList Statement SimpleStmt EmptyStmt ExpressionStmt IncDecStmt MapType
 %type <nt> Assignment ShortVarDecl Declaration VarSpec PackageName
 %type <nt> Signature Result Parameters ParameterList ParameterDecl
@@ -1690,11 +1691,11 @@ ContinueStmt:
 		Node* curr = new Node("ContinueStmt");
 		curr->current_node_data = new NodeData(string($1));
 		$$ = curr;
-		if(bl->is_empty()){
+		if(cl->is_empty()){
 			cout<<"[INVALID CONTINUE] Tried to continue when not inside a loop!";
 			exit(1);
 		}
-		Instruction* ins = new Instruction("JMP", new Place(bl->return_top_label()));
+		Instruction* ins = new Instruction("JMP", new Place(cl->return_top_label()));
 		$$->add_code_in_map(ins);
 	}
 	// | CONTINUE IDENTIFIER {
@@ -2107,7 +2108,7 @@ IfStmt:
 	;
 //remTAC: code for forMArker. need to fixed for hsubh.
 ForStmt:
-	FOR forMarker Block forMarkerEnd
+	FOR forMarker Block 
 	{
 		$$ = new Node("ForStmt");
 		$$->add_non_terminal_children($3);
@@ -2117,17 +2118,23 @@ ForStmt:
 		it=it->node_child;
 		it->node_child = $3->current_node_data;
 
-		string label = l->get_new_label();
+		string label_loop_start = cl->return_top_label();
+		string label_loop_end = bl->return_top_label();
 
-		Instruction* ins = new Instruction("LBL", new Place(label));
+		Instruction* ins = new Instruction("LBL", new Place(label_loop_start));
 		$$->add_code_in_map(ins);
 		$$->add_code_in_map($3->current_code);
 		$$->add_code_in_map($2->current_code);
-		Instruction* ins1 = new Instruction("JMP", new Place(label));
+		Instruction* ins1 = new Instruction("JMP", new Place(label_loop_start));
 		$$->add_code_in_map(ins1);
-		$$->add_code_in_map($4->current_code);
-	}
-	| FOR OpenBlock SimpleStmt SCOLON forMarker EmptyExpr SCOLON SimpleStmt Block forMarkerEnd CloseBlock {
+		Instruction* ins2 = new Instruction("LBL", new Place(label_loop_end));
+		$$->add_code_in_map(ins2);
+		//$$->add_code_in_map($4->current_code);
+		bl -> remove_last_break_label();
+		cl -> remove_last_break_label();
+	
+	} 
+	| FOR OpenBlock SimpleStmt SCOLON forMarker EmptyExpr SCOLON SimpleStmt Block CloseBlock {
 		$$ = new Node("ForStmt");
 		$$->add_non_terminal_children($3);
 		$$->add_non_terminal_children($6);
@@ -2138,8 +2145,8 @@ ForStmt:
 		it->node_child = new NodeData("ForBody");
 		it->node_child->node_child = $9->current_node_data;
 
-		string label_loop_start = l->get_new_label();
-		string label_loop_end = l->get_new_label();
+		string label_loop_start = cl->return_top_label();
+		string label_loop_end = bl->return_top_label();
 
 		$$->add_code_in_map($3->current_code);
 		$$->add_code_in_map($5->current_code);
@@ -2154,11 +2161,14 @@ ForStmt:
 		$$->add_code_in_map($8->current_code);
 		Instruction* ins4 = new Instruction("JMP", new Place(label_loop_start));
 		$$->add_code_in_map(ins4);
-		$$->add_code_in_map($10->current_code);
+		//$$->add_code_in_map($10->current_code);
 		Instruction* ins5 = new Instruction("LBL", new Place(label_loop_end));
 		$$->add_code_in_map(ins5);
-	}
-	| FOR OpenBlock SimpleStmt SCOLON forMarker ExpressionStmt SCOLON SimpleStmt Block forMarkerEnd CloseBlock {
+		bl -> remove_last_break_label();
+		cl -> remove_last_break_label();
+	
+	} 
+	| FOR OpenBlock SimpleStmt SCOLON forMarker ExpressionStmt SCOLON SimpleStmt Block  CloseBlock {
 		$$ = new Node("ForStmt");
 		$$->add_non_terminal_children($3);
 		$$->add_non_terminal_children($6);
@@ -2170,8 +2180,8 @@ ForStmt:
 		it->node_child = new NodeData("ForBody");
 		it->node_child->node_child = $9->current_node_data;
 
-		string label_loop_start = l->get_new_label();
-		string label_loop_end = l->get_new_label();
+		string label_loop_start = cl->return_top_label();
+		string label_loop_end = bl->return_top_label();
 
 		$$->add_code_in_map($3->current_code);
 		Instruction* ins1 = new Instruction("LBL", new Place(label_loop_start));
@@ -2186,11 +2196,15 @@ ForStmt:
 		$$->add_code_in_map($8->current_code);
 		Instruction* ins4 = new Instruction("JMP", new Place(label_loop_start));
 		$$->add_code_in_map(ins4);
-		$$->add_code_in_map($10->current_code);
+		//$$->add_code_in_map($10->current_code);
 		Instruction* ins5 = new Instruction("LBL", new Place(label_loop_end));
 		$$->add_code_in_map(ins5);
-	}
-	| FOR OpenBlock Condition forMarker Block forMarkerEnd CloseBlock {
+
+		bl -> remove_last_break_label();
+		cl -> remove_last_break_label();
+	
+	} 
+	| FOR OpenBlock Condition forMarker Block CloseBlock {
 		$$ = new Node("ForStmt");
 		$$->add_non_terminal_children($3);
 		$$->add_non_terminal_children($5);
@@ -2203,8 +2217,8 @@ ForStmt:
 		it = it->next_data;
 		it->node_child= $5->current_node_data;
 
-		string label_loop_start = l->get_new_label();
-		string label_loop_end = l->get_new_label();
+		string label_loop_start = cl->return_top_label();
+		string label_loop_end = bl->return_top_label();
 
 		Instruction* ins1 = new Instruction("LBL", new Place(label_loop_start));
 		$$->add_code_in_map(ins1);
@@ -2217,10 +2231,13 @@ ForStmt:
 		$$->add_code_in_map($4->current_code);
 		Instruction* ins4 = new Instruction("JMP", new Place(label_loop_start));
 		$$->add_code_in_map(ins4);
-		$$->add_code_in_map($6->current_code);
+		//$$->add_code_in_map($6->current_code);
 		Instruction* ins5 = new Instruction("LBL", new Place(label_loop_end));
 		$$->add_code_in_map(ins5);
-	}
+		bl -> remove_last_break_label();
+		cl -> remove_last_break_label();
+	
+	} 
 	//| FOR OpenBlock EmptyStmt Empty forMarker Expression Empty EmptyStmt Block forMarkerEnd CloseBlock {
 	//	$$ = new Node("ForStmt");
 	//	$$->add_non_terminal_children($3);
@@ -2249,17 +2266,23 @@ forMarker:
 	{
 		$$ = new Node("");
 		bl -> add_new_break_label(l->get_new_label());
+		cl -> add_new_break_label(l->get_new_label());
+		cout<<" beginning for Loop --- "<<bl->return_top_label()<<"\n\n\n\n";
 	}
 
 	;
 
-forMarkerEnd:
-	{
-		$$ = new Node("");
-		bl -> remove_last_break_label();
-	;
-	}
-	;
+//forMarkerEnd:
+//	{
+//		$$ = new Node("");
+//		//Instruction* ins5 = new Instruction("LBL", new Place(bl->return_top_label()));
+//		//$$->add_code_in_map(ins5);
+//		bl -> remove_last_break_label();
+//		cl -> remove_last_break_label();
+		
+//	;
+//	}
+//	;
 //Empty:
 	/* empty */
 	//{
