@@ -64,8 +64,28 @@ void Node::print_code_in_file(string file_name){
 		i+=1;
 		it= current_code.find(i);
 	}
-
 }
+
+void Node::convert_code_to_vector(vector<vector<string> >& v){
+	int i=1;
+	auto it= current_code.find(i);
+	// ofstream my_function_dump(file_name);
+
+	while(it!=current_code.end())
+	{
+		vector<string> temp;
+		Instruction* current_instr = ((*it).second);
+		temp.pb(((*it).second)->current_opcode);
+		if(current_instr->address1!=NULL) temp.pb(current_instr->address1->place_name);
+		if(current_instr->address2!=NULL) temp.pb(current_instr->address2->place_name);
+		if(current_instr->address3!=NULL) temp.pb(current_instr->address3->place_name);
+		v.pb(temp);	
+		i+=1;
+		it= current_code.find(i);
+	}
+}
+
+
 NodeData* Node::last_current_node_data(){
 	NodeData* temp = current_node_data;
 	while(temp->next_data!=NULL)

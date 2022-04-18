@@ -60,6 +60,7 @@ struct Node{
 	void add_code_in_map(Instruction* _code);
 	void add_code_in_map(map<int,Instruction*> _code);
 	void print_code_in_file(string file_name);
+	void convert_code_to_vector(vector<vector<string> >& v);
 };
 
 void update_instructions_with_scope(std::map<int, Instruction*>* instr ,SymbolTable *st);

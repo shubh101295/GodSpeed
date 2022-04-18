@@ -96,17 +96,23 @@ SourceFile:
 
 			 dump_dot_file("ast.dot", $$);
 			 $$->print_code_in_file("bin/output.tac");
-			 // auto val = st->get_symbol_table_data();
-			 // int x=0;
-			 // string yoyyo = "ghasgtvdegd";
-			 // // cout<<string
-			 // for (auto temp:val)
-			 // {
-			 // 	cout<<temp.first.first<<" - "<<temp.first.second<<" -  \n";
-			 // 	cout<<temp.second<<"\n";
-			 // 	cout<<temp.second->getDataType()<<"\n";
-			 // 	x+=1;
-			 // }
+			 vector<vector<string> > final_tac_code;
+			 $$->convert_code_to_vector(final_tac_code);
+			 for(auto a:final_tac_code)
+			 {
+			 	for(auto b:a)
+			 	{
+			 		cout<<b<<" ";
+			 	}
+			 	cout<<"\n";
+			 }
+			// tt->get_type_table_data gives the type map
+			 map< string ,DataType*> final_symbol_table;
+			 map<pair<string,string>, DataType*>  initial_symbol_table= st->get_symbol_table_data();
+			 for(auto val:initial_symbol_table){
+			 	final_symbol_table[val.first.first+val.first.second] = val.second;
+			 }
+
 		}
     ;
 
@@ -225,9 +231,6 @@ TopLevelDeclList:
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
 		$$->current_node_data = $1 -> current_node_data;
-		// if($$->last_current_node_data() == NULL){
-		// 	cout<<"NULL"<<endl;
-		// }
 		($$->last_current_node_data())->next_data = $2->current_node_data;
 		$$->add_code_in_map($1->current_code);
 		$$->add_code_in_map($2->current_code);
@@ -501,22 +504,22 @@ Declaration:
 // might change
 //remTAC: scopeExpr
 FunctionDecl:
-	FUNC IDENTIFIER OpenBlock Signature FunctionBody
+	FUNC IDENTIFIER OpenBlock Signature 
 	{
 		st->add_in_symbol_table({"0;",string($2)},$4->current_type);
 		st->output_csv_for_function(string($2),st->get_current_scope());
-	} CloseBlock {
+	} FunctionBody CloseBlock {
 		// cout<<"FunctionDecl: FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock \n";
 		Node* curr = new Node("FunctionDecl");
 		curr->add_terminal_children(string($2));
 		curr->add_non_terminal_children($4);
-		curr->add_non_terminal_children($5);
+		curr->add_non_terminal_children($6);
 		$$ = curr;
 		// st->add_in_symbol_table({st->get_current_scope(),string($2)},$4->current_type);
 		// cout<<($4->current_type->copyClass())->getDataType()<<"\n";
 		// exit(1);
 		$$-> current_node_data = new NodeData("Function-" + string($2));
-		$$-> current_node_data->node_child = $5->current_node_data;
+		$$-> current_node_data->node_child = $6->current_node_data;
 		dump_dot_file("./bin/"+string($2)+".dot", $$);
 
 		Instruction* ins1 = new Instruction("LBL", new Place(string($2), NULL));
@@ -524,7 +527,7 @@ FunctionDecl:
 		Instruction* ins2 = new Instruction("NEWFUNC");
 		$$->add_code_in_map(ins2);
 		$$->add_code_in_map($4->current_code);
-		$$->add_code_in_map($5->current_code);
+		$$->add_code_in_map($6->current_code);
 		Instruction* ins3 = new Instruction("NEWFUNCEND");
 		$$->add_code_in_map(ins3);
 		update_instructions_with_scope(&($$->current_code), st);
@@ -1661,13 +1664,11 @@ Element:
 	}
 	;
 
-// remaining
-//remTAC: scopeExpr
 ReturnStmt:
 	RETURN {
 		$$ = new Node("ReturnStmt");
 		$$ -> current_node_data = new NodeData(string($1));
-		$$->add_code_in_map(new Instruction("RET"));
+		$$->add_code_in_map(new Instruction("RETURNEMPTY"));
 
 	}
 	| RETURN ExpressionList {
@@ -1675,10 +1676,28 @@ ReturnStmt:
 		$$ -> add_non_terminal_children($2);
 		$$->current_node_data = new NodeData(string($1));
 		$$->current_node_data->node_child = $2->current_node_data;
+		Place* current_return_place = $2->current_place;
+		DataType* current_return_type = $2->current_type;
+		$$->add_code_in_map($2->current_code);
+
+		vector<Place *> args_places;
+		while(current_return_place!=NULL){
+			args_places.push_back(new Place(current_return_type));
+			Instruction* ins = new Instruction("USTOR", current_return_place,args_places[args_places.size()-1]);
+			$$->add_code_in_map(ins);
+			current_return_place= current_return_place->next_place;
+			current_return_type= current_return_type->next_type;
+		}	
+		$$->add_code_in_map(new Instruction("RETURNSTART"));
+		for(int i=args_places.size()-1;i>=0;i--)
+		{
+			$$->add_code_in_map(new Instruction("PUSHSTACK", args_places[i]));
+		}
+		$$->add_code_in_map(new Instruction("RETURNEND"));
+		update_instructions_with_scope(&($$->current_code),st);
 	}
 	;
 
-//remTAC: Please check if break label top element retrieved correctly.
 BreakStmt:
 	BREAK {
 		Node* curr = new Node("BreakStmt");
@@ -1911,7 +1930,7 @@ FallthroughStmt:
 
 	;
 
-//remTAC: scopeExprClosed
+//remTAC: adding scopes
 IfStmt:
 	IF OpenBlock Expression Block CloseBlock {
 		$$ = new Node("IfStmt");

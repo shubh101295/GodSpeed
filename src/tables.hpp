@@ -39,7 +39,7 @@ class TypesTable{
 private:
 	map< string ,DataType*> type_table;
 public:
-	bool 		   								add_in_type_table(string new_key,DataType* new_datatype);
+	bool							add_in_type_table(string new_key,DataType* new_datatype);
 	map< string, DataType*>         get_type_table_data();
 };
 

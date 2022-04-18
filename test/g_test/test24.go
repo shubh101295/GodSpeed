@@ -2,8 +2,13 @@ package main
 
 import "fmt"
 
+func area(a int) (int,int) {
+	return a,2*a;
+}
 
 func main() {
+	var z int;
+	x,y := area(z)
 	// var c int =2   
 	// var d int =4
 	// var e int
@@ -15,7 +20,7 @@ func main() {
 	// h:=0
 	// for i := 0; i < 3; i++ {
  //        for j := 0; j < 2; j++ {
-            // k := 2
+ //            k := 2
             // if k==0 {
             // 	h=1
             // 	// continue
