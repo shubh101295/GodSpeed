@@ -21,18 +21,27 @@ void Node::add_terminal_children(string _terminal_string_value){
 void Node::add_code_in_map(Instruction* _code){
 	current_code_count+=1;
 	current_code[current_code_count]= _code;
+	// cout<<"add_code_in_map:Type 1 call == ";
+	// cout<<_code->current_opcode<<" - ";
+	// if(_code->address1!=NULL) cout<<(_code->address1->place_name)<<"<A> ";
+	// if(_code->address2!=NULL) cout<<(_code->address2->place_name)<<"<B> ";
+	// if(_code->address3!=NULL) cout<<(_code->address3->place_name)<<"<C> ";
+	// cout<<"\n";
 }
 
 void Node::add_code_in_map(map<int,Instruction*> _code)
 {
+	// cout<<"add_code_in_map:Type 2 call==\n";
 	int i=1;
 	auto it= _code.find(i);
 	while(it!= _code.end())
 	{
+		// cout<<i<<"\n";
 		add_code_in_map((*it).second);
 		i+=1;
 		it= _code.find(i);
 	}
+	// cout<<"End add_code_in_map \n";
 	// // for(auto val:_code){
 	// 	add_code_in_map(val.second);
 	// // }
@@ -55,8 +64,28 @@ void Node::print_code_in_file(string file_name){
 		i+=1;
 		it= current_code.find(i);
 	}
-	
 }
+
+void Node::convert_code_to_vector(vector<vector<string> >& v){
+	int i=1;
+	auto it= current_code.find(i);
+	// ofstream my_function_dump(file_name);
+
+	while(it!=current_code.end())
+	{
+		vector<string> temp;
+		Instruction* current_instr = ((*it).second);
+		temp.pb(((*it).second)->current_opcode);
+		if(current_instr->address1!=NULL) temp.pb(current_instr->address1->place_name);
+		if(current_instr->address2!=NULL) temp.pb(current_instr->address2->place_name);
+		if(current_instr->address3!=NULL) temp.pb(current_instr->address3->place_name);
+		v.pb(temp);	
+		i+=1;
+		it= current_code.find(i);
+	}
+}
+
+
 NodeData* Node::last_current_node_data(){
 	NodeData* temp = current_node_data;
 	while(temp->next_data!=NULL)
@@ -67,50 +96,74 @@ NodeData* Node::last_current_node_data(){
 }
 
 DataType* Node::last_current_type(){
-	cout<<"B2\n";
+	// cout<<"B2\n";
 	DataType* temp = current_type;
-	cout<<"B2\n";
+	// cout<<"B2\n";
 	while(temp->next_type!=NULL)
 	{
-		cout<<"B2\n";
-		cout<<(temp==NULL)<<"\n";
-		cout<<(temp->next_type==NULL)<<"\n";
+		// cout<<"B2\n";
+		// cout<<(temp==NULL)<<"\n";
+		// cout<<(temp->next_type==NULL)<<"\n";
 		temp = temp->next_type;
-		cout<<(temp==NULL)<<"\n";
-		cout<<(temp->next_type==NULL)<<"AA\n";
+		// cout<<(temp==NULL)<<"\n";
+		// cout<<(temp->next_type==NULL)<<"AA\n";
 	}
-	cout<<"B24\n";
+	// cout<<"B24\n";
 	return temp;
 }
 
 NodeData* NodeData::last_next_child(){
-	cout<<"A\n";
+	// cout<<"A\n";
 	NodeData* temp = node_child;
-	cout<<"A\n";
-	cout<<(temp==NULL)<<"\n";
+	// cout<<"A\n";
+	// cout<<(temp==NULL)<<"\n";
 	while(temp->next_data!=NULL)
 	{
-		cout<<"A\n";
+		// cout<<"A\n";
 		temp = temp->next_data;
 	}
-	cout<<"A\n";
+	// cout<<"A\n";
 
 	return temp;
 }
 
 Place* Node::last_current_place(){
-	cout<<"B2\n";
+	// cout<<"B2\n";
 	Place* temp = current_place;
-	cout<<"B2\n";
+	// cout<<"B2\n";
 	while(temp->next_place!=NULL)
 	{
-		cout<<"B2\n";
-		cout<<(temp==NULL)<<"\n";
-		cout<<(temp->next_place==NULL)<<"\n";
+		// cout<<"B2\n";
+		// cout<<(temp==NULL)<<"\n";
+		// cout<<(temp->next_place==NULL)<<"\n";
 		temp = temp->next_place;
-		cout<<(temp==NULL)<<"\n";
-		cout<<(temp->next_place==NULL)<<"AA\n";
+		// cout<<(temp==NULL)<<"\n";
+		// cout<<(temp->next_place==NULL)<<"AA\n";
 	}
-	cout<<"B24\n";
+	// cout<<"B24\n";
 	return temp;
 }
+
+void update_instructions_with_scope(map<int,Instruction*>* instr,SymbolTable* st){
+	int i=1;
+	auto it= (*instr).find(i);
+	while(it!=(*instr).end())
+	{
+		auto current_instr = it->second;
+		if(current_instr->address1!=NULL)
+		{
+			current_instr->address1->place_name = st->get_scope_for_variable(current_instr->address1->place_name) + current_instr->address1->place_name;
+		}		
+		if(current_instr->address2!=NULL)
+		{
+			current_instr->address2->place_name = st->get_scope_for_variable(current_instr->address2->place_name) + current_instr->address2->place_name;
+		}		
+		if(current_instr->address3!=NULL)
+		{
+			current_instr->address3->place_name = st->get_scope_for_variable(current_instr->address3->place_name) + current_instr->address3->place_name;
+		}	
+		i+=1;
+		it= (*instr).find(i);
+	}
+}
+

@@ -13,11 +13,11 @@ void SymbolTable::update_current_scope() {
 }
 
 string SymbolTable::get_current_scope() {
-	return current_scope;	
+	return current_scope;
 }
 
 void SymbolTable::enter_new_scope() {
-	cout<<"Inside SymbolTable::enter_new_scope\n";
+	// cout<<"Inside SymbolTable::enter_new_scope\n";
 	current_block_inside_count+=1;
 	if(current_block_inside_count>=current_block_numbers.size())
 	{
@@ -38,7 +38,7 @@ void SymbolTable::enter_new_scope() {
 void SymbolTable::exit_latest_scope(){
 	// delete all from current scope left
 	current_block_inside_count-=1;
-	cout<<"EXit SymbolTable::enter_new_scope\n";
+	// cout<<"EXit SymbolTable::enter_new_scope\n";
 	update_current_scope();
 }
 
@@ -53,12 +53,12 @@ bool isPrefix(string s1,string s2)
 
 void SymbolTable::output_csv_for_function(string name_of_function, string prefix){
 	ofstream my_function_dump("./bin/"+name_of_function+".csv");
-	cout<<"A FORM output_csv_for_function\n";
+	// cout<<"A FORM output_csv_for_function\n";
 	my_function_dump<<"Scope,    variable_name,    variable_type\n";
 	// cout<<symbol_table[{"0;",name_of_function}]<<"\n";
 	my_function_dump<<"0;,    "<<name_of_function<<",    "<<symbol_table[{"0;",name_of_function}]->getDataType()<<"\n";
 	// for(auto val:)
-	cout<<"In output_csv_for_function \n";
+	// cout<<"In output_csv_for_function \n";
 	for (auto temp:symbol_table)
 	{
 		if(isPrefix(prefix,temp.first.first))
@@ -66,7 +66,7 @@ void SymbolTable::output_csv_for_function(string name_of_function, string prefix
 			cout<<temp.first.first<<",    "<<temp.first.second<<",    \n";
 			cout<<temp.second->getDataType()<<"\n";
 		 	my_function_dump<<temp.first.first<<",    "<<temp.first.second<<",    "<<temp.second->getDataType()<<"\n";
-			// my_function_dump	
+			// my_function_dump
 		}
 	 	// cout<<temp.second<<"\n";
 	 	// cout<<temp.second->getDataType()<<"\n";
@@ -114,13 +114,28 @@ int SymbolTable::scope_level(string variable_name){
 	return -1;
 }
 
+string SymbolTable::get_scope_for_variable(string variable_name) {
+	string temp_scope = "";
+	vector<string> temp_scopes;
+	for( int i=0;i<=current_block_inside_count;i++) {
+		temp_scope+=to_string(current_block_numbers[i])+";";
+		temp_scopes.pb(temp_scope);
+	}
+	reverse(temp_scopes.begin(),temp_scopes.end());
+	int ans=0;
+	for(auto val:temp_scopes){
+		if (symbol_table.find({val,variable_name})!=symbol_table.end()) return val;
+		ans+=1;
+	}
+	return "";
+}
 DataType * SymbolTable::get_value_from_key(string _variable_name){
 	pair<string,string> new_key = {current_scope,_variable_name};
 	if(symbol_table.find(new_key)!=symbol_table.end())
 	{
 		return symbol_table[new_key];
 	}
-	return NULL;	
+	return NULL;
 }
 
 DataType* SymbolTable::get_type(string variable_name){
@@ -153,15 +168,15 @@ map<string, DataType*> TypesTable::get_type_table_data() {
 	return type_table;
 }
 
-void BreakLabels::add_new_break_label(){
+void BreakLabels::add_new_break_label(string _current_break_label){
 	break_labels_list_position+=1;
-	break_label_count+=1;
-	string _break_label = "Label"+to_string(break_label_count);
+	// break_label_count+=1;
+	// string _break_label = "Label"+to_string(break_label_count);
 	if(break_labels_list_position>break_labels_list.size())
 	{
-		break_labels_list.resize(break_labels_list_position);	
+		break_labels_list.resize(break_labels_list_position);
 	}
-	break_labels_list[break_labels_list_position-1]=_break_label;
+	break_labels_list[break_labels_list_position-1]=_current_break_label;
 }
 
 bool BreakLabels::is_empty(){
@@ -172,9 +187,14 @@ void BreakLabels::remove_last_break_label(){
 	break_labels_list_position-=1;
 }
 
+string BreakLabels::return_top_label(){
+	cout<<"HERE in break_labels_list_position "<<break_labels_list_position<<"\n";
+	return break_labels_list[break_labels_list_position - 1];
+}
+
 string Labels::get_new_label(){
 	label_count+=1;
-	string _label = "Label:"+to_string(label_count);
+	string _label = "Label"+to_string(label_count);
 	return _label;
 }
 

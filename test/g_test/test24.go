@@ -2,25 +2,35 @@ package main
 
 import "fmt"
 
-func area(length int, width int)int{
-    Ar := length* width
-    return Ar
-
+func area(a int) (int,int) {
+	return a,2*a;
 }
 
 func main() {
+	var z int;
+	x,y := area(z)
+	// var c int =2   
+	// var d int =4
+	// var e int
 
-	type Point struct{
-		X[1] int
-		Y int
-		Z int
-	}
-
-	var a Point
-	a.X[0] = 5
-	a.Y = 4
-	a.Z = 3
-
-	var b int = area(a.X[0],area(a.Y,a.Z))
-
+	// e = c * (d/2) + (5)
+	// var k,i  = "hff",3
+	// var j string = "sDAFSD"
+	// j+=1;
+	// h:=0
+	// for i := 0; i < 3; i++ {
+ //        for j := 0; j < 2; j++ {
+ //            k := 2
+            // if k==0 {
+            // 	h=1
+            // 	// continue
+            // } else {
+            // 	h=2
+            // 	// break
+            // }
+            // a:=0
+            // for j:=0
+            // break
+    //     }
+    // }
 }
