@@ -37,6 +37,7 @@
 %code requires{
 	#include "node.hpp"
 	#include "tac.hpp"
+	//#include "codegen.cpp"
 	// #include "dot_generator.hpp"
 }
 
@@ -93,7 +94,10 @@ SourceFile:
 			 curr->add_code_in_map($4->current_code);
 
 			 $$ = curr;
-
+			 Instruction* ins1 = new Instruction("EXIT");
+			 $$->add_code_in_map(ins1);
+		
+			 //$$->add_code_in_map();
 			 dump_dot_file("ast.dot", $$);
 			 $$->print_code_in_file("bin/output.tac");
 			 vector<vector<string> > final_tac_code;
@@ -102,7 +106,7 @@ SourceFile:
 			 {
 			 	for(auto b:a)
 			 	{
-			 		cout<<b<<" ";
+			 		cout<<b<<" X ";
 			 	}
 			 	cout<<"\n";
 			 }
@@ -111,8 +115,11 @@ SourceFile:
 			 map<pair<string,string>, DataType*>  initial_symbol_table= st->get_symbol_table_data();
 			 for(auto val:initial_symbol_table){
 			 	final_symbol_table[val.first.first+val.first.second] = val.second;
+			 	cout<<val.first.first+val.first.second<<"   FROM ST\n\n";
 			 }
 
+			 //ASM* a = new ASM(final_symbol_table,tt->get_type_table_data(),final_tac_code);
+			 //a->gen();
 		}
     ;
 
@@ -254,7 +261,7 @@ TopLevelDecl:
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| FunctionDecl {
@@ -264,7 +271,7 @@ TopLevelDecl:
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| MethodDecl {
@@ -283,7 +290,7 @@ Block:
 		curr->current_type = $3->current_type;
 		curr->current_node_data = $3->current_node_data;
 		curr->current_place = $3->current_place;
-		curr->current_code = $3->current_code;
+		curr->add_code_in_map($3->current_code);
 		$$ = curr;
     }
     ;
@@ -296,7 +303,7 @@ Condition:
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	;
@@ -355,7 +362,7 @@ Statement:
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| LabeledStmt {
@@ -365,7 +372,7 @@ Statement:
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| SimpleStmt {
@@ -376,7 +383,7 @@ Statement:
 
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		// cout<<"Statement:	SimpleStmt "<<($1->current_node_data==NULL)<<"\n";
 		$$ = curr;
 	}
@@ -387,7 +394,7 @@ Statement:
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| BreakStmt {
@@ -397,7 +404,7 @@ Statement:
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| ContinueStmt {
@@ -407,7 +414,7 @@ Statement:
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| GotoStmt {
@@ -417,7 +424,7 @@ Statement:
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| SwitchStmt {
@@ -427,7 +434,7 @@ Statement:
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| FallthroughStmt {
@@ -436,7 +443,7 @@ Statement:
 		curr->add_non_terminal_children($1);
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| Block {
@@ -446,7 +453,7 @@ Statement:
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| IfStmt {
@@ -456,7 +463,7 @@ Statement:
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| ForStmt {
@@ -466,7 +473,7 @@ Statement:
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	;
@@ -478,7 +485,7 @@ Declaration:
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| VarDecl {
@@ -487,7 +494,7 @@ Declaration:
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	;
@@ -506,10 +513,15 @@ Declaration:
 FunctionDecl:
 	FUNC IDENTIFIER OpenBlock Signature 
 	{
+		cout<<"AAA\n";
 		st->add_in_symbol_table({"0;",string($2)},$4->current_type);
-		st->output_csv_for_function(string($2),st->get_current_scope());
+		//cout<<"AAA4\n";
+		cout<<"AAA2\n";
+
 	} FunctionBody CloseBlock {
 		// cout<<"FunctionDecl: FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock \n";
+		st->output_csv_for_function(string($2),st->get_current_scope());
+		
 		Node* curr = new Node("FunctionDecl");
 		curr->add_terminal_children(string($2));
 		curr->add_non_terminal_children($4);
@@ -531,6 +543,9 @@ FunctionDecl:
 		Instruction* ins3 = new Instruction("NEWFUNCEND");
 		$$->add_code_in_map(ins3);
 		update_instructions_with_scope(&($$->current_code), st);
+		//Instruction* ins5 = new Instruction("LBL", new Place(string($2), NULL));
+		////$$->add_code_in_map(ins5);
+		//$$->current_code[1]=ins5;
 	}
 	| FUNC IDENTIFIER OpenBlock Signature {
 		st->add_in_symbol_table({"0;",string($2)},$4->current_type);
@@ -583,7 +598,7 @@ SimpleStmt:
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
 		$$->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 	}
 	| ExpressionStmt {
 		// cout<<"SimpleStmt: ExpressionStmt\n";
@@ -592,7 +607,7 @@ SimpleStmt:
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
 		$$->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 	}
 	| IncDecStmt {
 		$$ = new Node("SimpleStmt");
@@ -600,7 +615,7 @@ SimpleStmt:
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
 		$$->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 	}
 	| Assignment {
 		$$ = new Node("SimpleStmt");
@@ -608,7 +623,7 @@ SimpleStmt:
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
 		$$->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 		// cout<<"SimpleStmt: Assignment "<<($$->current_node_data==NULL)<<"\n";
 	}
 	| ShortVarDecl {
@@ -617,7 +632,7 @@ SimpleStmt:
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
 		$$->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 	}
 	;
 
@@ -644,7 +659,7 @@ ExpressionStmt:
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
 		$$->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 		update_instructions_with_scope(&($$->current_code), st);
 	}
 	;
@@ -773,11 +788,19 @@ Assignment:
 				}
 
 			}
-			cout<<"HUM YAHAN HAI in line 752"<<string($2)<<"\n";
+			cout<<"HUM YAHAN HAI in line 752"<<string($2)<<"\n\n\n\n";
 			if(string($2) == "=")
 			{
 				cout<<"inside assignment operator, generating a store instruction\n";
 				Instruction* ins = new Instruction("USTOR", right_place, new Place(left_data->lval, right_type));
+				
+					cout<< "csfs:"<<ins->address2->place_name<<"\n\n";
+				if(ins->address2->place_name=="<no_lval>")
+				{
+					cout<< "csfs:"<<ins->address2->place_name<<"\n\n";
+					exit(1);
+				}
+				//exit(1);
 				$$->add_code_in_map(ins);
 			}
 			else if(string($2).length() >= 2)
@@ -877,6 +900,8 @@ ShortVarDecl:
 				// cout<<"ADDING IN INFER_EQ mode \n\n\n\n";
 				st->add_in_symbol_table({st->get_current_scope(),name}, right_type);
 			}
+			Instruction* ins2 = new Instruction("DECL",new Place(left_data->data_name, right_type));
+			$$->add_code_in_map(ins2);
 
 			Instruction* ins = new Instruction("USTOR", right_place, new Place(left_data->data_name, right_type));
 			$$->add_code_in_map(ins);
@@ -909,7 +934,7 @@ VarDecl:
 		$$->current_type = $2->current_type;
 		$$->current_node_data = $2->current_node_data;
 		$$->current_place = $2->current_place;
-		$$->current_code = $2->current_code;
+		$$->add_code_in_map($2->current_code);
 	}
 	| VAR LEFTPARAN VarSpecList RIGHTPARAN {
 		$$ = new Node("VarDecl");
@@ -917,7 +942,7 @@ VarDecl:
 		$$->current_type = $3->current_type;
 		$$->current_node_data = $3->current_node_data;
 		$$->current_place = $3->current_place;
-		$$->current_code = $3->current_code;
+		$$->add_code_in_map($3->current_code);
 	}
 	;
 
@@ -957,7 +982,7 @@ VarSpec:
 			}
 			st->add_in_symbol_table({st->get_current_scope(),curr->data_name},$2->current_type);
 			// cout<<curr->data_name<<"    "<< $2->current_type<<"   "<<$2->current_type->getDataType()<<"\n";
-			Instruction* ins = new Instruction("DECL", new Place(st->get_current_scope() + curr->data_name + " " + $2->current_type->getDataType()));
+			Instruction* ins = new Instruction("DECL", new Place(st->get_current_scope() + curr->data_name));
 			$$->add_code_in_map(ins);
 			DataType * temp = $2->current_type->copyClass();
 			// cout<<temp<<" "<<temp->getDataType()<<"  " <<temp->getDataType()<<"\n";
@@ -1022,7 +1047,7 @@ VarSpec:
 				exit(1);
 			}
 			st->add_in_symbol_table({st->get_current_scope(),name},$2->current_type);
-			auto p1 = new Place(st->get_current_scope() + name + " "+$2->current_type->getDataType());
+			auto p1 = new Place(st->get_current_scope() + name );
 			Instruction* ins = new Instruction("DECL", p1 );
 
 			$$->add_code_in_map(ins);
@@ -1101,7 +1126,7 @@ VarSpec:
 				exit(1);
 			}
 			st->add_in_symbol_table({st->get_current_scope(),name},right_type);
-			auto p1 = new Place(st->get_current_scope() + name + " "+right_type->getDataType());
+			auto p1 = new Place(st->get_current_scope() + name);
 			Instruction* ins = new Instruction("DECL", p1 );
 
 			$$->add_code_in_map(ins);
@@ -1151,7 +1176,7 @@ FunctionBody:
 		$$ -> current_type = $1->current_type;
 		$$ -> current_node_data = $1->current_node_data;
 		$$->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 	}
 	;
 
@@ -1185,7 +1210,7 @@ Signature:
 			dcurr = dcurr -> next_data;
 		}
 		$$ -> current_type = new FunctionType(arguments,return_types);
-
+		cout<<"Signature: Parameters2\n";
 	}
 	| Parameters Result {
 		$$ = new Node("Signature");
@@ -1444,7 +1469,7 @@ LiteralType:
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
 		$$->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 	}
 	| ArrayType {
 		// cout<<"LiteralType: ArrayType"<<endl;
@@ -1453,7 +1478,7 @@ LiteralType:
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
 		$$->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 	}
 	| PointerType {
 		$$ = new Node("LiteralType");
@@ -1461,7 +1486,7 @@ LiteralType:
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
 		$$->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 	}
 	| SliceType {
 		$$ = new Node("LiteralType");
@@ -1469,7 +1494,7 @@ LiteralType:
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
 		$$->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 	}
 	| LEFTSQUARE ELIPSIS RIGHTSQUARE Operand {
 		$$ = new Node("LiteralType");
@@ -1482,7 +1507,7 @@ LiteralType:
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
 		$$->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 	}
 	;
 
@@ -1495,11 +1520,11 @@ Type:
 		$$->current_node_data = new NodeData($$->current_type->getDataType());
 	}
 	| OperandName {
-		// cout<<"Type:OperandName"<<endl;
 		$$ = new Node("Type");
 		$$->add_non_terminal_children($1);
 		$$->current_type = new BasicType(string($1 -> current_node_data -> data_name));
 		$$->current_node_data = new NodeData($$->current_type->getDataType());
+		//cout<<"Type:OperandName"<<endl;
 	}
 	;
 
@@ -1511,18 +1536,20 @@ Operand:
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
 		$$->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 		// cout<<"Operand Value "<<$$->current_node_data->value<<endl;
 	}
 	| OperandName {
-		// cout<<"Operand: OperandName";
+		 cout<<"Operand: OperandName";
 		$$ = new Node("Operand");
 		$$->add_non_terminal_children($1);
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
 		$$->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
-		// cout<<"Value: "<<$$->current_node_data->value<<endl;
+		$$->add_code_in_map($1->current_code);
+		 cout<<"Value: "<<$$->current_node_data->value<<endl;
+		 cout<<$$->current_node_data->lval<<" ----\n";
+	
 	}
 	| LEFTPARAN Expression RIGHTPARAN {
 		$$ = new Node("Operand");
@@ -1530,13 +1557,13 @@ Operand:
 		$$->current_node_data = $2->current_node_data;
 		$$->current_type = $2->current_type;
 		$$->current_place = $2->current_place;
-		$$->current_code = $2->current_code;
+		$$->add_code_in_map($2->current_code);
 	}
 	;
 
 OperandName:
 	IDENTIFIER {
-		// cout<<"OperandName:	IDENTIFIER - "<<string($1)<<"\n";
+		 cout<<"OperandName:	IDENTIFIER - "<<string($1)<<"\n";
 		$$ = new Node("OperandName");
 		// cout<<"OperandName2:	IDENTIFIER - "<<string($1)<<"\n";
 		$$->add_terminal_children(string($1));
@@ -1544,11 +1571,14 @@ OperandName:
 
 		$$->current_node_data = new NodeData(string($1));
 		$$->current_node_data->value = true;
-		// cout<<"OperandName4:	IDENTIFIER - "<<string($1)<<"\n";
+		 cout<<"OperandName4:	IDENTIFIER - "<<string($1)<<"\n";
 		$$->current_place = new Place(string($1));
+		//cour
 		$$->current_type = st->get_type(string($1))?st->get_type(string($1)):new BasicType("undefined");
-		// cout<<"OperandName5:	IDENTIFIER - "<<string($1)<<"\n";
+		cout<<($$->current_type->current_data_type)<<"\n";
+		 cout<<"OperandName5:	IDENTIFIER - "<<string($1)<<"\n";
 		 $$->current_node_data->lval = $$->current_place->place_name;
+		 cout<<" SET lval == "<<$$->current_node_data->lval<<"\n";
 	}
 	;
 
@@ -1563,7 +1593,7 @@ LiteralValue:
 		$$->current_type = $2->current_type;
 		$$->current_node_data = $2->current_node_data;
 		$$->current_place = $2->current_place;
-		$$->current_code = $2->current_code;
+		$$->add_code_in_map($2->current_code);
 	}
 	| LEFTBRACE ElementList COMMA RIGHTBRACE {
 		$$ = new Node("LiteralValue");
@@ -1571,7 +1601,7 @@ LiteralValue:
 		$$->current_type = $2->current_type;
 		$$->current_node_data = $2->current_node_data;
 		$$->current_place = $2->current_place;
-		$$->current_code = $2->current_code;
+		$$->add_code_in_map($2->current_code);
 	}
 	;
 SliceType:
@@ -1590,7 +1620,7 @@ ElementList:
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| ElementList COMMA KeyedElement {
@@ -1618,7 +1648,7 @@ KeyedElement:
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| Key COLON Element {
@@ -1650,7 +1680,7 @@ Element:
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	| LiteralValue {
@@ -1659,7 +1689,7 @@ Element:
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
 	;
@@ -1689,8 +1719,21 @@ ReturnStmt:
 			current_return_type= current_return_type->next_type;
 		}	
 		$$->add_code_in_map(new Instruction("RETURNSTART"));
+		vector<Instruction*> temp_instrs; // we need to push the returns in the opposite order
+
+		//current_return_place = $2->current_place;
+		//vector<Instruction*> temp_instrs; // we need to push the returns in the opposite order
+
+		//current_return_place = $2->current_place;
+		//while(current_return_place!=NULL){
+		//	// we need to push the returns in the opposite order
+		//	temp_instrs.push_back(new Instruction("PUSHSTACK", current_return_place));
+		//	//$$->add_code_in_map(ins);
+		//	current_return_place= current_return_place->next_place;
+		//}	
 		for(int i=args_places.size()-1;i>=0;i--)
 		{
+			//$$->add_code_in_map(temp_instrs[i]);
 			$$->add_code_in_map(new Instruction("PUSHSTACK", args_places[i]));
 		}
 		$$->add_code_in_map(new Instruction("RETURNEND"));
@@ -2098,7 +2141,7 @@ IfStmt:
 		Instruction* ins3 = new Instruction("LBL", new Place(label_if));
 		$$->add_code_in_map(ins3);
 		$$->add_code_in_map($8->current_code);
-		Instruction* ins4 = new Instruction("JMP", new Place(label_else));
+		Instruction* ins4 = new Instruction("LBL", new Place(label_else));
 		$$->add_code_in_map(ins4);
 	}
 	|IF OpenBlock SimpleStmt SCOLON Expression Block ELSE Block CloseBlock {
@@ -2139,8 +2182,9 @@ IfStmt:
 		Instruction* ins3 = new Instruction("LBL", new Place(label_if));
 		$$->add_code_in_map(ins3);
 		$$->add_code_in_map($8->current_code);
-		Instruction* ins4 = new Instruction("JMP", new Place(label_else));
+		Instruction* ins4 = new Instruction("LBL", new Place(label_else));
 		$$->add_code_in_map(ins4);
+
 	}
 	;
 //remTAC: code for forMArker. need to fixed for hsubh.
@@ -2182,7 +2226,8 @@ ForStmt:
 		it->node_child = new NodeData("ForBody");
 		it->node_child->node_child = $9->current_node_data;
 
-		string label_loop_start = cl->return_top_label();
+		string label_loop_start = l->get_new_label();
+		string continue_loop_label = cl->return_top_label();
 		string label_loop_end = bl->return_top_label();
 
 		$$->add_code_in_map($3->current_code);
@@ -2195,6 +2240,8 @@ ForStmt:
 		Instruction* ins3 = new Instruction("JE", new Place(label_loop_end));
 		$$->add_code_in_map(ins3);
 		$$->add_code_in_map($9->current_code);
+		Instruction* ins6 = new Instruction("LBL", new Place(continue_loop_label));
+		$$->add_code_in_map(ins6);
 		$$->add_code_in_map($8->current_code);
 		Instruction* ins4 = new Instruction("JMP", new Place(label_loop_start));
 		$$->add_code_in_map(ins4);
@@ -2217,7 +2264,8 @@ ForStmt:
 		it->node_child = new NodeData("ForBody");
 		it->node_child->node_child = $9->current_node_data;
 
-		string label_loop_start = cl->return_top_label();
+		string label_loop_start = l->get_new_label();
+		string continue_loop_label = cl->return_top_label();
 		string label_loop_end = bl->return_top_label();
 
 		$$->add_code_in_map($3->current_code);
@@ -2230,6 +2278,9 @@ ForStmt:
 		$$->add_code_in_map(ins3);
 		$$->add_code_in_map($9->current_code);
 		$$->add_code_in_map($5->current_code);
+		Instruction* ins6 = new Instruction("LBL", new Place(continue_loop_label));
+		$$->add_code_in_map(ins6);
+		
 		$$->add_code_in_map($8->current_code);
 		Instruction* ins4 = new Instruction("JMP", new Place(label_loop_start));
 		$$->add_code_in_map(ins4);
@@ -3161,7 +3212,7 @@ Expression:
 			$$->current_node_data = $1->current_node_data;
 			$$->current_place = $1->current_place;
 			cout<<"INSIDE 2984 UnaryExpr "<<($$->current_place==NULL)<<"\n";
-			$$->current_code = $1->current_code;
+			$$->add_code_in_map($1->current_code);
 			// cout<<"Unary value"<<endl;
 			  cout<<$$->current_node_data->value<<endl;
 			// cout<<"Unary value"<<endl;
@@ -3174,8 +3225,7 @@ UnaryExpr:
 		$$ = new Node("UnaryExpr");
 		$$->add_terminal_children(string($1));
 		$$->add_non_terminal_children($2);
-		$$->current_node_data = new NodeData("*unary");
-		$$->current_node_data->node_child = $2->current_node_data;
+		$$->current_node_data =  $2->current_node_data;
 		$$->add_code_in_map($2->current_code);
 		if($2->current_type->current_data_type != _POINTER){
 			cout<<"Can not dereference a non-pointer! Exiting..."<<endl;
@@ -3210,7 +3260,7 @@ UnaryExpr:
 			$$->add_code_in_map($2->current_code);
 			Place* p1 = new Place($$->current_type);
 
-			Instruction* ins1 = new Instruction("USTOR",$2->current_place,p1);
+			Instruction* ins1 = new Instruction("USTOR",new Place("0",$$->current_type),p1);
 			Instruction* ins2 = new Instruction("ADD",$2->current_place,p1);
 
 			$$->add_code_in_map(ins1);
@@ -3227,9 +3277,10 @@ UnaryExpr:
 			$$->add_code_in_map($2->current_code);
 			Place* p1 = new Place($$->current_type);
 
-			Instruction* ins1 = new Instruction("USTOR",$2->current_place,p1);
+			Instruction* ins1 = new Instruction("USTOR",new Place("0",$$->current_type),p1);
 			Instruction* ins2 = new Instruction("SUB",$2->current_place,p1);
-
+			cout<<$2->current_place->place_name<<"SUB PrimaryExpr \n";
+			//exit(1);
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
 			$$->current_place = p1;
@@ -3259,7 +3310,7 @@ UnaryExpr:
 		$$->current_node_data = $1->current_node_data;
 		$$->current_place = $1->current_place;
 		cout << ($1->current_place==NULL) << "Hi\n";
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 		//cout<<"Primary Value: "<<$$->current_node_data->value<<" "<<$1->current_node_data->value<< endl;
 
 	}
@@ -3270,15 +3321,23 @@ UnaryExpr:
  	Operand  {
  		 cout<<" PrimaryExpr: Operand, Value:";
 		Node* curr = new Node("PrimaryExpr");
+		//cout<<"ABC\n";
 		curr->add_non_terminal_children($1);
+		//cout<<"ABC\n";
 		curr->current_node_data = $1->current_node_data;
-		curr->current_type = $1->current_type;
-		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
 
+		//cout<<"ABC\n";
+		curr->current_type = $1->current_type;
+		//cout<<"ABC2\n";
+		curr->current_place = $1->current_place;
+		//cout<<"ABC2\n";
+		curr->add_code_in_map($1->current_code);
+		//cout<<"ABC4\n";
 		$$ = curr;
 		cout<<$$->current_node_data->value<<endl;
-		//cout<<"Operand Value:"<<$$->current_node_data->value<<endl;
+		cout<<"Operand Value:"<<$$->current_node_data->value<<endl;
+		cout<<"Operand lval:"<<$$->current_node_data->lval<<endl;
+
 	}
  	| MakeExpr {
 		Node* curr = new Node("PrimaryExpr");
@@ -3286,7 +3345,7 @@ UnaryExpr:
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 
 		$$ = curr;
 	}
@@ -3435,62 +3494,86 @@ UnaryExpr:
 		$$ = curr;
 	}
  	| PrimaryExpr Arguments { // remaining
+ 		cout<<"PrimaryExpr Arguments\n";
 		$$ = new Node("PrimaryExpr");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
 		$$->current_node_data = new NodeData("FunctionCall");
 		$$->current_node_data->node_child = $1->current_node_data;
 		$$->current_node_data->node_child->next_data = $2->current_node_data;
-		if($1->current_type->current_data_type != _FUNCTION){
-			cout<<$1->current_type->getDataType()<<" is not a function\n";
-			exit(1);
-		}
-		int pos=1;
-		auto fxn = dynamic_cast<FunctionType *>($1->current_type);
-		DataType* argType = $2->current_type;
-		for(auto req_arg_type: fxn->argument_types){
-			cout<<req_arg_type->getDataType()<<endl;
-			if(argType == NULL){
-				cout<<"Insufficient number of arguments for function "<<endl;
-				exit(1);
-			}
-			if(argType->getDataType()!= req_arg_type->getDataType()){
-				cout<<"[Type Mismatch] at position: " << pos<<". Expected arg type: "<<req_arg_type->getDataType()<<" . Found Type: "<<argType->getDataType()<<endl;
-				exit(1);
-			}
-			argType = argType -> next_type;
-			pos++;
-		}
-		if(argType){
-			cout<<"Extra arguments provided to function"<<endl;
-			exit(1);
-		}
-
-		DataType* head = new BasicType("");
-		DataType* temp = head;
-		for(auto x: fxn->return_type){
-			head -> next_type = x;
-			head = head->next_type;
-		}
-		$$->current_type = temp->next_type;
-		$$->current_place =  new Place("");
-
-		$$->add_code_in_map($2->current_code);
-		Instruction* ins = new Instruction("CALL",$1->current_place);
-		$$->add_code_in_map(ins);
-		update_instructions_with_scope(&($$->current_code),st);
-
-		Place* pp = $$->current_place;
-
-		for(DataType* tp = $$->current_type; tp != NULL; tp = tp->next_type){
-			pp->next_place = new Place(tp);
-			Instruction* ins = new Instruction("POP",pp->next_place);
-			pp = pp->next_place;
+			cout<<"HEH";
+		//if($1->current_type->current_data_type==_PRINTF)
+		//{
+		//	exit(1);
+		//}
+		cout<<$1->current_type->current_data_type<<"\n";
+		cout<<$1->current_place->place_name<<"\n\n\n";
+		if($1->current_place->place_name=="printf")
+		{
+			Instruction* ins = new Instruction("PRINTCALLINCOMING",$1->current_place);
 			$$->add_code_in_map(ins);
+			
+			$$->add_code_in_map($2->current_code);
+			Instruction* ins2 = new Instruction("CALL",$1->current_place);
+			$$->add_code_in_map(ins2);
+				
 		}
-		$$->current_place = $$->current_place->next_place;
-		// remaining
-		$$->current_node_data->value = false;
+		else{
+
+			if($1->current_type->current_data_type != _FUNCTION){
+				cout<<$1->current_type->getDataType()<<" is not a function\n";
+				exit(1);
+			}
+
+			int pos=1;
+			auto fxn = dynamic_cast<FunctionType *>($1->current_type);
+			DataType* argType = $2->current_type;
+			for(auto req_arg_type: fxn->argument_types){
+				cout<<req_arg_type->getDataType()<<endl;
+				if(argType == NULL){
+					cout<<"Insufficient number of arguments for function "<<endl;
+					exit(1);
+				}
+				if(argType->getDataType()!= req_arg_type->getDataType()){
+					cout<<"[Type Mismatch] at position: " << pos<<". Expected arg type: "<<req_arg_type->getDataType()<<" . Found Type: "<<argType->getDataType()<<endl;
+					exit(1);
+				}
+				argType = argType -> next_type;
+				pos++;
+			}
+			if(argType){
+				cout<<"Extra arguments provided to function"<<endl;
+				exit(1);
+			}
+
+			DataType* head = new BasicType("");
+			DataType* temp = head;
+			for(auto x: fxn->return_type){
+				head -> next_type = x;
+				head = head->next_type;
+			}
+			$$->current_type = temp->next_type;
+			$$->current_place =  new Place("");
+			Instruction* ins4 = new Instruction("NORMALCALLINCOMING",$1->current_place);
+			$$->add_code_in_map(ins4);
+			
+			$$->add_code_in_map($2->current_code);
+			Instruction* ins = new Instruction("CALL",$1->current_place);
+			$$->add_code_in_map(ins);
+			update_instructions_with_scope(&($$->current_code),st);
+
+			Place* pp = $$->current_place;
+
+			for(DataType* tp = $$->current_type; tp != NULL; tp = tp->next_type){
+				pp->next_place = new Place(tp);
+				Instruction* ins = new Instruction("POP",pp->next_place);
+				pp = pp->next_place;
+				$$->add_code_in_map(ins);
+			}
+			$$->current_place = $$->current_place->next_place;
+			// remaining
+			$$->current_node_data->value = false;
+		}
 	}
  	| OperandName StructLiteral {
 		Node* curr = new Node("PrimaryExpr");
@@ -3552,7 +3635,7 @@ Index:
 		curr->current_type = $2->current_type;
 		curr->current_node_data = $2->current_node_data;
 		curr->current_place = $2->current_place;
-		curr->current_code = $2->current_code;
+		curr->add_code_in_map($2->current_code);
 
 		$$ = curr;
 	}
@@ -3683,13 +3766,14 @@ Arguments:
 		$$ = curr;
 	}
 	| LEFTPARAN ExpressionList RIGHTPARAN {
+		cout<<"Arguments\n";
 		Node* curr = new Node("Arguments");
 		curr->add_non_terminal_children($2);
 
 		curr->current_node_data = $2->current_node_data;
 		curr->current_type = $2->current_type;
 		curr->current_place = $2->current_place;
-		curr->current_code = $2->current_code;
+		curr->add_code_in_map($2->current_code);
 
 		Place *temp = $2->current_place, *p1, *p2;
 		Instruction* inst;
@@ -3713,7 +3797,7 @@ Arguments:
 		curr->current_node_data = $2->current_node_data;
 		curr->current_type = $2->current_type;
 		curr->current_place = $2->current_place;
-		curr->current_code = $2->current_code;
+		curr->add_code_in_map($2->current_code);
 
 		Place *temp = $2->current_place, *p1, *p2;
 		Instruction* inst;
@@ -3742,24 +3826,34 @@ ExpressionList:
 		curr->current_node_data = $1->current_node_data;
 		curr->current_type = $1->current_type;
 		curr->current_place = $1->current_place;
-		curr->current_code = $1->current_code;
+		curr->add_code_in_map($1->current_code);
 
 		cout<<$$->current_node_data->value<<endl;
 		$$ = curr;
 	}
 	| ExpressionList COMMA Expression {
+		cout<<"ExpressionList COMMA Expression\n";
 		$$ = new Node("ExpressionList");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($3);
+		cout<<"A\n";
 		$$->current_node_data = $1->current_node_data;
+		cout<<"A\n";
 		($$->last_current_node_data())->next_data = $3->current_node_data;
+		cout<<"A\n";
 		$$->current_type = $1->current_type;
+		cout<<"A\n";
+		$3->current_type->next_type=NULL;
 		($$->last_current_type())->next_type = $3->current_type;
+
+		cout<<"A\n";
 		$$->current_place = $1->current_place;
+		cout<<"A\n";
 		($$->last_current_place())->next_place = $3->current_place;
+		cout<<"A\n";
 		$$->add_code_in_map($1->current_code);
 		$$->add_code_in_map($3->current_code);
-
+		cout<<"ExpressionList COMMA Expression\n";
 	}
 	;
 // remaining
@@ -3776,7 +3870,7 @@ TypeDecl:
 		$$->current_node_data = $2->current_node_data;
 		$$->current_type = $2->current_type;
 		$$->current_place = $2->current_place;
-		$$->current_code = $2->current_code;
+		$$->add_code_in_map($2->current_code);
 	}
 	;
 // remaining
@@ -3803,7 +3897,7 @@ TypeSpec:
 		$$->current_node_data = $1->current_node_data;
 		$$->current_type = $1->current_type;
 		// curr->current_place = $1->current_place;
-		$$->current_code = $1->current_code;
+		$$->add_code_in_map($1->current_code);
 	}
 	;
 
@@ -3842,7 +3936,7 @@ StructType:
 		curr->current_node_data = $3->current_node_data;
 		curr->current_type = $3->current_type;
 		curr->current_place = $3->current_place;
-		curr->current_code = $3->current_code;
+		curr->add_code_in_map($3->current_code);
 
 		$$ = curr;
 	}
@@ -3940,7 +4034,7 @@ PointerType:
 		curr->current_type = $2->current_type;
 		curr->current_node_data = $2->current_node_data;
 		curr->current_place = $2->current_place;
-		curr->current_code = $2->current_code;
+		curr->add_code_in_map($2->current_code);
 		if($2->current_type->getDataType() == "undefined")
 		{
 			$2->current_type = new BasicType($2->current_node_data->data_name);
@@ -4011,7 +4105,7 @@ Literal:
 		 curr->current_node_data = $1->current_node_data;
 		 curr->current_type = $1->current_type;
 		 curr->current_place = $1->current_place;
-		 curr->current_code = $1->current_code;
+		 curr->add_code_in_map($1->current_code);
 		 $$ = curr;
 		 cout<<($$->current_type)<<"\n";
 		 }
@@ -4021,7 +4115,7 @@ Literal:
 		 curr->current_node_data = $1->current_node_data;
 		 curr->current_type = $1->current_type;
 		 curr->current_place = $1->current_place;
-		 curr->current_code = $1->current_code;
+		 curr->add_code_in_map($1->current_code);
 		 $$ = curr;
 		 }
 	;
@@ -4134,10 +4228,17 @@ int main (int argc, char **argv) {
     tt->add_in_type_table("byte", new BasicType("byte"));
     tt->add_in_type_table("float", new BasicType("float"));
     tt->add_in_type_table("string", new BasicType("string"));
-
     tt->add_in_type_table(string("fmt"), fmt_struct);
 
-    st->add_in_symbol_table({"0;",string("fmt")}, fmt_struct);
+    // st->add_in_symbol_table({"0;",string("fmt")}, fmt_struct);
+    DataType* x=new DataType();
+    x->current_data_type=_FUNCTION;
+    cout<<"Aaax === "<< x->current_data_type<<"\n\n\n\n\n\n";
+	st->add_in_symbol_table({"0;",string("printf")}, x);
+	
+	// FunctionType* xyz = new FunctionType(vector<DataType *>{new BasicType("string"), new BasicType("int")},
+ //                                    vector<DataType *>{});
+
 	yyparse ( );
 	cout<<"THE GIVEN FILE WAS PARSABLE \n";
 
