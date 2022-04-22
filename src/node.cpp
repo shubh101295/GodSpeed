@@ -99,14 +99,20 @@ DataType* Node::last_current_type(){
 	// cout<<"B2\n";
 	DataType* temp = current_type;
 	// cout<<"B2\n";
+	// int xx=0;
 	while(temp->next_type!=NULL)
 	{
 		// cout<<"B2\n";
+		// cout<<temp<<" "<<temp->next_type<<"\n";
 		// cout<<(temp==NULL)<<"\n";
 		// cout<<(temp->next_type==NULL)<<"\n";
 		temp = temp->next_type;
 		// cout<<(temp==NULL)<<"\n";
 		// cout<<(temp->next_type==NULL)<<"AA\n";
+		// xx+=1;
+		// if(xx==8) {
+		// 	exit(1);
+		// }
 	}
 	// cout<<"B24\n";
 	return temp;
@@ -153,14 +159,44 @@ void update_instructions_with_scope(map<int,Instruction*>* instr,SymbolTable* st
 		if(current_instr->address1!=NULL)
 		{
 			current_instr->address1->place_name = st->get_scope_for_variable(current_instr->address1->place_name) + current_instr->address1->place_name;
+			if(current_instr->address1->place_name.find(".")!=string::npos)
+			{
+				string t="";
+				for(int j=0;j<(current_instr->address1->place_name.size());j++)
+				{
+					if(current_instr->address1->place_name[j]=='.') break;
+					t+=current_instr->address1->place_name[j];
+				}	
+				current_instr->address1->place_name = st->get_scope_for_variable(t)+ current_instr->address1->place_name;
+			}
 		}		
 		if(current_instr->address2!=NULL)
 		{
 			current_instr->address2->place_name = st->get_scope_for_variable(current_instr->address2->place_name) + current_instr->address2->place_name;
+			if(current_instr->address2->place_name.find(".")!=string::npos)
+			{
+				string t="";
+				for(int j=0;j<(current_instr->address2->place_name.size());j++)
+				{
+					if(current_instr->address2->place_name[j]=='.') break;
+					t+=current_instr->address2->place_name[j];
+				}	
+				current_instr->address2->place_name = st->get_scope_for_variable(t)+ current_instr->address2->place_name;
+			}
 		}		
 		if(current_instr->address3!=NULL)
 		{
 			current_instr->address3->place_name = st->get_scope_for_variable(current_instr->address3->place_name) + current_instr->address3->place_name;
+			if(current_instr->address3->place_name.find(".")!=string::npos)
+			{
+				string t="";
+				for(int j=0;j<(current_instr->address3->place_name.size());j++)
+				{
+					if(current_instr->address3->place_name[j]=='.') break;
+					t+=current_instr->address3->place_name[j];
+				}	
+				current_instr->address3->place_name = st->get_scope_for_variable(t)+ current_instr->address3->place_name;
+			}
 		}	
 		i+=1;
 		it= (*instr).find(i);
