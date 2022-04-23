@@ -2,7 +2,6 @@ package main
 
 import "fmt"
 
-
 func main() {
 	a := 1
 	b := 4
@@ -19,6 +18,8 @@ func main() {
 	m:=-292
 	n:=23
 	o:=292
+
+	scanf("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",&a,&b,&c,&d,&e,&f,&g,&h,&i,&j,&k,&l,&m,&n,&o);
 	printf("Here are your numbers: %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",a,b,c,d,e,f,g,h,i,j,k,l,m,n,o);
 }
 

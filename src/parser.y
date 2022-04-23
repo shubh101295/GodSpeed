@@ -3530,6 +3530,16 @@ UnaryExpr:
 			$$->add_code_in_map(ins2);
 				
 		}
+		else if($1->current_place->place_name=="scanf")
+		{
+			Instruction* ins = new Instruction("SCANCALLINCOMING",$1->current_place);
+			$$->add_code_in_map(ins);
+			
+			$$->add_code_in_map($2->current_code);
+			Instruction* ins2 = new Instruction("CALL",$1->current_place);
+			$$->add_code_in_map(ins2);
+				
+		}
 		else{
 
 			if($1->current_type->current_data_type != _FUNCTION){
@@ -4248,6 +4258,7 @@ int main (int argc, char **argv) {
     x->current_data_type=_FUNCTION;
     cout<<"Aaax === "<< x->current_data_type<<"\n\n\n\n\n\n";
 	st->add_in_symbol_table({"0-",string("printf")}, x);
+	st->add_in_symbol_table({"0-",string("scanf")}, x);
 	
 	// FunctionType* xyz = new FunctionType(vector<DataType *>{new BasicType("string"), new BasicType("int")},
  //                                    vector<DataType *>{});
