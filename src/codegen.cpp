@@ -2,7 +2,6 @@
 #include "datatypes.hpp"
 using namespace std;
 
-// const int INF = 1e18+5;
 #define pb push_back
 #define ff first
 #define ss second
@@ -29,7 +28,6 @@ public:
 	vector<string> argument_regs ;
 	map<string, string> last_byte;
 	map<string, pair<string, string>> locs;
-	map<string, string> temps;
 	int cnt;
 	string RBP,RIP;
 
@@ -67,10 +65,10 @@ public:
 				reg = t.first;
 			}
 		}
-		cout<<reg<<" REturned from lru"<<"\n\n\n\n";
-		for(auto x:locs){
-			cout<<x.ff<<" "<<x.ss.ff<<" -A- "<<x.ss.ss<<"\n";
-		}
+		// cout<<reg<<" REturned from lru"<<"\n\n\n\n";
+		// for(auto x:locs){
+		// 	cout<<x.ff<<" "<<x.ss.ff<<" -A- "<<x.ss.ss<<"\n";
+		// }
 
 		// auto it=locs.begin();
 		// while(it!=locs.end())
@@ -95,7 +93,7 @@ public:
 		// for(auto x:locs){
 		// 	cout<<x.ff<<" "<<x.ss.ff<<" -A- "<<x.ss.ss<<"\n";
 		// }
-		cout<<"-----------ended\n\n\n\n";
+		// cout<<"-----------ended\n\n\n\n";
 		return reg;
 	}
 
@@ -168,8 +166,6 @@ public:
 				break;
 			}
 		}
-		// cout<<locs[s].ff.size()<<"-------------\n";
-		// cout<<locs[s].ff<<"-------------\n";
 		
 		if(found && locs[s].ff.size()){
 			// debug("yo");
@@ -262,13 +258,13 @@ public:
 		cout<<"MAI YAHAN HU\n";
 		for(auto x:sym_tab){
 			vector<string> temp = split(x.ff,'-');
-			if(temp[0].size()==2 && temp[0][0]=='0'){
-				if(dynamic_cast<FunctionType*>(x.ss) != NULL){
+			if(temp.size()==2 && temp[0]=="0"){
+				if(dynamic_cast<FunctionType*>(x.ss) != NULL || temp[1]=="printf" || temp[1]=="scanf"){
 					continue;
 				}
 				instructions.push_back(temp[1]+":");
 				instructions.push_back("\t.space "+ to_string(x.ss->getSize()));
-				r.locs[x.ff] = {"","(" + temp[1] + ")"};
+				// r.locs[x.ff] = {"","(" + temp[1] + ")"};
 			}
 		}
 		cout<<"MAI YAHAN HU2\n";
@@ -285,12 +281,7 @@ public:
 		instructions.push_back(".data");
 		for(string s:constants)
 			instructions.push_back(s);
-		instructions.push_back(".bss");
 
-		for(auto p:r.temps){
-			instructions.push_back(p.ss+":");
-			instructions.push_back("\t.space 8");
-		}
 		cout<<"\n\n\n\n\n\n\nBEGINNING ASM PART\n\n\n\n\n\n\n";
 		ofstream my_function_dump("./bin/output.s");
 
@@ -303,11 +294,8 @@ public:
 	}
 
 	string str_constant(string op){
-		string ans;
-		for (int i = 0; i < 8; ++i)
-		{
-			ans+='a'+rnd(0,25);
-		}
+		int l = constants.size();
+		string ans="format"+to_string(l);
 		constants.push_back(ans+":");
 		constants.push_back("\t.asciz\t"+op);
 		return "$"+ans;
@@ -323,8 +311,8 @@ public:
 		else if(dynamic_cast<SliceType *>(x)!=NULL){
 			return dynamic_cast<SliceType *>(x)->slice_base;
 		}
-		else if(dynamic_cast<KeyedElement *>(x)!=NULL){
-			return dynamic_cast<KeyedElement *>(x)->base;
+		else if(dynamic_cast<StructFieldElement *>(x)!=NULL){
+			return dynamic_cast<StructFieldElement *>(x)->base;
 		}
 		cout<<"Trying to find base of something that does not have it!"<<endl;
 		return NULL;
@@ -397,9 +385,7 @@ public:
 					vector<string> y = split(s,'.');
 					string str = y[0];
 					string sel = y[1];
-					if(str == "ffi")
-						temp.push_back("\t"+sel);
-					else if(type_tab.find(str)!=type_tab.end()){
+					if(type_tab.find(str)!=type_tab.end()){
 						temp.push_back("\ts" + to_upper(str) + "f" + to_upper(sel) );
 					}
 					else{
@@ -473,7 +459,7 @@ public:
 				// Symbol table entry
 				cout<<"Inside isdigit\n";
 				if(sym_tab.find(s)==sym_tab.end()){
-					assert(s.find("*-tmp")!=string::npos);
+					assert(s.find("*-local")!=string::npos);
 				}
 				// for(auto x:r.locs)
 				// {
@@ -529,10 +515,6 @@ public:
 	void tac_to_ins(){
 		vector<string> argument_list; // When args are more than regs
 		int offset = 16;
-		long long int rsp = 8;
-		long long int rbp = rsp;
-		stack<long long> rbps;
-		rbps.push(rbp);
 		for(int i=0;i<tacList.size();i++){
 			vector<string> tac = tacList[i];
 			instructions.push_back("");
@@ -550,7 +532,7 @@ public:
 				instructions.push_back("\tmov $"+to_string(siz)+", %rdi");
 				vector<string> t = r.write_back();
 				for(string k:t) instructions.push_back(k);
-				instructions.push_back("\tcall malloc"); // remaining
+				instructions.push_back("\tcall malloc");
 				instructions.push_back("\tmov %rax,"+parse_arguments({label}));
 			}
 			else if(tac[0] == "JMP"){
@@ -584,8 +566,8 @@ public:
 					}
 
 					tac[1] = r.argument_regs[stoi(tac[1])];
-					cout<<"parse_arguments({tac[2],tac[1]}) == "<<parse_arguments({tac[2],tac[1]})<<"\n";
-					cout<<"\tmov " + parse_arguments({tac[2],tac[1]})<<" ==PUSHARG \n\n\n\n\n\n\n";
+					// cout<<"parse_arguments({tac[2],tac[1]}) == "<<parse_arguments({tac[2],tac[1]})<<"\n";
+					// cout<<"\tmov " + parse_arguments({tac[2],tac[1]})<<" ==PUSHARG \n\n\n\n\n\n\n";
 					string temp = parse_arguments({tac[2],tac[1]});
 					// string temp2= temp.substr(1,4);
 					// for(auto x:r.locs)
@@ -610,7 +592,6 @@ public:
 						}
 					}
 					argument_list.push_back("\tpush" +temp);
-					rsp += 8;
 					// argument_list.push_back("\tpush"+parse_arguments({tac[2]}));
 				}	
 			}
@@ -652,23 +633,11 @@ public:
 					instructions.push_back(s);
 				// if(tac[1].substr(0,8)=="0-printf")
 				instructions.push_back("\txor\t%rax,\t%rax");
-				cout << offset << "\n";
-				cout << "rsp: " << rsp <<"\n";
-				if(rsp%16){
-					instructions.push_back("\tsub $8, %rsp");
-					rsp += 8;
-				}
 				instructions.push_back("\tcall"+parse_arguments({"#"+tac[1]}));
 				if(tac[1].substr(0,8)=="0-printf"){
 					instructions.push_back("\tpop %rax");
 					instructions.push_back("\tpop %rcx");
-					rsp -= 16; //+8 for printf
 
-				}
-				if(tac[1].substr(0,7)=="0-scanf"){
-					instructions.push_back("\tpop %rax");
-					instructions.push_back("\tpop %rcx");
-					rsp -= 16; //
 				}
 				argument_list.clear();
 			}
@@ -716,7 +685,7 @@ public:
 				instructions.push_back("\tmov %rax, "+dst);
 			}
 			else if(tac[0]=="UADDR"){
-				instructions.push_back("\tlea "+r.locs[tac[1]].ss+", "+parse_arguments(vector<string>(tac.begin()+2,tac.end())));
+				instructions.push_back("\tlea "+r.locs[tac[1]].ss+","+parse_arguments(vector<string>(tac.begin()+2,tac.end())));
 			}
 			else if(tac[0]=="UREF"){
 				auto p = r.write_back({},false);
@@ -779,9 +748,6 @@ public:
 				instructions.push_back("\tpush %rbp");
 				instructions.push_back("\tmov %rsp, %rbp");
 				instructions.push_back("");
-				rsp += 8;
-				rbps.push(rbp);
-				rbp = rsp;
 				cout<<"A\n";
 				int j=i;
 				int off=0;
@@ -815,9 +781,9 @@ public:
 					}
 					else{
 						for(string s:curr){
-							if(s.substr(0,5)=="*-tmp"){
-								hash<string> h1;
-								r.temps[s] = "a" + to_string(h1(s)).substr(0,7);
+							if(s.substr(0,7)=="*-local"){
+								// hash<string> h1;
+								// r.temps[s] = "a" + to_string(h1(s)).substr(0,7);
 								off+=8;
 								r.locs[s] = {"",to_string(-off) + "(%rbp)"};
 							}
@@ -826,7 +792,6 @@ public:
 					j++;
 				}
 				instructions.push_back("\tsub $"+to_string(off)+", %rsp");
-				rsp += off;
 			}
 			else if(tac[0] == "RETURNEMPTY"){
 				auto p= r.write_back();
@@ -835,9 +800,6 @@ public:
 				instructions.push_back("\tmov %rbp, %rsp");
 				instructions.push_back("\tpop %rbp");
 				instructions.push_back("\tret" + parse_arguments(vector<string>(tac.begin()+1,tac.end())));
-				rsp = rbp -8;
-				rbp = rbps.top();
-				rbps.pop();
 			}
 			else if(tac[0] == "RETURNSTART"){
 				instructions.push_back("");
@@ -853,15 +815,12 @@ public:
 				instructions.push_back("\tadd $8, %rsp");
 				r.RBP = p.ff;
 				r.RIP = q.ff;
-				rsp = rbp+8;
 			}
 			else if(tac[0] == "PUSHSTACK"){
 				instructions.push_back("\tpush"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
-				rsp += 8;
 			}
 			else if(tac[0] == "POP"){
 				instructions.push_back("\tpop" + parse_arguments(vector<string>(tac.begin()+1,tac.end())));
-				rsp -= 8;
 			}
 			else if(tac[0] == "RETURNEND"){
 				string r1 = r.RBP;
@@ -870,7 +829,6 @@ public:
 				instructions.push_back("\tpush "+r1);
 				instructions.push_back("\tpop %rbp");
 				instructions.push_back("\tret");
-				rsp += 8;
 			}
 			else if(tac[0] == "NEWFUNCEND"){
 				cout<<"Inside NEWFUNCEND \n";
@@ -880,9 +838,6 @@ public:
 				instructions.push_back("\tmov %rbp, %rsp");
 				instructions.push_back("\tpop %rbp");
 				instructions.push_back("\tret");
-				rsp = rbp-8;
-				rbp = rbps.top();
-				rbps.pop();
 			}
 			else if(tac[0]=="EXIT"){
 				auto v= r.write_back();
@@ -892,28 +847,15 @@ public:
 				instructions.push_back("\tsyscall");
 			}
 			else if(tac[0]=="DECL" || tac[0]=="NORMALCALLINCOMING") continue;
-			else if(tac[0]=="PRINTCALLINCOMING" || tac[0]=="SCANCALLINCOMING" )
+			else if(tac[0]=="PRINTCALLINCOMING")
 			{
-				int j=0,k=0;
-				instructions.push_back("# PRINT/SCAN CALL INCOMING");
+				int j=i;
 				instructions.push_back("\tpush %rcx");
 				instructions.push_back("\tpush %rax");
-				rsp += 16;
-				while(tacList[i+1+k][0]!="PUSHARG"){
-					k++;
-				}
-				while(tacList[i+1+k+j][0]=="PUSHARG"){
-					j++;
-				}
-				j = max(j-6,0);
-				cout << "PUSHARGS: " << j << "\n";
-				if((rsp+8*j)%16){
-					instructions.push_back("\tsub $8, %rsp");
-					rsp += 8;
-				}
-
 				
-
+				// vector<string> tac = tacList[i];
+				
+				// instructions.push_back("");
 			}
 			else{
 				cout<<"UNKNOWN INSTRUCTION: "<<tac[0]<<endl;
