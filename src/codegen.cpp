@@ -515,10 +515,6 @@ public:
 	void tac_to_ins(){
 		vector<string> argument_list; // When args are more than regs
 		int offset = 16;
-		long long int rsp = 8;
-		long long int rbp = rsp;
-		stack<long long> rbps;
-		rbps.push(rbp);
 		for(int i=0;i<tacList.size();i++){
 			vector<string> tac = tacList[i];
 			instructions.push_back("");
@@ -596,7 +592,6 @@ public:
 						}
 					}
 					argument_list.push_back("\tpush" +temp);
-					rsp += 8;
 					// argument_list.push_back("\tpush"+parse_arguments({tac[2]}));
 				}	
 			}
@@ -646,7 +641,6 @@ public:
 				if(tac[1].substr(0,8)=="0-printf"||tac[1].substr(0,7)=="0-scanf"){
 					instructions.push_back("\tpop %rax");
 					instructions.push_back("\tpop %rcx");
-					rsp -= 16; //+8 for printf
 
 				}
 				argument_list.clear();
@@ -759,9 +753,6 @@ public:
 				instructions.push_back("\tpush %rbp");
 				instructions.push_back("\tmov %rsp, %rbp");
 				instructions.push_back("");
-				rsp += 8;
-				rbps.push(rbp);
-				rbp = rsp;
 				cout<<"A\n";
 				int j=i;
 				int off=0;
@@ -806,7 +797,6 @@ public:
 					j++;
 				}
 				instructions.push_back("\tsub $"+to_string(off)+", %rsp");
-				rsp += off;
 			}
 			else if(tac[0] == "RETURNEMPTY"){
 				auto p= r.write_back();
@@ -815,9 +805,6 @@ public:
 				instructions.push_back("\tmov %rbp, %rsp");
 				instructions.push_back("\tpop %rbp");
 				instructions.push_back("\tret" + parse_arguments(vector<string>(tac.begin()+1,tac.end())));
-				rsp = rbp -8;
-				rbp = rbps.top();
-				rbps.pop();
 			}
 			else if(tac[0] == "RETURNSTART"){
 				instructions.push_back("");
@@ -833,15 +820,12 @@ public:
 				instructions.push_back("\tadd $8, %rsp");
 				r.RBP = p.ff;
 				r.RIP = q.ff;
-				rsp = rbp+8;
 			}
 			else if(tac[0] == "PUSHSTACK"){
 				instructions.push_back("\tpush"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
-				rsp += 8;
 			}
 			else if(tac[0] == "POP"){
 				instructions.push_back("\tpop" + parse_arguments(vector<string>(tac.begin()+1,tac.end())));
-				rsp -= 8;
 			}
 			else if(tac[0] == "RETURNEND"){
 				string r1 = r.RBP;
@@ -850,7 +834,6 @@ public:
 				instructions.push_back("\tpush "+r1);
 				instructions.push_back("\tpop %rbp");
 				instructions.push_back("\tret");
-				rsp += 8;
 			}
 			else if(tac[0] == "NEWFUNCEND"){
 				cout<<"Inside NEWFUNCEND \n";
@@ -860,9 +843,6 @@ public:
 				instructions.push_back("\tmov %rbp, %rsp");
 				instructions.push_back("\tpop %rbp");
 				instructions.push_back("\tret");
-				rsp = rbp-8;
-				rbp = rbps.top();
-				rbps.pop();
 			}
 			else if(tac[0]=="EXIT"){
 				auto v= r.write_back();
@@ -872,28 +852,15 @@ public:
 				instructions.push_back("\tsyscall");
 			}
 			else if(tac[0]=="DECL" || tac[0]=="NORMALCALLINCOMING") continue;
-			else if(tac[0]=="PRINTCALLINCOMING" || tac[0]=="SCANCALLINCOMING" )
+			else if(tac[0]=="PRINTCALLINCOMING")
 			{
-				int j=0,k=0;
-				instructions.push_back("# PRINT/SCAN CALL INCOMING");
+				int j=i;
 				instructions.push_back("\tpush %rcx");
 				instructions.push_back("\tpush %rax");
-				rsp += 16;
-				while(tacList[i+1+k][0]!="PUSHARG"){
-					k++;
-				}
-				while(tacList[i+1+k+j][0]=="PUSHARG"){
-					j++;
-				}
-				j = max(j-6,0);
-				cout << "PUSHARGS: " << j << "\n";
-				if((rsp+8*j)%16){
-					instructions.push_back("\tsub $8, %rsp");
-					rsp += 8;
-				}
-
 				
-
+				// vector<string> tac = tacList[i];
+				
+				// instructions.push_back("");
 			}
 			else{
 				cout<<"UNKNOWN INSTRUCTION: "<<tac[0]<<endl;
