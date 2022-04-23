@@ -37,7 +37,7 @@
 %code requires{
 	#include "node.hpp"
 	#include "tac.hpp"
-	//#include "codegen.cpp"
+	#include "codegen.cpp"
 	// #include "dot_generator.hpp"
 }
 
@@ -118,8 +118,8 @@ SourceFile:
 			 	cout<<val.first.first+val.first.second<<"   FROM ST\n\n";
 			 }
 
-			 //ASM* a = new ASM(final_symbol_table,tt->get_type_table_data(),final_tac_code);
-			 //a->gen();
+			 ASM* a = new ASM(final_symbol_table,tt->get_type_table_data(),final_tac_code);
+			 a->gen();
 		}
     ;
 
@@ -514,7 +514,7 @@ FunctionDecl:
 	FUNC IDENTIFIER OpenBlock Signature 
 	{
 		cout<<"AAA\n";
-		st->add_in_symbol_table({"0;",string($2)},$4->current_type);
+		st->add_in_symbol_table({"0-",string($2)},$4->current_type);
 		//cout<<"AAA4\n";
 		cout<<"AAA2\n";
 
@@ -548,7 +548,7 @@ FunctionDecl:
 		//$$->current_code[1]=ins5;
 	}
 	| FUNC IDENTIFIER OpenBlock Signature {
-		st->add_in_symbol_table({"0;",string($2)},$4->current_type);
+		st->add_in_symbol_table({"0-",string($2)},$4->current_type);
 		st->output_csv_for_function(string($2),st->get_current_scope());
 	} CloseBlock  {
 		Node* curr = new Node("FunctionDecl");
@@ -1005,7 +1005,7 @@ VarSpec:
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
 		$$->add_non_terminal_children($4);
-
+		
 		DataType* right_type = $4->current_type;
 
 		NodeData* left_data = $1->current_node_data;
@@ -1574,9 +1574,21 @@ OperandName:
 		 cout<<"OperandName4:	IDENTIFIER - "<<string($1)<<"\n";
 		$$->current_place = new Place(string($1));
 		//cour
+		cout<<string($1);
+		//cout<<st->get_type(string($1))<<"\n";
+		for(auto val:st->get_symbol_table_data())
+		{
+			cout<<val.first.first<<" "<<val.first.second<<"\n";
+		}
+		//if(st->get_type(string($1))->current_data_type==_BASIC)
+		//{
+		//	exit(1);
+		//}
 		$$->current_type = st->get_type(string($1))?st->get_type(string($1)):new BasicType("undefined");
+		//cout<<
 		cout<<($$->current_type->current_data_type)<<"\n";
 		 cout<<"OperandName5:	IDENTIFIER - "<<string($1)<<"\n";
+		//if(string($1)=="byte") exit(1);
 		 $$->current_node_data->lval = $$->current_place->place_name;
 		 cout<<" SET lval == "<<$$->current_node_data->lval<<"\n";
 	}
@@ -4142,7 +4154,8 @@ BasicLit:
 		 curr->add_terminal_children($1);
 		 curr->current_node_data = new NodeData(string($1));
 		 curr->current_type = new BasicType("byte");
-		 curr->current_place = new Place(string($1),curr->current_type);
+		 string temp = string($1);
+		 curr->current_place = new Place(to_string((int)temp[1]),curr->current_type);
 		 $$ = curr;
 		 }
 	| String {
@@ -4160,7 +4173,7 @@ BasicLit:
 		 curr->add_terminal_children(string($1));
 		 curr->current_node_data = new NodeData($1);
 		 curr->current_type = new BasicType("bool");
-		 curr->current_place = new Place(string($1),curr->current_type);
+		 curr->current_place = new Place(to_string(1),curr->current_type);
 		 $$ = curr;
 		 }
 	| FALSE     {
@@ -4168,7 +4181,7 @@ BasicLit:
 		 curr->add_terminal_children(string($1));
 		 curr->current_node_data = new NodeData($1);
 		 curr->current_type = new BasicType("bool");
-		 curr->current_place = new Place(string($1),curr->current_type);
+		 curr->current_place = new Place(to_string(0),curr->current_type);
 		 $$ = curr;
 		 }
 	;
@@ -4225,16 +4238,16 @@ int main (int argc, char **argv) {
     tt->add_in_type_table("void", new BasicType("void"));
     tt->add_in_type_table("int", new BasicType("int"));
     tt->add_in_type_table("bool", new BasicType("bool"));
-    tt->add_in_type_table("byte", new BasicType("byte"));
+    tt->add_in_type_table("byte", new BasicType("int"));
     tt->add_in_type_table("float", new BasicType("float"));
     tt->add_in_type_table("string", new BasicType("string"));
     tt->add_in_type_table(string("fmt"), fmt_struct);
 
-    // st->add_in_symbol_table({"0;",string("fmt")}, fmt_struct);
+    // st->add_in_symbol_table({"0-",string("fmt")}, fmt_struct);
     DataType* x=new DataType();
     x->current_data_type=_FUNCTION;
     cout<<"Aaax === "<< x->current_data_type<<"\n\n\n\n\n\n";
-	st->add_in_symbol_table({"0;",string("printf")}, x);
+	st->add_in_symbol_table({"0-",string("printf")}, x);
 	
 	// FunctionType* xyz = new FunctionType(vector<DataType *>{new BasicType("string"), new BasicType("int")},
  //                                    vector<DataType *>{});

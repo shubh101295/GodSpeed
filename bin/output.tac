@@ -1,0 +1,7 @@
+LBL 0-main 
+NEWFUNC 
+PRINTCALLINCOMING 0-printf 
+PUSHARG 0 "Hello World\n" 
+CALL 0-printf 
+NEWFUNCEND 
+EXIT 
