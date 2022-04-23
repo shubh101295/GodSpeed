@@ -638,7 +638,6 @@ public:
 					instructions.push_back(s);
 				// if(tac[1].substr(0,8)=="0-printf")
 				instructions.push_back("\txor\t%rax,\t%rax");
-				instructions.push_back("\tcall"+parse_arguments({"#"+tac[1]}));
 				if(rsp%16){
 					instructions.push_back("\tsub $8, %rsp");
 					rsp += 8;
