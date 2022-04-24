@@ -127,9 +127,9 @@ public:
 
 			}
 		}
-		// for(auto x:locs){
-		// 	cout<<x.ff<<" "<<x.ss.ff<<" -F- "<<x.ss.ss<<"\n";
-		// }
+		for(auto x:locs){
+			cout<<x.ff<<" "<<x.ss.ff<<" -F- "<<x.ss.ss<<"\n";
+		}
 		return ins;
 	}	
 
@@ -517,6 +517,7 @@ public:
 		int offset = 16;
 		long long int rsp = 8;
 		long long int rbp = rsp;
+		long long int index = 0;
 		stack<long long> rbps;
 		rbps.push(rbp);
 		for(int i=0;i<tacList.size();i++){
@@ -627,6 +628,15 @@ public:
 					instructions.push_back("\tmov "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 				}
 			}
+			else if(tac[0]=="RSTOR"){
+				auto p = r.write_back({});
+				for(string s:p){
+					instructions.push_back(s);
+				}
+				string from = strip(parse_arguments({tac[1]}));
+				string to = strip(parse_arguments({tac[2]}));
+				instructions.push_back("\tmov\t"+from+", ("+to+")");
+			}
 			else if(tac[0] == "CALL"){
 				auto p = r.write_back();
 				for(string s:p){
@@ -639,7 +649,7 @@ public:
 				// if(tac[1].substr(0,8)=="0-printf")
 				instructions.push_back("\txor\t%rax,\t%rax");
 				if(rsp%16){
-					instructions.push_back("\tsub $8, %rsp");
+					instructions[index] = "\tsub $8, %rsp";
 					rsp += 8;
 				}
 				instructions.push_back("\tcall"+parse_arguments({"#"+tac[1]}));
@@ -695,7 +705,13 @@ public:
 				instructions.push_back("\tmov %rax, "+dst);
 			}
 			else if(tac[0]=="UADDR"){
-				instructions.push_back("\tlea "+r.locs[tac[1]].ss+","+parse_arguments(vector<string>(tac.begin()+2,tac.end())));
+				if(r.in_loc(tac[1]) ){
+					instructions.push_back("\tlea "+r.locs[tac[1]].ss+","+parse_arguments(vector<string>(tac.begin()+2,tac.end())));
+				}
+				else{
+					string dst = strip(parse_arguments({tac[1]},false));
+					instructions.push_back("\tmov "+dst+","+parse_arguments(vector<string>(tac.begin()+2,tac.end())));
+				}
 			}
 			else if(tac[0]=="UREF"){
 				auto p = r.write_back({},false);
@@ -879,18 +895,20 @@ public:
 				instructions.push_back("\tpush %rcx");
 				instructions.push_back("\tpush %rax");
 				rsp += 16;
-				while(tacList[i+1+k][0]!="PUSHARG"){
-					k++;
-				}
-				while(tacList[i+1+k+j][0]=="PUSHARG"){
-					j++;
-				}
-				j = max(j-6,0);
-				cout << "PUSHARGS: " << j << "\n";
-				if((rsp+8*j)%16){
-					instructions.push_back("\tsub $8, %rsp");
-					rsp += 8;
-				}
+				// while(tacList[i+1+k][0]!="PUSHARG"){
+				// 	k++;
+				// }
+				// while(tacList[i+1+k+j][0]=="PUSHARG"){
+				// 	j++;
+				// }
+				// j = max(j-6,0);
+				// cout << "PUSHARGS: " << j << "\n";
+				// if((rsp+8*j)%16){
+				// 	instructions.push_back("\tsub $8, %rsp");
+				// 	rsp += 8;
+				// }
+				index = instructions.size();
+				instructions.push_back("");
 
 				
 
