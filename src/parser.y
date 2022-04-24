@@ -722,12 +722,15 @@ Assignment:
 		$$->add_code_in_map($1->current_code);
 
 		cout<<($1)<<" "<<($3)<<"\n";
+
+		Node* left_expr = $1;
 		DataType* left_type = $1->current_type;
 		DataType* right_type = $3->current_type;
 
 		NodeData* left_data = $1->current_node_data;
 		NodeData* right_data = $3->current_node_data;
 
+		Place* left_place = $1->current_place;
 		Place* right_place = $3->current_place;
 		// cout<<"A  AAA \n";
 		// cout<<left_data->value<<" "<<right_data->value<<endl;
@@ -782,9 +785,10 @@ Assignment:
 				// cout<<right_type->getDataType()<<"\n";
 
 				if(left_type->getDataType() != right_type->getDataType()){
-
-					cout<<"[Type Mismatch]"<<name<<" Expected type ( " <<left_type->getDataType()<<" ) whereas found ( "<<right_type->getDataType()<<" ) \n";
-					exit(1);
+					if(left_type->getDataType()!="byte" || right_type->getDataType()!="int"){
+						cout<<"[Type Mismatch]"<<name<<" Expected type ( " <<left_type->getDataType()<<" ) whereas found ( "<<right_type->getDataType()<<" ) \n";
+						exit(1);
+					}
 				}
 
 			}
@@ -792,7 +796,7 @@ Assignment:
 			if(string($2) == "=")
 			{
 				cout<<"inside assignment operator, generating a store instruction\n";
-				Instruction* ins = new Instruction("USTOR", right_place, new Place(left_data->lval, right_type));
+				Instruction* ins = new Instruction("USTOR", right_place, left_place);
 				
 					cout<< "csfs:"<<ins->address2->place_name<<"\n\n";
 				if(ins->address2->place_name=="<no_lval>")
@@ -809,19 +813,33 @@ Assignment:
 				cout<<"inside += operator, generate " <<operation<<" instruction\n";
 				Place* p1 = new Place($1->current_type);
 				Place* p2 = new Place($1->current_type);
-				Instruction* ins1 = new Instruction("USTOR", $1->current_place, p1);
-				Instruction* ins2 = new Instruction(operation, $3->current_place, p1);
+				Instruction* ins1 = new Instruction("USTOR", left_place, p1);
+				Instruction* ins2 = new Instruction(operation, right_place, p1);
 				Instruction* ins3 = new Instruction("USTOR", p1, p2);
-				Instruction* ins4 = new Instruction("USTOR", p2, $1->current_place);
+				Instruction* ins4 = new Instruction("USTOR", p2, left_place);
 				$$->add_code_in_map(ins1);
 				$$->add_code_in_map(ins2);
 				$$->add_code_in_map(ins3);
 				$$->add_code_in_map(ins4);
 			}
+			Node* child_expr = left_expr->current_node_children[0].non_terminal_node;
+			child_expr = child_expr->current_node_children[0].non_terminal_node;
+			cout << "NodeName: " << child_expr->node_name << "\n";
+			cout << "Val: " << child_expr->current_node_children[0].terminal_string_value << "\n";
+			if(child_expr->node_name == "UnaryExpr"){
+				if(child_expr->current_node_children[0].terminal_string_value == "*"){
+					Place *p1 = child_expr->current_node_children[1].non_terminal_node->current_place;
+					Instruction* ins1 = new Instruction("RSTOR", left_place, p1 );
+					$$->add_code_in_map(ins1);
+				}
+				
+			}
 
 				// cout<<"HERE 4\n";
 			left_data = left_data->next_data;
 			left_type = left_type->next_type;
+			left_place = left_place->next_place;
+			if(left_expr->current_node_children.size()==2) left_expr = left_expr->current_node_children[1].non_terminal_node;
 			right_type = right_type->next_type;
 			right_data = right_data?right_data->next_data:right_data;
 			right_place = right_place? right_place->next_place: right_place;
@@ -891,8 +909,10 @@ ShortVarDecl:
 
 			if(st->scope_level(name)==0){
 				if(st->get_type(name) -> getDataType() != right_type->getDataType()){
-					cout<<"[Type Mismatch]"<<name<<" has different types on LHS and RHS";
-					exit(1);
+					if(left_type->getDataType()!="byte" || right_type->getDataType()!="int"){ //confirm check
+						cout<<"[Type Mismatch]"<<name<<" has different types on LHS and RHS";
+						exit(1);
+					}
 				}
 			}
 			else{
@@ -1054,9 +1074,10 @@ VarSpec:
 			$$->current_type = $2->current_type;
 
 			if(right_type->getDataType() != $2->current_type->getDataType()){
-
-					cout<<"[Type Mismatch]"<<name<<" Expected type ( " <<$2->current_type->getDataType()<<" ) whereas found ( "<<right_type->getDataType()<<" ) \n";
-					exit(1);
+					if($2->current_type->getDataType()!="byte"||right_type->getDataType()!="int"){
+						cout<<"[Type Mismatch]"<<name<<" Expected type ( " <<$2->current_type->getDataType()<<" ) whereas found ( "<<right_type->getDataType()<<" ) \n";
+						exit(1);
+					}
 				}
 			//cout<<"inside assignment operator, generating a store instruction\n";
 			ins = new Instruction("USTOR", right_place, new Place(st->get_current_scope() + name));
@@ -2443,8 +2464,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -2489,8 +2512,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -2529,8 +2554,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -2569,8 +2596,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -2608,8 +2637,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -2647,8 +2678,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -2687,8 +2720,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -2726,8 +2761,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -2765,8 +2802,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -2804,8 +2843,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -2844,8 +2885,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -2883,8 +2926,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -2929,8 +2974,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -2976,8 +3023,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -3019,8 +3068,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -3062,8 +3113,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -3105,8 +3158,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -3148,8 +3203,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -3191,8 +3248,10 @@ Expression:
 
 			if($1->current_type->getDataType() != $3->current_type->getDataType()) {
 				// Might handle more cases on completion
-				cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
-				exit(1);
+				if($1->current_type->getDataType()!="byte" || $3->current_type->getDataType()!="int"){
+					cout<<"[Type Mismatch]: "<<$1->current_type->getDataType() <<" and "<<$3->current_type->getDataType()<<endl;
+					exit(1);
+				}
 			}
 
 			string temp = string($2);
@@ -3853,7 +3912,7 @@ ExpressionList:
 		cout<<$$->current_node_data->value<<endl;
 		$$ = curr;
 	}
-	| ExpressionList COMMA Expression {
+	| Expression COMMA ExpressionList {
 		cout<<"ExpressionList COMMA Expression\n";
 		$$ = new Node("ExpressionList");
 		$$->add_non_terminal_children($1);
