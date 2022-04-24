@@ -704,6 +704,63 @@ public:
 				instructions.push_back("\tidiv "+src);
 				instructions.push_back("\tmov %rax, "+dst);
 			}
+			else if(tac[0]=="MOD"){
+				instructions.push_back("\tmov $0, %rdx");
+				// string xx=parse_arguments({tac[1]});
+				// string yy=parse_arguments({tac[2]});
+				// string xx2=strip(xx);
+				// string yy2=strip(yy);
+					
+				// cout<<xx<<" -- "<<xx2<<"  FROM QUOT \n\n\n\n\n\n";
+				// cout<<yy<<" -- "<<yy2<<"  FROM QUOT \n\n\n\n\n\n";
+				// exit(1);
+				
+				string src = strip(parse_arguments({tac[1]}));
+				if(src[0]=='$'){
+					cout<<" from MOD get_register\n\n";
+					auto p=r.get_register();
+					cout<<" from MOD get_register end\n\n";
+					for(string s:p.ss){
+						cout<<s<<"\n\n";
+						instructions.push_back(s);
+					} 
+					instructions.push_back("\tmov "+src+", "+p.ff);
+					src = p.ff;
+					cout<<"\tmov "+src+", "+p.ff<<"\n";
+					// exit(1);
+				}
+				// else{
+				// 	src = r.last_byte[src];
+				// }
+				string dst = strip(parse_arguments({tac[2]}));
+				instructions.push_back("\tmov "+dst+", %rax");
+				instructions.push_back("\tcqo");
+				instructions.push_back("\tidiv "+src);
+				instructions.push_back("\tmov %rdx, "+dst);
+			}
+			else if(tac[0] =="AND"){
+				instructions.push_back("\tand"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+			}
+			else if(tac[0] =="OR"){
+				instructions.push_back("\tor"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+			}
+			else if(tac[0] =="XOR"){
+				instructions.push_back("\txor"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+			}
+			else if(tac[0] =="SHL"){
+				if(tac[1][0] == '*' || tac[1].find("-")!=string::npos){
+					cout<<"Error: Expected Integer for Shifting Left"<<endl;
+					exit(1);
+				}
+				instructions.push_back("\tshl"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+			}
+			else if(tac[0] =="SHR"){
+				if(tac[1][0] == '*' || tac[1].find("-")!=string::npos){
+					cout<<"Error: Expected Integer for Shifting Right"<<endl;
+					exit(1);
+				}
+				instructions.push_back("\tshr"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+			}
 			else if(tac[0]=="UADDR"){
 				if(r.in_loc(tac[1]) ){
 					instructions.push_back("\tlea "+r.locs[tac[1]].ss+","+parse_arguments(vector<string>(tac.begin()+2,tac.end())));
