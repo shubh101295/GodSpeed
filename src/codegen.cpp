@@ -525,10 +525,16 @@ public:
 			instructions.push_back("");
 			cout<<"START "<<tac[0]<<"\n";
 			if(tac[0]=="LBL"){
+				
 				string x = split(tac[1],'-').back();
 				vector<string> p = r.write_back();
 				for(string s:p)
 					instructions.push_back(s);
+
+				if(rsp%16 && x.substr(0,5)=="Label"){
+					instructions.push_back("\tsub $8, %rsp");
+					rsp += 8;
+				}
 				instructions.push_back(x+":");
 			}
 			else if(tac[0] == "NEW"){
@@ -543,16 +549,28 @@ public:
 			else if(tac[0] == "JMP"){
 				vector<string> t = r.write_back();
 				for(string k:t) instructions.push_back(k);
+				if(rsp%16){
+					instructions.push_back("\tsub $8, %rsp");
+					rsp += 8;
+				}
 				instructions.push_back("\tjmp"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0] == "JE"){
 				vector<string> t = r.write_back();
 				for(string k:t) instructions.push_back(k);
+				if(rsp%16){
+					instructions.push_back("\tsub $8, %rsp");
+					rsp += 8;
+				}
 				instructions.push_back("\tje"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0] == "JNE"){
 				vector<string> t = r.write_back();
 				for(string k:t) instructions.push_back(k);
+				if(rsp%16){
+					instructions.push_back("\tsub $8, %rsp");
+					rsp += 8;
+				}
 				instructions.push_back("\tJNE"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0] == "JEQZ"){
@@ -560,6 +578,10 @@ public:
 				instructions.push_back("\tcmp $0, "+temp);
 				vector<string> t = r.write_back();
 				for(string k:t) instructions.push_back(k);
+				if(rsp%16){
+					instructions.push_back("\tsub $8, %rsp");
+					rsp += 8;
+				}
 				instructions.push_back("\tje"+parse_arguments({tac[2]}));
 			}
 			else if(tac[0] == "PUSHARG"){
@@ -887,7 +909,11 @@ public:
 				instructions.push_back("\txor %rdi, %rdi");
 				instructions.push_back("\tsyscall");
 			}
-			else if(tac[0]=="DECL" || tac[0]=="NORMALCALLINCOMING") continue;
+			else if(tac[0]=="DECL") continue;
+			else if (tac[0]=="NORMALCALLINCOMING"){
+				index = instructions.size();
+				instructions.push_back("");
+			}
 			else if(tac[0]=="PRINTCALLINCOMING" || tac[0]=="SCANCALLINCOMING" )
 			{
 				int j=0,k=0;
