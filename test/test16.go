@@ -11,7 +11,7 @@ func swap(a *int,b *int) {
 func main() {
 	var a ,b   [5]*int
 	var c ,d   [5] int
-
+	
 	for i:=0;i<5;i++{
 		a[i] = &c[i]
 		b[i] = &d[i]

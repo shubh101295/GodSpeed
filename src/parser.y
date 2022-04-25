@@ -59,7 +59,7 @@
 %type <nt> Assignment ShortVarDecl Declaration VarSpec PackageName
 %type <nt> Signature Result Parameters ParameterList ParameterDecl
 %type <nt> MethodDecl Receiver TopLevelDecl LabeledStmt
-%type <nt> ReturnStmt BreakStmt ContinueStmt GotoStmt FallthroughStmt StructType
+%type <nt> ReturnStmt BreakStmt ContinueStmt StructType
 %type <nt> FunctionBody ForStmt
 %type <nt> FunctionDecl 
 %type <nt> Condition  UnaryExpr PrimaryExpr
@@ -416,16 +416,16 @@ Statement:
 		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
-	| GotoStmt {
-		// cout<<"Statement:	GotoStmt\n";
-		Node* curr = new Node("Statement");
-		curr->add_non_terminal_children($1);
-		curr->current_type = $1->current_type;
-		curr->current_node_data = $1->current_node_data;
-		curr->current_place = $1->current_place;
-		curr->add_code_in_map($1->current_code);
-		$$ = curr;
-	}
+	//| GotoStmt {
+	//	// cout<<"Statement:	GotoStmt\n";
+	//	Node* curr = new Node("Statement");
+	//	curr->add_non_terminal_children($1);
+	//	curr->current_type = $1->current_type;
+	//	curr->current_node_data = $1->current_node_data;
+	//	curr->current_place = $1->current_place;
+	//	curr->add_code_in_map($1->current_code);
+	//	$$ = curr;
+	//}
 	//| SwitchStmt {
 	//	// cout<<"Statement:	SwitchStmt\n";
 	//	Node* curr = new Node("Statement");
@@ -436,15 +436,15 @@ Statement:
 	//	curr->add_code_in_map($1->current_code);
 	//	$$ = curr;
 	//}
-	| FallthroughStmt {
-		// cout<<"Statement:	FallthroughStmt\n";
-		Node* curr = new Node("Statement");
-		curr->add_non_terminal_children($1);
-		curr->current_node_data = $1->current_node_data;
-		curr->current_place = $1->current_place;
-		curr->add_code_in_map($1->current_code);
-		$$ = curr;
-	}
+	//| FallthroughStmt {
+	//	// cout<<"Statement:	FallthroughStmt\n";
+	//	Node* curr = new Node("Statement");
+	//	curr->add_non_terminal_children($1);
+	//	curr->current_node_data = $1->current_node_data;
+	//	curr->current_place = $1->current_place;
+	//	curr->add_code_in_map($1->current_code);
+	//	$$ = curr;
+	//}
 	| Block {
 		// cout<<"Statement:	Block\n";
 		Node* curr = new Node("Statement");
@@ -1785,15 +1785,15 @@ ContinueStmt:
 	// }
 	;
 
-GotoStmt:
-	GOTO IDENTIFIER {
-		Node* curr = new Node("GotoStmt");
-		curr->add_terminal_children(string($2));
-		curr->current_node_data = new NodeData(string($1));
-		curr->current_node_data->node_child = new NodeData(string($2));
-		$$ = curr;
-	}
-	;
+//GotoStmt:
+//	GOTO IDENTIFIER {
+//		Node* curr = new Node("GotoStmt");
+//		curr->add_terminal_children(string($2));
+//		curr->current_node_data = new NodeData(string($1));
+//		curr->current_node_data->node_child = new NodeData(string($2));
+//		$$ = curr;
+//	}
+//	;
 
 //SwitchStmt:
 //	ExprSwitchStmt {
@@ -1944,30 +1944,30 @@ GotoStmt:
 //	}
 //	;
 
-FallthroughStmt:
-	FALLTHROUGH {
-		if (is_inside_case==false){
-			cout<<"[FALLTHROUGH] fallthrough can only be used inside switch cases\n";
-			exit(1);
-		}
-		// if(is_last_statement==false)
-		// {
-		// 	cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
-		// 	exit(1);
-		// }
-		// cout<<"SET fallthrough_expression_count ==1\n";
-		if (fallthrough_expression_count)
-		{
-			cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
-			exit(1);
-			// fallthrough_expression_count+=1;
-		}
-		fallthrough_expression_count= 1;
-		$$ = new Node("FallthroughStmt");
-		$$->current_node_data = new NodeData("FallThorugh");
-	}
+//FallthroughStmt:
+//	FALLTHROUGH {
+//		if (is_inside_case==false){
+//			cout<<"[FALLTHROUGH] fallthrough can only be used inside switch cases\n";
+//			exit(1);
+//		}
+//		// if(is_last_statement==false)
+//		// {
+//		// 	cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
+//		// 	exit(1);
+//		// }
+//		// cout<<"SET fallthrough_expression_count ==1\n";
+//		if (fallthrough_expression_count)
+//		{
+//			cout<<"[FALLTHROUGH] fallthrough statement out of place\n";
+//			exit(1);
+//			// fallthrough_expression_count+=1;
+//		}
+//		fallthrough_expression_count= 1;
+//		$$ = new Node("FallthroughStmt");
+//		$$->current_node_data = new NodeData("FallThorugh");
+//	}
 
-	;
+//	;
 
 //remTAC: adding scopes
 IfStmt:
