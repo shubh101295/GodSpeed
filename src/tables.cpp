@@ -61,7 +61,7 @@ void SymbolTable::output_csv_for_function(string name_of_function, string prefix
 	// cout<<"In output_csv_for_function \n";
 	for (auto temp:symbol_table)
 	{
-		if(isPrefix(prefix,temp.first.first))
+		if(isPrefix(prefix,temp.first.first) && temp.first.first!="0-" )
 		{
 			cout<<temp.first.first<<",    "<<temp.first.second<<",    \n";
 			cout<<temp.second->getDataType()<<"\n";

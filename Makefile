@@ -31,7 +31,7 @@ clean:
 	rm ./bin/*.png
 
 asm1:
-	./bin/parser ./test/test08.go
+	./bin/parser ./test/test18.go
 	gcc -no-pie ./bin/output.s
 
 
