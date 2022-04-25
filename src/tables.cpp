@@ -8,7 +8,7 @@ void SymbolTable::update_current_scope() {
 	current_scope = "";
 	for( int i=0;i<=current_block_inside_count;i++)
 	{
-		current_scope+=to_string(current_block_numbers[i])+";";
+		current_scope+=to_string(current_block_numbers[i])+"-";
 	}
 }
 
@@ -55,13 +55,13 @@ void SymbolTable::output_csv_for_function(string name_of_function, string prefix
 	ofstream my_function_dump("./bin/"+name_of_function+".csv");
 	// cout<<"A FORM output_csv_for_function\n";
 	my_function_dump<<"Scope,    variable_name,    variable_type\n";
-	// cout<<symbol_table[{"0;",name_of_function}]<<"\n";
-	my_function_dump<<"0;,    "<<name_of_function<<",    "<<symbol_table[{"0;",name_of_function}]->getDataType()<<"\n";
+	// cout<<symbol_table[{"0-",name_of_function}]<<"\n";
+	my_function_dump<<"0-,    "<<name_of_function<<",    "<<symbol_table[{"0-",name_of_function}]->getDataType()<<"\n";
 	// for(auto val:)
 	// cout<<"In output_csv_for_function \n";
 	for (auto temp:symbol_table)
 	{
-		if(isPrefix(prefix,temp.first.first))
+		if(isPrefix(prefix,temp.first.first) && temp.first.first!="0-" )
 		{
 			cout<<temp.first.first<<",    "<<temp.first.second<<",    \n";
 			cout<<temp.second->getDataType()<<"\n";
@@ -102,7 +102,7 @@ int SymbolTable::scope_level(string variable_name){
 	string temp_scope = "";
 	vector<string> temp_scopes;
 	for( int i=0;i<=current_block_inside_count;i++) {
-		temp_scope+=to_string(current_block_numbers[i])+";";
+		temp_scope+=to_string(current_block_numbers[i])+"-";
 		temp_scopes.pb(temp_scope);
 	}
 	reverse(temp_scopes.begin(),temp_scopes.end());
@@ -118,7 +118,7 @@ string SymbolTable::get_scope_for_variable(string variable_name) {
 	string temp_scope = "";
 	vector<string> temp_scopes;
 	for( int i=0;i<=current_block_inside_count;i++) {
-		temp_scope+=to_string(current_block_numbers[i])+";";
+		temp_scope+=to_string(current_block_numbers[i])+"-";
 		temp_scopes.pb(temp_scope);
 	}
 	reverse(temp_scopes.begin(),temp_scopes.end());
@@ -141,15 +141,21 @@ DataType * SymbolTable::get_value_from_key(string _variable_name){
 DataType* SymbolTable::get_type(string variable_name){
 	// returns the DataType* from the latest scope
 	string temp_scope = "";
+	cout<<"SADFGHFH\n";
 	vector<string> temp_scopes;
 	for( int i=0;i<=current_block_inside_count;i++) {
-		temp_scope+=to_string(current_block_numbers[i])+";";
+		temp_scope+=to_string(current_block_numbers[i])+"-";
 		temp_scopes.pb(temp_scope);
 	}
 	reverse(temp_scopes.begin(),temp_scopes.end());
 	for(auto val:temp_scopes){
-		if (symbol_table.find({val,variable_name})!=symbol_table.end()) return symbol_table[{val,variable_name}]->copyClass();
+		if (symbol_table.find({val,variable_name})!=symbol_table.end()){
+			cout<<"FOUND IN Symbol table\n";
+			return symbol_table[{val,variable_name}]->copyClass();
+
+		} 
 	}
+	cout<<"WERY\n";
 	return NULL;
 }
 
