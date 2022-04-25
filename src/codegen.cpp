@@ -670,7 +670,7 @@ public:
 					instructions.push_back(s);
 				// if(tac[1].substr(0,8)=="0-printf")
 				instructions.push_back("\txor\t%rax,\t%rax");
-				if(rsp%16){
+				if(rsp%16 && tac[1].substr(0,8)!="0-printf"){
 					instructions[index] = "\tsub $8, %rsp";
 					rsp += 8;
 				}
@@ -845,10 +845,13 @@ public:
 				instructions.push_back("\tsetne "+r.last_byte[reg]);
 			}
 			else if(tac[0]=="CMP"){
+				vector<string> t = r.write_back();
+				for(string k:t) instructions.push_back(k);
 				instructions.push_back("\tcmp "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0]=="NEWFUNC"){
-
+				if(tacList[i-1][1] != "0-main") rsp = 0;
+				else rsp = 8;
 				auto p = r.write_back();
 				for(string s:p) instructions.push_back(s);
 				instructions.push_back("\tpush %rbp");
