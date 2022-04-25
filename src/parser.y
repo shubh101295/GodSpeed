@@ -722,10 +722,15 @@ Assignment:
 
 		cout<<($1)<<" "<<($3)<<"\n";
 
-		// Node* left_expr = $1;
+		Node* left_expr = $1;
 		DataType* left_type = $1->current_type;
 		DataType* right_type = $3->current_type;
-
+		stack<Node*> expr;
+		while(left_expr->current_node_children.size()==2){
+			expr.push(left_expr->current_node_children[1].non_terminal_node);
+			left_expr = left_expr->current_node_children[0].non_terminal_node;
+		}
+		expr.push(left_expr->current_node_children[0].non_terminal_node);
 		NodeData* left_data = $1->current_node_data;
 		NodeData* right_data = $3->current_node_data;
 
@@ -821,24 +826,24 @@ Assignment:
 				$$->add_code_in_map(ins3);
 				$$->add_code_in_map(ins4);
 			}
-			// Node* child_expr = left_expr->current_node_children[0].non_terminal_node;
-			// child_expr = child_expr->current_node_children[0].non_terminal_node;
-			// cout << "NodeName: " << child_expr->node_name << "\n";
-			// cout << "Val: " << child_expr->current_node_children[0].terminal_string_value << "\n";
-			// if(child_expr->node_name == "UnaryExpr"){
-			// 	if(child_expr->current_node_children[0].terminal_string_value == "*"){
-			// 		Place *p1 = child_expr->current_node_children[1].non_terminal_node->current_place;
-			// 		Instruction* ins1 = new Instruction("RSTOR", left_place, p1 );
-			// 		$$->add_code_in_map(ins1);
-			// 	}
+			Node* child_expr = expr.top()->current_node_children[0].non_terminal_node;
+			child_expr = child_expr->current_node_children[0].non_terminal_node;
+			cout << "NodeName: " << child_expr->node_name << "\n";
+			cout << "Val: " << child_expr->current_node_children[0].terminal_string_value << "\n";
+			if(child_expr->node_name == "UnaryExpr"){
+				if(child_expr->current_node_children[0].terminal_string_value == "*"){
+					Place *p1 = child_expr->current_node_children[1].non_terminal_node->current_place;
+					Instruction* ins1 = new Instruction("RSTOR", left_place, p1 );
+					$$->add_code_in_map(ins1);
+				}
 				
-			// }
+			}
 
 				// cout<<"HERE 4\n";
+			expr.pop();
 			left_data = left_data->next_data;
 			left_type = left_type->next_type;
 			left_place = left_place->next_place;
-			// if(left_expr->current_node_children.size()==2) left_expr = left_expr->current_node_children[1].non_terminal_node;
 			right_type = right_type->next_type;
 			right_data = right_data?right_data->next_data:right_data;
 			right_place = right_place? right_place->next_place: right_place;
