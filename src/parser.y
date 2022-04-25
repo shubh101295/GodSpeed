@@ -1025,7 +1025,7 @@ VarSpec:
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($2);
 		$$->add_non_terminal_children($4);
-		
+		$$->add_code_in_map($4->current_code);
 		DataType* right_type = $4->current_type;
 
 		NodeData* left_data = $1->current_node_data;
@@ -1105,7 +1105,7 @@ VarSpec:
 		$$ = new Node("VarSpec");
 		$$->add_non_terminal_children($1);
 		$$->add_non_terminal_children($3);
-
+		$$->add_code_in_map($3->current_code);
 		DataType* right_type = $3->current_type;
 
 		NodeData* left_data = $1->current_node_data;
@@ -3318,6 +3318,7 @@ UnaryExpr:
 		$$->add_code_in_map($2->current_code);
 		Place* p1 = new Place($$->current_type);
 		Instruction* ins = new Instruction("UADDR",$2->current_place,p1);
+		cout << "Primary:::" << $2->current_place->place_name << "\n";
 		$$->add_code_in_map(ins);
 		$$->current_place = p1;
 		}
