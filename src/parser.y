@@ -25,7 +25,10 @@
 	BreakLabels* cl = new BreakLabels(); // this one is for the continue labels
 	Labels *l = new Labels();
 	SwitchCaseList* scl= NULL;
-
+	map<string,vector<DataType*> > function_return_global; 
+	string current_function_name = "";
+	bool current_function_has_return_stmt = false;
+	
 	// for switch statements
 	bool is_inside_case = false;
 	// bool is_last_statement = false;
@@ -516,6 +519,40 @@ FunctionDecl:
 		st->add_in_symbol_table({"0-",string($2)},$4->current_type);
 		//cout<<"AAA4\n";
 		cout<<"AAA2\n";
+		current_function_name = string($2);
+		FunctionType* current_function = dynamic_cast<FunctionType*>($4->current_type);
+		function_return_global[current_function_name]=current_function->return_type;
+		for(auto temp_type:current_function->argument_types){
+			int is_supported_return_type=0;
+			//cout<<temp_type->current_data_type<<"\n";
+			if(temp_type->current_data_type==_BASIC ){
+				is_supported_return_type=1;
+			} else if(temp_type->current_data_type==_POINTER){
+				PointerType* curr_pointer = dynamic_cast<PointerType*>(temp_type);
+				if(curr_pointer->type_of_address_pointing_to->current_data_type==_BASIC) {
+					is_supported_return_type=1;
+				}
+			}
+			if(is_supported_return_type==0){
+				cout<<"[Unsupported argument type] From function "<<current_function_name<<"\n";
+				exit(1);
+			}
+		}
+		
+		for(auto temp_type:current_function->return_type){
+			int is_supported_return_type=0;
+			//cout<<temp_type->current_data_type<<"\n";
+			if(temp_type->current_data_type==_BASIC ){
+				is_supported_return_type=1;
+			}
+			if(is_supported_return_type==0){
+				cout<<"[Unsupported return type] From function "<<current_function_name<<"\n";
+				exit(1);
+			}
+		}
+		//cout<<current_function_name<<"\n";
+		//exit(1);
+		current_function_has_return_stmt=(function_return_global[current_function_name].size()==0);
 
 	} FunctionBody CloseBlock {
 		// cout<<"FunctionDecl: FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock \n";
@@ -542,6 +579,12 @@ FunctionDecl:
 		Instruction* ins3 = new Instruction("NEWFUNCEND");
 		$$->add_code_in_map(ins3);
 		update_instructions_with_scope(&($$->current_code), st);
+		current_function_name="";
+		if(current_function_has_return_stmt==false){
+			cout<<"[Return Error] Function Does not have a return Statement\n";
+			exit(1);
+		}
+		current_function_has_return_stmt=false;
 		//Instruction* ins5 = new Instruction("LBL", new Place(string($2), NULL));
 		////$$->add_code_in_map(ins5);
 		//$$->current_code[1]=ins5;
@@ -549,6 +592,42 @@ FunctionDecl:
 	| FUNC IDENTIFIER OpenBlock Signature {
 		st->add_in_symbol_table({"0-",string($2)},$4->current_type);
 		st->output_csv_for_function(string($2),st->get_current_scope());
+		current_function_name = string($2);
+		FunctionType* current_function = dynamic_cast<FunctionType*>($4->current_type);
+		function_return_global[current_function_name]=current_function->return_type;
+		for(auto temp_type:current_function->argument_types){
+			int is_supported_return_type=0;
+			//cout<<temp_type->current_data_type<<"\n";
+			if(temp_type->current_data_type==_BASIC ){
+				is_supported_return_type=1;
+			} else if(temp_type->current_data_type==_POINTER){
+				PointerType* curr_pointer = dynamic_cast<PointerType*>(temp_type);
+				if(curr_pointer->type_of_address_pointing_to->current_data_type==_BASIC) {
+					is_supported_return_type=1;
+				}
+			}
+			if(is_supported_return_type==0){
+				cout<<"[Unsupported argument type] From function "<<current_function_name<<"\n";
+				exit(1);
+			}
+		}
+		for(auto temp_type:current_function->return_type){
+			int is_supported_return_type=0;
+			if(temp_type->current_data_type==_BASIC ){
+				is_supported_return_type=1;
+			} else if(temp_type->current_data_type==_POINTER){
+				PointerType* curr_pointer = dynamic_cast<PointerType*>(temp_type);
+				if(curr_pointer->type_of_address_pointing_to->current_data_type==_BASIC) {
+					is_supported_return_type=1;
+				}
+			}
+			if(is_supported_return_type==0){
+				cout<<"[Unsupported return type] From function "<<current_function_name<<"\n";
+				exit(1);
+			}
+		}
+		current_function_has_return_stmt=(function_return_global[current_function_name].size()==0);
+
 	} CloseBlock  {
 		Node* curr = new Node("FunctionDecl");
 		curr->add_terminal_children(string($2));
@@ -557,6 +636,12 @@ FunctionDecl:
 		// st->add_in_symbol_table({st->get_current_scope(),string($2)},$4->current_type);
 		$$->current_node_data = new NodeData("Function-"+ string($2));
 		dump_dot_file("./bin/"+string($2)+".dot", $$);
+		current_function_name="";
+		if(current_function_has_return_stmt==false){
+			cout<<"[Return Error] Function Does not have a return Statement\n";
+			exit(1);
+		}
+		current_function_has_return_stmt=false;
 	}
 	;
 
@@ -1707,9 +1792,25 @@ ReturnStmt:
 		$$ = new Node("ReturnStmt");
 		$$ -> current_node_data = new NodeData(string($1));
 		$$->add_code_in_map(new Instruction("RETURNEMPTY"));
-
+		if(current_function_name==""){
+			cout<<"[Return statment Not in function] Return statment outside a function\nAborting...";
+			exit(1);
+		}
+		auto it = function_return_global.find(current_function_name);
+		if(it==function_return_global.end())
+		{
+			cout<< "[Error] Return Statement inside an invalid function\n";
+			exit(1);
+		}
+		if(function_return_global[current_function_name].size()!=0)
+		{
+			cout<< "[Return Error] Trying to return from inside a void function\n";
+			exit(1);
+		}
+		current_function_has_return_stmt=true;
 	}
 	| RETURN ExpressionList {
+		current_function_has_return_stmt=true;
 		$$ = new Node("ReturnStmt");
 		$$ -> add_non_terminal_children($2);
 		$$->current_node_data = new NodeData(string($1));
@@ -1717,7 +1818,42 @@ ReturnStmt:
 		Place* current_return_place = $2->current_place;
 		DataType* current_return_type = $2->current_type;
 		$$->add_code_in_map($2->current_code);
+		if(current_function_name==""){
+			cout<<"[Return statment Not in function] Return statment outside a function\nAborting...";
+			exit(1);
+		}
+		auto it = function_return_global.find(current_function_name);
+		if(it==function_return_global.end())
+		{
+			cout<< "[Error] Return Statement inside an invalid function\n";
+			exit(1);
+		}
+		cout<<current_function_name<<" == current_function_name\n";
+		int i=0;
+		while(current_return_type!=NULL)
+		{
+			if(i>=function_return_global[current_function_name].size()){
+				cout<< "[Return Error] Number of arguments returned is more than declared in the function return type\n";
+				exit(1);
+			}
+			if(current_return_type->current_data_type!=function_return_global[current_function_name][i]->current_data_type){
+				cout<< "[Return error] Return type mismatch from what is declared in the function\n";
+				exit(1);
+			}
+			current_return_type=current_return_type->next_type;
+			i+=1;
+		}
+		if(i>function_return_global[current_function_name].size()){
+			cout<< "[Return Error] Number of arguments returned is more than declared in the function return type\n";
+			exit(1);
+		}
+		if(i<function_return_global[current_function_name].size()){
+			cout<< "[Return Error] Number of arguments returned is less than declared in the function return type\n";
+			exit(1);
+		} 
 
+
+		current_return_type = $2->current_type;
 		vector<Place *> args_places;
 		while(current_return_place!=NULL){
 			args_places.push_back(new Place(current_return_type));
@@ -1727,7 +1863,8 @@ ReturnStmt:
 			current_return_type= current_return_type->next_type;
 		}	
 		$$->add_code_in_map(new Instruction("RETURNSTART"));
-		vector<Instruction*> temp_instrs; // we need to push the returns in the opposite order
+
+
 
 		for(int i=args_places.size()-1;i>=0;i--)
 		{
@@ -1762,7 +1899,7 @@ BreakStmt:
 	;
 
 
-//remTAC: Please check if break label top element retrieved correctly.
+
 ContinueStmt:
 	CONTINUE {
 		Node* curr = new Node("ContinueStmt");
@@ -1969,7 +2106,7 @@ ContinueStmt:
 
 //	;
 
-//remTAC: adding scopes
+
 IfStmt:
 	IF OpenBlock Expression Block CloseBlock {
 		$$ = new Node("IfStmt");
@@ -2183,7 +2320,7 @@ IfStmt:
 
 	}
 	;
-//remTAC: code for forMArker. need to fixed for hsubh.
+
 ForStmt:
 	FOR forMarker Block 
 	{
@@ -2345,7 +2482,7 @@ ForStmt:
 //	}
 //	;
 
-//remTAC: Fix next labels, shubh
+
 forMarker:
 	{
 		$$ = new Node("");
@@ -3408,7 +3545,7 @@ UnaryExpr:
 	}
 
  	;
-// remaining
+
  PrimaryExpr:
  	Operand  {
  		 cout<<" PrimaryExpr: Operand, Value:";
@@ -3524,7 +3661,7 @@ UnaryExpr:
 
 
 	}
- 	| PrimaryExpr Index { //remaining lval
+ 	| PrimaryExpr Index { 
  		cout<<"PrimaryExpr: PrimaryExpr Index"<<endl;
  		$$ = new Node("PrimaryExpr");
  		$$->add_non_terminal_children($1);
@@ -3579,7 +3716,7 @@ UnaryExpr:
 			$$->current_node_data->lval = $$->current_place->place_name;
 
  		}
- 	| PrimaryExpr Arguments { // remaining
+ 	| PrimaryExpr Arguments { 
  		cout<<"PrimaryExpr Arguments\n";
 		$$ = new Node("PrimaryExpr");
 		$$->add_non_terminal_children($1);
@@ -3669,7 +3806,6 @@ UnaryExpr:
 				$$->add_code_in_map(ins);
 			}
 			$$->current_place = $$->current_place->next_place;
-			// remaining
 			$$->current_node_data->value = false;
 		}
 	}

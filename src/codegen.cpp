@@ -112,7 +112,7 @@ public:
 			if(regs[s].first!=""){
 				string loc = locs[regs[s].first].ss;
 				cout<<"loc == "<<loc<<"\n";
-				if(loc!= "---"){
+				if(loc!= ""){
 					string temp = "\tmov ";
 					temp+=s;
 					temp+=",\t";
@@ -144,7 +144,6 @@ public:
 
 	pair<string, vector<string>> get_register(string s=""){
 		if(s.size()==0){
-			// Too same?
 			string ascii = "abcdefghijklmnopqrstuvwxyz";
 
 			for (int i = 0; i < 8; ++i)
@@ -212,7 +211,7 @@ public:
 			// cout
 		}
 		else{
-			locs[s] = {reg,"---"};
+			locs[s] = {reg,""};
 		}
 
 		for(auto val:instructions) cout<<val<<"-\n";
