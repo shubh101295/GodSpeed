@@ -6,8 +6,4 @@ func main() {
 	printf("Hello World\n")
 }
 
-/*
-Expected Output
 
-
-*/

@@ -2,16 +2,17 @@ package main
 
 import "fmt"
 
-func rev() {
-	var x int
-	scanf("%d", &x)
-	if x == 0 {
-		return
+func fib(n int) int {
+	if n == 1 || n == 2 {
+		return 1
 	}
-	rev()
-	// printf("%d", x)
-}
 
+	return fib(n-1) + fib(n-2)
+
+}
 func main() {
-	rev()
+	n := 5
+	b := &n
+	scanf("%d",b)
+	printf("%d-th fibonacci number: %d\n", n, fib(n))
 }

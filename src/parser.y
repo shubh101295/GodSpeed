@@ -827,7 +827,6 @@ Assignment:
 				$$->add_code_in_map(ins4);
 			}
 			Node* child_expr = expr.top()->current_node_children[0].non_terminal_node;
-			child_expr = child_expr->current_node_children[0].non_terminal_node;
 			cout << "NodeName: " << child_expr->node_name << "\n";
 			cout << "Val: " << child_expr->current_node_children[0].terminal_string_value << "\n";
 			if(child_expr->node_name == "UnaryExpr"){
