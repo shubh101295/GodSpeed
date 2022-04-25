@@ -6,12 +6,12 @@ func main() {
 	// printf("Hello World\n")
 	b := 2
 	a := 4
-	c := a << 2
+	c := a << b
 	printf("%d \n", c)
 }
 
 /*
 Expected Output
 
-Hello World
+
 */
