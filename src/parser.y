@@ -879,16 +879,21 @@ ShortVarDecl:
 		Place* right_place = $3->current_place;
 
 		bool newVar = false;
-
+		int yoyoyo=0;
 		while(left_data || right_type){
-			// if(left_data){
-			// 	cout<<"LEFT :"<<left_data->data_name<<endl;
-			// }
-			// if(right_type){
-			// 	cout<<"Right: "<<right_type->getDataType()<<endl;
-			// }
+			yoyoyo+=1;
+			 if(left_data){
+			 	cout<<"LEFT :"<<left_data->data_name<<endl;
+			 }
+			 if(right_type){
+			 	cout<<"Right: "<<right_type->getDataType()<<endl;
+			 }
 			if(!left_data || !right_type){
-				cout<<"[unpacking error], '=' operator expected same number of operands on LHS and RHS";
+				cout<<yoyoyo<<" == yoyoyo\n";
+				cout<<"[unpacking error], ':=' operator expected same number of operands on LHS and RHS\n";
+				cout<<(left_data==NULL)<<" == for left\n";
+				cout<<(right_type==NULL)<<" == for right\n";
+				
 				exit(1);
 			}
 
@@ -3624,7 +3629,9 @@ UnaryExpr:
 				pos++;
 			}
 			if(argType){
+
 				cout<<"Extra arguments provided to function"<<endl;
+				cout<<argType->getDataType()<<endl;
 				exit(1);
 			}
 
@@ -3909,7 +3916,7 @@ ExpressionList:
 		curr->current_type = $1->current_type;
 		curr->current_place = $1->current_place;
 		curr->add_code_in_map($1->current_code);
-
+		curr->current_type->next_type=NULL;
 		cout<<$$->current_node_data->value<<endl;
 		$$ = curr;
 	}
@@ -3925,7 +3932,7 @@ ExpressionList:
 		cout<<"A\n";
 		$$->current_type = $1->current_type;
 		cout<<"A\n";
-		$3->current_type->next_type=NULL;
+		//$3->current_type->next_type=NULL;
 		($$->last_current_type())->next_type = $3->current_type;
 
 		cout<<"A\n";
