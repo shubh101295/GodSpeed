@@ -848,7 +848,7 @@ public:
 				instructions.push_back("\tcmp "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0]=="NEWFUNC"){
-
+				rsp = 8;
 				auto p = r.write_back();
 				for(string s:p) instructions.push_back(s);
 				instructions.push_back("\tpush %rbp");
