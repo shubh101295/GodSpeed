@@ -18,20 +18,20 @@ clean:
 	rm src/parser.tab.h
 	rm src/lex.yy.c
 	rm bin/parser
-	rm parser.output
 	rm bin/*.out
+	rm bin/output.s
+	rm a.out
+	rm parser.output
 
 	rm ./bin/*.csv
+
 	rm ./bin/*.dot
 	rm ./bin/output.tac
 	rm ast.node ast.edge ast.dot
 	rm ./bin/*.png
 
-clean_csv:
-	rm ./bin/*.csv
-
 asm1:
-	./bin/parser ./test/test20.go
+	./bin/parser ./test/test08.go
 	gcc -no-pie ./bin/output.s
 
 

@@ -8,7 +8,7 @@ func main() {
 	t := -5
 	
 	// printf("%d\n",s)
-	if(s==1) {
+	if(s==25) {
 		printf("HELLO\n")
 	}
 }

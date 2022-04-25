@@ -264,7 +264,7 @@ public:
 				}
 				instructions.push_back(temp[1]+":");
 				instructions.push_back("\t.space "+ to_string(x.ss->getSize()));
-				// r.locs[x.ff] = {"","(" + temp[1] + ")"};
+				r.locs[x.ff] = {"","(" + temp[1] + ")"};
 			}
 		}
 		cout<<"MAI YAHAN HU2\n";
@@ -531,10 +531,10 @@ public:
 				for(string s:p)
 					instructions.push_back(s);
 
-				if(rsp%16 && x.substr(0,5)=="Label"){
-					instructions.push_back("\tsub $8, %rsp");
-					rsp += 8;
-				}
+				// if(rsp%16 && x.substr(0,5)=="Label"){
+				// 	instructions.push_back("\tsub $8, %rsp");
+				// 	rsp += 8;
+				// }
 				instructions.push_back(x+":");
 			}
 			else if(tac[0] == "NEW"){
@@ -549,40 +549,40 @@ public:
 			else if(tac[0] == "JMP"){
 				vector<string> t = r.write_back();
 				for(string k:t) instructions.push_back(k);
-				if(rsp%16){
-					instructions.push_back("\tsub $8, %rsp");
-					rsp += 8;
-				}
-				instructions.push_back("\tjmp"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+				// if(rsp%16){
+				// 	instructions.push_back("\tsub $8, %rsp");
+				// 	rsp += 8;
+				// }
+				instructions.push_back("\tjmp "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0] == "JE"){
 				vector<string> t = r.write_back();
 				for(string k:t) instructions.push_back(k);
-				if(rsp%16){
-					instructions.push_back("\tsub $8, %rsp");
-					rsp += 8;
-				}
-				instructions.push_back("\tje"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+				// if(rsp%16){
+				// 	instructions.push_back("\tsub $8, %rsp");
+				// 	rsp += 8;
+				// }
+				instructions.push_back("\tje "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0] == "JNE"){
 				vector<string> t = r.write_back();
 				for(string k:t) instructions.push_back(k);
-				if(rsp%16){
-					instructions.push_back("\tsub $8, %rsp");
-					rsp += 8;
-				}
-				instructions.push_back("\tJNE"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+				// if(rsp%16){
+				// 	instructions.push_back("\tsub $8, %rsp");
+				// 	rsp += 8;
+				// }
+				instructions.push_back("\tjne "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0] == "JEQZ"){
 				string temp = parse_arguments({tac[1]});
 				instructions.push_back("\tcmp $0, "+temp);
 				vector<string> t = r.write_back();
 				for(string k:t) instructions.push_back(k);
-				if(rsp%16){
-					instructions.push_back("\tsub $8, %rsp");
-					rsp += 8;
-				}
-				instructions.push_back("\tje"+parse_arguments({tac[2]}));
+				// if(rsp%16){
+				// 	instructions.push_back("\tsub $8, %rsp");
+				// 	rsp += 8;
+				// }
+				instructions.push_back("\tje "+parse_arguments({tac[2]}));
 			}
 			else if(tac[0] == "PUSHARG"){
 				if(stoi(tac[1]) < 6){
@@ -674,7 +674,7 @@ public:
 					instructions[index] = "\tsub $8, %rsp";
 					rsp += 8;
 				}
-				instructions.push_back("\tcall"+parse_arguments({"#"+tac[1]}));
+				instructions.push_back("\tcall "+parse_arguments({"#"+tac[1]}));
 				if(tac[1].substr(0,8)=="0-printf"||tac[1].substr(0,7)=="0-scanf"){
 					instructions.push_back("\tpop %rax");
 					instructions.push_back("\tpop %rcx");
@@ -684,10 +684,10 @@ public:
 				argument_list.clear();
 			}
 			else if(tac[0] =="ADD"){
-				instructions.push_back("\tadd"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+				instructions.push_back("\tadd "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0] =="SUB"){
-				instructions.push_back("\tsub"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+				instructions.push_back("\tsub "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0]=="MUL"){
 				instructions.push_back("\timul "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
@@ -761,27 +761,27 @@ public:
 				instructions.push_back("\tmov %rdx, "+dst);
 			}
 			else if(tac[0] =="AND"){
-				instructions.push_back("\tand"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+				instructions.push_back("\tand "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0] =="OR"){
-				instructions.push_back("\tor"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+				instructions.push_back("\tor "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0] =="XOR"){
-				instructions.push_back("\txor"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+				instructions.push_back("\txor "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0] =="SHL"){
 				if(tac[1][0] == '*' || tac[1].find("-")!=string::npos){
 					cout<<"Error: Expected Integer for Shifting Left"<<endl;
 					exit(1);
 				}
-				instructions.push_back("\tshl"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+				instructions.push_back("\tshl "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0] =="SHR"){
 				if(tac[1][0] == '*' || tac[1].find("-")!=string::npos){
 					cout<<"Error: Expected Integer for Shifting Right"<<endl;
 					exit(1);
 				}
-				instructions.push_back("\tshr"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+				instructions.push_back("\tshr "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 			}
 			else if(tac[0]=="UADDR"){
 				if(r.in_loc(tac[1]) ){
@@ -912,7 +912,7 @@ public:
 				instructions.push_back("");
 				instructions.push_back("\tmov %rbp, %rsp");
 				instructions.push_back("\tpop %rbp");
-				instructions.push_back("\tret" + parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+				instructions.push_back("\tret " + parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 				rsp = rbp -8;
 				rbp = rbps.top();
 				rbps.pop();
@@ -934,11 +934,11 @@ public:
 				rsp = rbp+8;
 			}
 			else if(tac[0] == "PUSHSTACK"){
-				instructions.push_back("\tpush"+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+				instructions.push_back("\tpush "+parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 				rsp += 8;
 			}
 			else if(tac[0] == "POP"){
-				instructions.push_back("\tpop" + parse_arguments(vector<string>(tac.begin()+1,tac.end())));
+				instructions.push_back("\tpop " + parse_arguments(vector<string>(tac.begin()+1,tac.end())));
 				rsp -= 8;
 			}
 			else if(tac[0] == "RETURNEND"){

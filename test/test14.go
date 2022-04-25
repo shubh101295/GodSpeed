@@ -9,7 +9,7 @@ func main() {
 	for i:=0;i<5;i++ {
 		a[i] = &b[i]
 		b[i] = &c[i]
-		scanf("%d",*a[i]);
+		scanf("%d",b[i]);
 		// *(*a[i]) += i
 		// *b[i]  += i
 	}
@@ -19,3 +19,5 @@ func main() {
 	printf("%d\n",*b[0]*(*(*a[1]))*(c[2]))
 
 }
+
+// currently pointers not working 

@@ -2,21 +2,7 @@ package main
 
 import "fmt"
 
-<<<<<<< HEAD
-func rev(a int, b int) {
-	// *a += *b
-	// *b = *a -*b
-	// *a -= *b
-	a = b
-	printf("%d %d", a, b)
-}
 
-func main() {
-	a, b:= 1, 2
-	// c, d := &a, &b
-	rev(b,a)
-	printf("%d,  %d\n", a, b)
-=======
 func main() {
 	// x:=5
 	// y:=4
@@ -28,9 +14,9 @@ func main() {
 	printf("Enter 5 elements : ")
 
 	for i:=0;i<5;i++ {
-		// b[i]=2-i
-		a[i] = &b[i]
-		scanf("%d",a[i]);
+		b[i]=2-i
+		// a[i] = &b[i]
+		// scanf("%d",a[i]);
 		// *a[i] += i;
 	}
 	for i:=0;i<5;i++ {
@@ -62,5 +48,4 @@ func main() {
 	}
 	printf("\n")
 	// printf("%d\n",*a[0]*(*a[1])*(*a[2]))
->>>>>>> 91a83965741f8060cf4da68ad2d171f42285edc6
 }

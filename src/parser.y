@@ -55,24 +55,23 @@
 %token <sval> ASSGN_OP
 
 %type <nt> SourceFile Expression forMarker EmptyExpr
-%type <nt> Block StatementList Statement SimpleStmt EmptyStmt ExpressionStmt IncDecStmt MapType
+%type <nt> Block StatementList Statement SimpleStmt EmptyStmt ExpressionStmt IncDecStmt
 %type <nt> Assignment ShortVarDecl Declaration VarSpec PackageName
 %type <nt> Signature Result Parameters ParameterList ParameterDecl
 %type <nt> MethodDecl Receiver TopLevelDecl LabeledStmt
 %type <nt> ReturnStmt BreakStmt ContinueStmt GotoStmt FallthroughStmt StructType
 %type <nt> FunctionBody ForStmt
-%type <nt> FunctionDecl SwitchStmt ExprSwitchCase ExprSwitchStmt
+%type <nt> FunctionDecl 
 %type <nt> Condition  UnaryExpr PrimaryExpr
-%type <nt> Selector Index Slice TypeDecl TypeSpec VarDecl
+%type <nt> Selector Index TypeDecl TypeSpec VarDecl
 %type <nt> TypeAssertion Arguments ExpressionList ArrayType CompositeLit
-%type <nt> String ImportPath SliceType LiteralType
+%type <nt> String ImportPath LiteralType
 %type <nt> LiteralValue ElementList KeyedElement Key Element
-%type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt ExprCaseClauseList
+%type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt 
 %type <nt> PackageClause ImportDeclList ImportDecl ImportSpecList TopLevelDeclList
 %type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type BaseType
 %type <nt> PointerType IdentifierList TypeDef
-%type <nt> VarSpecList TypeList ExprCaseClause
-%type <nt> FakeTrue
+%type <nt> VarSpecList TypeList 
 %left LOGOR
 %left LOGAND
 %left ISEQ NEQ GRTEQ GRT LESSEQ LESS
@@ -427,16 +426,16 @@ Statement:
 		curr->add_code_in_map($1->current_code);
 		$$ = curr;
 	}
-	| SwitchStmt {
-		// cout<<"Statement:	SwitchStmt\n";
-		Node* curr = new Node("Statement");
-		curr->add_non_terminal_children($1);
-		curr->current_type = $1->current_type;
-		curr->current_node_data = $1->current_node_data;
-		curr->current_place = $1->current_place;
-		curr->add_code_in_map($1->current_code);
-		$$ = curr;
-	}
+	//| SwitchStmt {
+	//	// cout<<"Statement:	SwitchStmt\n";
+	//	Node* curr = new Node("Statement");
+	//	curr->add_non_terminal_children($1);
+	//	curr->current_type = $1->current_type;
+	//	curr->current_node_data = $1->current_node_data;
+	//	curr->current_place = $1->current_place;
+	//	curr->add_code_in_map($1->current_code);
+	//	$$ = curr;
+	//}
 	| FallthroughStmt {
 		// cout<<"Statement:	FallthroughStmt\n";
 		Node* curr = new Node("Statement");
@@ -1464,23 +1463,6 @@ CompositeLit:
                 $$->current_type = $1->current_type->copyClass();
 				$$->current_place = new Place($$->current_type);
                 break;
-            case _SLICE:
-                slice = dynamic_cast<SliceType*>($1->current_type);
-                iter = $2->current_type;
-                while (iter != NULL) {
-                    if (iter->getDataType() != slice->slice_base->getDataType()) {
-                        cout<<"Element of wrong datatype in slice declaration" << iter->getDataType();
-                        exit(1);
-                    }
-                    iter = iter->next_type;
-                }
-                $$->current_node_data = new NodeData("SliceLiteral");
-                $$->current_node_data->node_child = new NodeData("Type");
-                $$->current_node_data->node_child->next_data = new NodeData("Value");
-                $$->current_node_data->node_child = $1->current_node_data;
-                $$->current_node_data->node_child->next_data->node_child = $2->current_node_data;
-                $$->current_type = $1->current_type->copyClass();
-				$$->current_place = new Place($$->current_type);
             default:
                 cerr << "Composite type not yet supported" << endl;
                 exit(1);
@@ -1514,27 +1496,19 @@ LiteralType:
 		$$->current_place = $1->current_place;
 		$$->add_code_in_map($1->current_code);
 	}
-	| SliceType {
-		$$ = new Node("LiteralType");
-		$$->add_non_terminal_children($1);
-		$$->current_node_data = $1->current_node_data;
-		$$->current_type = $1->current_type;
-		$$->current_place = $1->current_place;
-		$$->add_code_in_map($1->current_code);
-	}
-	| LEFTSQUARE ELIPSIS RIGHTSQUARE Operand {
-		$$ = new Node("LiteralType");
-		$$->add_terminal_children(string($2));
-		$$->add_non_terminal_children($4);
-	}
-	| MapType {
-		$$ = new Node("LiteralType");
-		$$->add_non_terminal_children($1);
-		$$->current_node_data = $1->current_node_data;
-		$$->current_type = $1->current_type;
-		$$->current_place = $1->current_place;
-		$$->add_code_in_map($1->current_code);
-	}
+	//| LEFTSQUARE ELIPSIS RIGHTSQUARE Operand {
+	//	$$ = new Node("LiteralType");
+	//	$$->add_terminal_children(string($2));
+	//	$$->add_non_terminal_children($4);
+	//}
+	//| MapType {
+	//	$$ = new Node("LiteralType");
+	//	$$->add_non_terminal_children($1);
+	//	$$->current_node_data = $1->current_node_data;
+	//	$$->current_type = $1->current_type;
+	//	$$->current_place = $1->current_place;
+	//	$$->add_code_in_map($1->current_code);
+	//}
 	;
 
 Type:
@@ -1641,14 +1615,6 @@ LiteralValue:
 		$$->current_place = $2->current_place;
 		$$->add_code_in_map($2->current_code);
 	}
-	;
-SliceType:
-	LEFTSQUARE RIGHTSQUARE Type {
-		$$ = new Node("LiteralValue");
-		$$->add_non_terminal_children($3);
-		$$->current_type = new SliceType($3->current_type);
-        $$->current_node_data = new NodeData($$->current_type->getDataType());
-		;}
 	;
 
 ElementList:
@@ -1836,155 +1802,154 @@ GotoStmt:
 	}
 	;
 
-//remTAC: look after this.
-SwitchStmt:
-	ExprSwitchStmt {
-		// cout<<"SwitchStmt: ExprSwitchStmt\n";
-		$$ = new Node("SwitchStmt");
-		$$ -> add_non_terminal_children($1);
-		$$ -> current_type = $1->current_type;
-		$$ -> current_node_data = $1->current_node_data;
-	}
-	;
+//SwitchStmt:
+//	ExprSwitchStmt {
+//		// cout<<"SwitchStmt: ExprSwitchStmt\n";
+//		$$ = new Node("SwitchStmt");
+//		$$ -> add_non_terminal_children($1);
+//		$$ -> current_type = $1->current_type;
+//		$$ -> current_node_data = $1->current_node_data;
+//	}
+//	;
 
-ExprSwitchStmt:
+//ExprSwitchStmt:
 
-	// empty switches
-	// SWITCH LEFTBRACE RIGHTBRACE {;}
-	// | SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE {;}
-	// | SWITCH Expression LEFTBRACE RIGHTBRACE { ;}
-	// | SWITCH SimpleStmt SCOLON Expression LEFTBRACE RIGHTBRACE {;}
-	// |
+//	// empty switches
+//	// SWITCH LEFTBRACE RIGHTBRACE {;}
+//	// | SWITCH SimpleStmt SCOLON LEFTBRACE RIGHTBRACE {;}
+//	// | SWITCH Expression LEFTBRACE RIGHTBRACE { ;}
+//	// | SWITCH SimpleStmt SCOLON Expression LEFTBRACE RIGHTBRACE {;}
+//	// |
 
-	 SWITCH OpenBlock FakeTrue LEFTBRACE  { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE CloseBlock {
-	 	$$ = new Node("ExprSwitchStmt");
-		$$->add_non_terminal_children($3);
-		$$->add_non_terminal_children($6);
-		$$ -> current_node_data = new NodeData("SWITCH");
-		NodeData* it = $$->current_node_data;
-		it->node_child = new NodeData("MatchCondition");
-		it=it->node_child;
-		it->node_child = $3->current_node_data;
-		it->next_data = new NodeData("SwitchCases");
-		it=it->next_data;
-		it->node_child = $6->current_node_data;
-	 	scl = NULL;
-	 }
-	| SWITCH OpenBlock SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); }
-	 	ExprCaseClauseList RIGHTBRACE CloseBlock {
-	 	// cout<<"SWITCH SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
+//	 SWITCH OpenBlock FakeTrue LEFTBRACE  { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE CloseBlock {
+//	 	$$ = new Node("ExprSwitchStmt");
+//		$$->add_non_terminal_children($3);
+//		$$->add_non_terminal_children($6);
+//		$$ -> current_node_data = new NodeData("SWITCH");
+//		NodeData* it = $$->current_node_data;
+//		it->node_child = new NodeData("MatchCondition");
+//		it=it->node_child;
+//		it->node_child = $3->current_node_data;
+//		it->next_data = new NodeData("SwitchCases");
+//		it=it->next_data;
+//		it->node_child = $6->current_node_data;
+//	 	scl = NULL;
+//	 }
+//	| SWITCH OpenBlock SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); }
+//	 	ExprCaseClauseList RIGHTBRACE CloseBlock {
+//	 	// cout<<"SWITCH SimpleStmt SCOLON LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
 
-	 	$$ = new Node("ExprSwitchStmt");
-		$$->add_non_terminal_children($3);
-		$$->add_non_terminal_children($7);
-		$$ -> current_node_data = new NodeData("SWITCH");
-		NodeData* it = $$->current_node_data;
-		it->node_child = new NodeData("MatchCondition");
-		it=it->node_child;
-		it->node_child = $3->current_node_data;
-		it->next_data = new NodeData("SwitchCases");
-		it=it->next_data;
-		it->node_child = $7->current_node_data;
-	 	scl = NULL;
-	}
-	| SWITCH OpenBlock Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE CloseBlock {
-		// cout<<"SWITCH Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
-		$$ = new Node("ExprSwitchStmt");
-		$$->add_non_terminal_children($3);
-		$$->add_non_terminal_children($6);
-		$$ -> current_node_data = new NodeData("SWITCH");
-		NodeData* it = $$->current_node_data;
-		it->node_child = new NodeData("MatchCondition");
-		it=it->node_child;
-		it->node_child = $3->current_node_data;
-		it->next_data = new NodeData("SwitchCases");
-		it=it->next_data;
-		it->node_child = $6->current_node_data;
-	 	scl = NULL;
-	}
-	// | SWITCH SimpleStmt SCOLON Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE {;}
-	;
+//	 	$$ = new Node("ExprSwitchStmt");
+//		$$->add_non_terminal_children($3);
+//		$$->add_non_terminal_children($7);
+//		$$ -> current_node_data = new NodeData("SWITCH");
+//		NodeData* it = $$->current_node_data;
+//		it->node_child = new NodeData("MatchCondition");
+//		it=it->node_child;
+//		it->node_child = $3->current_node_data;
+//		it->next_data = new NodeData("SwitchCases");
+//		it=it->next_data;
+//		it->node_child = $7->current_node_data;
+//	 	scl = NULL;
+//	}
+//	| SWITCH OpenBlock Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE CloseBlock {
+//		// cout<<"SWITCH Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE\n";
+//		$$ = new Node("ExprSwitchStmt");
+//		$$->add_non_terminal_children($3);
+//		$$->add_non_terminal_children($6);
+//		$$ -> current_node_data = new NodeData("SWITCH");
+//		NodeData* it = $$->current_node_data;
+//		it->node_child = new NodeData("MatchCondition");
+//		it=it->node_child;
+//		it->node_child = $3->current_node_data;
+//		it->next_data = new NodeData("SwitchCases");
+//		it=it->next_data;
+//		it->node_child = $6->current_node_data;
+//	 	scl = NULL;
+//	}
+//	// | SWITCH SimpleStmt SCOLON Expression LEFTBRACE { scl = new SwitchCaseList(); } ExprCaseClauseList RIGHTBRACE {;}
+//	;
 
-ExprCaseClauseList:
-	ExprCaseClauseList ExprCaseClause {
-		// cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
-		$$ = new Node("ExprCaseClauseList");
-		$$->add_non_terminal_children($1);
-		$$->add_non_terminal_children($2);
-		$$->current_node_data = $1->current_node_data;
-		// cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause \n";
-		// cout<<(($$->current_node_data->last_next_child())==NULL)<<"\n";
-		($$->current_node_data->last_next_child())->next_data = $2->current_node_data;
-		// cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
+//ExprCaseClauseList:
+//	ExprCaseClauseList ExprCaseClause {
+//		// cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
+//		$$ = new Node("ExprCaseClauseList");
+//		$$->add_non_terminal_children($1);
+//		$$->add_non_terminal_children($2);
+//		$$->current_node_data = $1->current_node_data;
+//		// cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause \n";
+//		// cout<<(($$->current_node_data->last_next_child())==NULL)<<"\n";
+//		($$->current_node_data->last_next_child())->next_data = $2->current_node_data;
+//		// cout<<"ExprCaseClauseList: ExprCaseClauseList ExprCaseClause\n";
 
-	}
-	| ExprCaseClause {
-		// cout<<"ExprCaseClauseList: ExprCaseClause\n";
-		$$ = new Node("ExprCaseClauseList");
-		$$->add_non_terminal_children($1);
-		$$->current_node_data = new NodeData("list");
-		$$->current_node_data->node_child = $1->current_node_data;
-		// $$->current_type = $1->current_type;
-	}
-	;
+//	}
+//	| ExprCaseClause {
+//		// cout<<"ExprCaseClauseList: ExprCaseClause\n";
+//		$$ = new Node("ExprCaseClauseList");
+//		$$->add_non_terminal_children($1);
+//		$$->current_node_data = new NodeData("list");
+//		$$->current_node_data->node_child = $1->current_node_data;
+//		// $$->current_type = $1->current_type;
+//	}
+//	;
 
-ExprCaseClause:
-	ExprSwitchCase COLON StatementList {
-		// cout<<"ExprCaseCause:	ExprSwitchCase COLON StatementList\n";
-		$$ = new Node("ExprCaseClause");
-		$$ -> add_non_terminal_children($1);
-		$$ -> add_non_terminal_children($3);
-		scl->add_case_label(has_default_statement,fallthrough_expression_count==2);
-		if(fallthrough_expression_count>2)
-		{
-			cout<<"[Error in parser.y] ExprCaseClause->ExprSwitchCase COLON StatementList (fallthrough_expression_count>2)==true\n";
-			exit(1);
-		}
-		has_default_statement=false;
-		is_inside_case = false;
-		fallthrough_expression_count=0;
+//ExprCaseClause:
+//	ExprSwitchCase COLON StatementList {
+//		// cout<<"ExprCaseCause:	ExprSwitchCase COLON StatementList\n";
+//		$$ = new Node("ExprCaseClause");
+//		$$ -> add_non_terminal_children($1);
+//		$$ -> add_non_terminal_children($3);
+//		scl->add_case_label(has_default_statement,fallthrough_expression_count==2);
+//		if(fallthrough_expression_count>2)
+//		{
+//			cout<<"[Error in parser.y] ExprCaseClause->ExprSwitchCase COLON StatementList (fallthrough_expression_count>2)==true\n";
+//			exit(1);
+//		}
+//		has_default_statement=false;
+//		is_inside_case = false;
+//		fallthrough_expression_count=0;
 
-		$$->current_node_data = $1->current_node_data;
-		$$->current_type = $1->current_type;
-		$$->current_node_data->next_data = $3->current_node_data;
-    }
-	;
+//		$$->current_node_data = $1->current_node_data;
+//		$$->current_type = $1->current_type;
+//		$$->current_node_data->next_data = $3->current_node_data;
+//    }
+//	;
 
 
-FakeTrue:
-	{
-		 Node* curr = new Node("BasicLit");
-		 curr->add_terminal_children("true");
-		 curr->current_node_data = new NodeData("true");
-		 curr->current_type = new BasicType("bool");
-		 $$ = curr;
-	}
+//FakeTrue:
+//	{
+//		 Node* curr = new Node("BasicLit");
+//		 curr->add_terminal_children("true");
+//		 curr->current_node_data = new NodeData("true");
+//		 curr->current_type = new BasicType("bool");
+//		 $$ = curr;
+//	}
 
-ExprSwitchCase:
-	CASE ExpressionList {
-		// cout<<"ExprSwitchCase:  CASE ExpressionList\n";
-		$$ = new Node("ExprSwitchCase");
-		$$ -> add_non_terminal_children($2);
-		is_inside_case = true;
-		$$->current_node_data = $2->current_node_data;
-		$$->current_type = $2->current_type;
+//ExprSwitchCase:
+//	CASE ExpressionList {
+//		// cout<<"ExprSwitchCase:  CASE ExpressionList\n";
+//		$$ = new Node("ExprSwitchCase");
+//		$$ -> add_non_terminal_children($2);
+//		is_inside_case = true;
+//		$$->current_node_data = $2->current_node_data;
+//		$$->current_type = $2->current_type;
 
-	}
-	| DEFAULT FakeTrue {
-		/* a fake true as expression list*/
-		// Node* child_curr = new Node("BasicLit");
-		//  child_curr->add_terminal_children("true");
-		//  child_curr->current_node_data = new NodeData("true");
-		//  child_curr->current_type = new BasicType("bool");
-		//  // $$ = curr;
+//	}
+//	| DEFAULT FakeTrue {
+//		/* a fake true as expression list*/
+//		// Node* child_curr = new Node("BasicLit");
+//		//  child_curr->add_terminal_children("true");
+//		//  child_curr->current_node_data = new NodeData("true");
+//		//  child_curr->current_type = new BasicType("bool");
+//		//  // $$ = curr;
 
-		$$ = new Node("ExprSwitchCase");
-		is_inside_case = true;
-		has_default_statement = true;
-		$$->current_node_data = $2->current_node_data;
-		$$->current_type = $2->current_type;
-	}
-	;
+//		$$ = new Node("ExprSwitchCase");
+//		is_inside_case = true;
+//		has_default_statement = true;
+//		$$->current_node_data = $2->current_node_data;
+//		$$->current_type = $2->current_type;
+//	}
+//	;
 
 FallthroughStmt:
 	FALLTHROUGH {
@@ -3564,12 +3529,6 @@ UnaryExpr:
 			$$->current_node_data->lval = $$->current_place->place_name;
 
  		}
- 	| PrimaryExpr Slice {
-		Node* curr = new Node("PrimaryExpr");
-		curr->add_non_terminal_children($1);
-		curr->add_non_terminal_children($2);
-		$$ = curr;
-	}
  	| PrimaryExpr Arguments { // remaining
  		cout<<"PrimaryExpr Arguments\n";
 		$$ = new Node("PrimaryExpr");
@@ -3730,49 +3689,49 @@ Index:
 	}
 	;
 
-Slice:
-	 LEFTSQUARE COLON Expression RIGHTSQUARE {
-		Node* curr = new Node("Slice");
-		curr->add_terminal_children(string($2));
-		// still ramining
-		curr->add_non_terminal_children($3);
-		$$ = curr;
-	}
-	 | LEFTSQUARE COLON RIGHTSQUARE {
-		Node* curr = new Node("Slice");
-		$$ = curr;
-	}
-	 | LEFTSQUARE Expression COLON RIGHTSQUARE  {
-		Node* curr = new Node("Slice");
-		curr->add_non_terminal_children($2);
-		curr->add_terminal_children(string($3));
-		$$ = curr;
-	}
-	 | LEFTSQUARE Expression COLON Expression RIGHTSQUARE {
-		Node* curr = new Node("Slice");
-		curr->add_non_terminal_children($2);
-		curr->add_terminal_children(string($3));
-		curr->add_non_terminal_children($4);
-		$$ = curr;
-	}
-	 | LEFTSQUARE COLON Expression COLON Expression RIGHTSQUARE {
-		Node* curr = new Node("Slice");
-		curr->add_terminal_children(string($2));
-		curr->add_non_terminal_children($3);
-		curr->add_terminal_children(string($4));
-		curr->add_non_terminal_children($5);
-		$$ = curr;
-	}
-	 | LEFTSQUARE Expression COLON Expression COLON Expression RIGHTSQUARE {
-		Node* curr = new Node("Slice");
-		curr->add_non_terminal_children($2);
-		curr->add_terminal_children(string($3));
-		curr->add_non_terminal_children($4);
-		curr->add_terminal_children(string($5));
-		curr->add_non_terminal_children($6);
-		$$ = curr;
-	}
-	 ;
+//Slice:
+//	 LEFTSQUARE COLON Expression RIGHTSQUARE {
+//		Node* curr = new Node("Slice");
+//		curr->add_terminal_children(string($2));
+//		// still ramining
+//		curr->add_non_terminal_children($3);
+//		$$ = curr;
+//	}
+//	 | LEFTSQUARE COLON RIGHTSQUARE {
+//		Node* curr = new Node("Slice");
+//		$$ = curr;
+//	}
+//	 | LEFTSQUARE Expression COLON RIGHTSQUARE  {
+//		Node* curr = new Node("Slice");
+//		curr->add_non_terminal_children($2);
+//		curr->add_terminal_children(string($3));
+//		$$ = curr;
+//	}
+//	 | LEFTSQUARE Expression COLON Expression RIGHTSQUARE {
+//		Node* curr = new Node("Slice");
+//		curr->add_non_terminal_children($2);
+//		curr->add_terminal_children(string($3));
+//		curr->add_non_terminal_children($4);
+//		$$ = curr;
+//	}
+//	 | LEFTSQUARE COLON Expression COLON Expression RIGHTSQUARE {
+//		Node* curr = new Node("Slice");
+//		curr->add_terminal_children(string($2));
+//		curr->add_non_terminal_children($3);
+//		curr->add_terminal_children(string($4));
+//		curr->add_non_terminal_children($5);
+//		$$ = curr;
+//	}
+//	 | LEFTSQUARE Expression COLON Expression COLON Expression RIGHTSQUARE {
+//		Node* curr = new Node("Slice");
+//		curr->add_non_terminal_children($2);
+//		curr->add_terminal_children(string($3));
+//		curr->add_non_terminal_children($4);
+//		curr->add_terminal_children(string($5));
+//		curr->add_non_terminal_children($6);
+//		$$ = curr;
+//	}
+//	 ;
 
 
 MakeExpr:
@@ -3932,7 +3891,7 @@ ExpressionList:
 		cout<<"A\n";
 		$$->current_type = $1->current_type;
 		cout<<"A\n";
-		//$3->current_type->next_type=NULL;
+		$3->current_type->next_type=NULL;
 		($$->last_current_type())->next_type = $3->current_type;
 
 		cout<<"A\n";
@@ -4000,21 +3959,21 @@ TypeDef:
 	}
 	;
 
-MapType:
-	MAP LEFTSQUARE Type RIGHTSQUARE Type {
-		Node* curr = new Node("MapType");
-		curr->add_terminal_children(string($1));
-		curr->add_non_terminal_children($3);
-		curr->add_non_terminal_children($5);
+//MapType:
+//	MAP LEFTSQUARE Type RIGHTSQUARE Type {
+//		Node* curr = new Node("MapType");
+//		curr->add_terminal_children(string($1));
+//		curr->add_non_terminal_children($3);
+//		curr->add_non_terminal_children($5);
 
-		DataType *key, *value;
-		key = $3->current_type;
-		value = $5->current_type;
+//		DataType *key, *value;
+//		key = $3->current_type;
+//		value = $5->current_type;
 
-		curr->current_type = new MapType(key,value);
-		$$ = curr;
-	}
-	;
+//		curr->current_type = new MapType(key,value);
+//		$$ = curr;
+//	}
+//	;
 
 StructType:
 	STRUCT LEFTBRACE FieldDeclList RIGHTBRACE {
@@ -4289,28 +4248,7 @@ String:
 
 int main (int argc, char **argv) {
 
-	// tt->add_in_type_table("void", new BasicType("void"));
- //    tt->add_in_type_table("int", new BasicType("int"));
- //    tt->add_in_type_table("bool", new BasicType("bool"));
- //    tt->add_in_type_table("byte", new BasicType("byte"));
- //    tt->add_in_type_table("float", new BasicType("float"));
- //    tt->add_in_type_table("string", new BasicType("string"));
-	// tt->add
-
 	yyin = fopen(argv[1], "r");	//taking input as argument
-	map<string, DataType *> fmt_functions = {
-        {"Printf", new FunctionType(vector<DataType *>{new BasicType("string"), new BasicType("int")},
-                                    vector<DataType *>{})},
-        {"Scanf", new FunctionType(vector<DataType *>{new BasicType("string")},
-                                    vector<DataType *>{new BasicType("int")})},
-        {"Println", new FunctionType(vector<DataType *>{new BasicType("string")},
-                                    vector<DataType *>{})},
-        {"Scanln", new FunctionType(vector<DataType *>{new BasicType("string")},
-                                    vector<DataType *>{new BasicType("int")})}
-    };
-
-
-    auto fmt_struct = new StructType(fmt_functions);
 
     tt->add_in_type_table("void", new BasicType("void"));
     tt->add_in_type_table("int", new BasicType("int"));
@@ -4318,18 +4256,13 @@ int main (int argc, char **argv) {
     tt->add_in_type_table("byte", new BasicType("int"));
     tt->add_in_type_table("float", new BasicType("float"));
     tt->add_in_type_table("string", new BasicType("string"));
-    tt->add_in_type_table(string("fmt"), fmt_struct);
-
-    // st->add_in_symbol_table({"0-",string("fmt")}, fmt_struct);
+    
+    
     DataType* x=new DataType();
     x->current_data_type=_FUNCTION;
-    cout<<"Aaax === "<< x->current_data_type<<"\n\n\n\n\n\n";
-	st->add_in_symbol_table({"0-",string("printf")}, x);
+    st->add_in_symbol_table({"0-",string("printf")}, x);
 	st->add_in_symbol_table({"0-",string("scanf")}, x);
 	
-	// FunctionType* xyz = new FunctionType(vector<DataType *>{new BasicType("string"), new BasicType("int")},
- //                                    vector<DataType *>{});
-
 	yyparse ( );
 	cout<<"THE GIVEN FILE WAS PARSABLE \n";
 

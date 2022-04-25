@@ -23,7 +23,7 @@ func main() {
 	n:=23
 	o:=292
 
-	scanf("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",&a,&b,&c,&d,&e,&f,&g,&h,&i,&j,&k,&l,&m,&n,&o);
+	// scanf("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",&a,&b,&c,&d,&e,&f,&g,&h,&i,&j,&k,&l,&m,&n,&o);
 	printf("Here are your numbers: %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",a,b,c,d,e,f,g,h,i,j,k,l,m,n);
 	for x:=0;x<3;x++{
 		plsm_print(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o)

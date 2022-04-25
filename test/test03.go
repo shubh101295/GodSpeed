@@ -4,7 +4,7 @@ import "fmt"
 
 func main(){
 
-	a,b,c,d:=4,-6,2,9
-
+	a,b,c,d:=272882724,-6,'a',true
 	printf("%d %d %d %d\n",a,b,c,d)
+	
 }
