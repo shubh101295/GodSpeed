@@ -3,22 +3,13 @@ Source - GOlang
 Implementation - C++
 Target - X86
 
-Steps to run the parser 
+Steps to run the generate the X86 code 
 ```
 	make
 	./bin/parser <path to go file>
 ```
 
-
-Note: make itself creates the dot file named as "parser.dot".
-
-Steps to run AST part
+Then we can run the code
 ```
-	make
-	./bin/parser <path to go file>
+	./a.out
 ```
-
-Csv for symbolTable of each function is generated in ```bin``` folder.
-
-Do ```make clean_csv``` do remove the csv files generated in the ```bin``` folder.
-
