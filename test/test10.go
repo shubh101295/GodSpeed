@@ -3,13 +3,14 @@ package main
 import "fmt"
 
 func main() {
-	n:=5
-	a := &n
-	b :=  &a
-	// b++
-	*(*b) += 1
-
-	printf("%d\n",*(*b))
+	var a [5]*int
+	var b [5]int
+	for i:=0;i<5;i++ {
+		a[i] = &b[i]
+		scanf("%d",a[i]);
+	}
+	
+	printf("%d\n",*a[0]*(*a[1])*(*a[2]))
 
 
 
