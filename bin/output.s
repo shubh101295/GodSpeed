@@ -5,405 +5,14 @@
 .text
 
 
-plsm_print:
-
-	push %rbp
-	mov %rsp, %rbp
-
-	sub $120, %rsp
-
-	mov	-8(%rbp), %rbx
-	mov %rdi, 	%rbx
-
-	mov	-16(%rbp), %r15
-	mov %rsi, 	%r15
-
-	mov	-24(%rbp), %r14
-	mov %rdx, 	%r14
-
-	mov	-32(%rbp), %r13
-	mov %rcx, 	%r13
-
-	mov	-40(%rbp), %r12
-	mov %r8, 	%r12
-
-	mov	-48(%rbp), %r11
-	mov %r9, 	%r11
-
-	mov	-56(%rbp), %r10
-	mov 16(%rbp), 	%r10
-
-	mov %rbx,	-8(%rbp)
-	mov	-64(%rbp), %rbx
-	mov 24(%rbp), 	%rbx
-
-	mov %r15,	-16(%rbp)
-	mov	-72(%rbp), %r15
-	mov 32(%rbp), 	%r15
-
-	mov %r14,	-24(%rbp)
-	mov	-80(%rbp), %r14
-	mov 40(%rbp), 	%r14
-
-	mov %r13,	-32(%rbp)
-	mov	-88(%rbp), %r13
-	mov 48(%rbp), 	%r13
-
-	mov %r12,	-40(%rbp)
-	mov	-96(%rbp), %r12
-	mov 56(%rbp), 	%r12
-
-	mov %r11,	-48(%rbp)
-	mov	-104(%rbp), %r11
-	mov 64(%rbp), 	%r11
-
-	mov %r10,	-56(%rbp)
-	mov	-112(%rbp), %r10
-	mov 72(%rbp), 	%r10
-
-	mov %rbx,	-64(%rbp)
-	mov	-120(%rbp), %rbx
-	mov 80(%rbp), 	%rbx
-
-# PRINT/SCAN CALL INCOMING
-	push %rcx
-	push %rax
-
-
-# Debug: WB without flush
-	mov %r10,	-112(%rbp)
-	mov %r11,	-104(%rbp)
-	mov %r12,	-96(%rbp)
-	mov %r13,	-88(%rbp)
-	mov %r14,	-80(%rbp)
-	mov %r15,	-72(%rbp)
-	mov %rbx,	-120(%rbp)
-	mov 	$format0,	%rdi
-
-	mov %r15,	-72(%rbp)
-	mov	-8(%rbp), %r15
-	mov 	%r15,	%rsi
-
-	mov %r14,	-80(%rbp)
-	mov	-16(%rbp), %r14
-	mov 	%r14,	%rdx
-
-	mov %r13,	-88(%rbp)
-	mov	-24(%rbp), %r13
-	mov 	%r13,	%rcx
-
-	mov %r12,	-96(%rbp)
-	mov	-32(%rbp), %r12
-	mov 	%r12,	%r8
-
-	mov %r11,	-104(%rbp)
-	mov	-40(%rbp), %r11
-	mov 	%r11,	%r9
-
-	mov %r10,	-112(%rbp)
-	mov	-48(%rbp), %r10
-
-	mov %rbx,	-120(%rbp)
-	mov	-56(%rbp), %rbx
-
-	mov %r15,	-8(%rbp)
-	mov	-64(%rbp), %r15
-
-	mov %r14,	-16(%rbp)
-	mov	-72(%rbp), %r14
-
-	mov %r13,	-24(%rbp)
-	mov	-80(%rbp), %r13
-
-	mov %r12,	-32(%rbp)
-	mov	-88(%rbp), %r12
-
-	mov %r11,	-40(%rbp)
-	mov	-96(%rbp), %r11
-
-	mov %r10,	-48(%rbp)
-	mov	-104(%rbp), %r10
-
-	mov %rbx,	-56(%rbp)
-	mov	-112(%rbp), %rbx
-
-	mov %r10,	-104(%rbp)
-	mov %r11,	-96(%rbp)
-	mov %r12,	-88(%rbp)
-	mov %r13,	-80(%rbp)
-	mov %r14,	-72(%rbp)
-	mov %r15,	-64(%rbp)
-	mov %rbx,	-112(%rbp)
-	push	-112(%rbp)
-	push	-104(%rbp)
-	push	-96(%rbp)
-	push	-88(%rbp)
-	push	-80(%rbp)
-	push	-72(%rbp)
-	push	-64(%rbp)
-	push	-56(%rbp)
-	push	-48(%rbp)
-	xor	%rax,	%rax
-	call	printf
-	pop %rax
-	pop %rcx
-
-
-	mov %rbp, %rsp
-	pop %rbp
-	ret
-
 main:
 
 	push %rbp
 	mov %rsp, %rbp
 
-	sub $576, %rsp
+	sub $1000, %rsp
 
 
-	mov	-8(%rbp), %rbx
-	mov 	$1 ,	%rbx
-
-
-	mov	-16(%rbp), %r15
-	mov 	$4 ,	%r15
-
-
-	mov	-24(%rbp), %r14
-	mov 	$6 ,	%r14
-
-	mov	-56(%rbp), %r13
-	mov 	$0 ,	%r13
-
-	sub	$7 ,	%r13
-
-
-	mov	-48(%rbp), %r12
-	mov 	%r13,	%r12
-
-
-	mov	-64(%rbp), %r11
-	mov 	$6 ,	%r11
-
-
-	mov	-72(%rbp), %r10
-	mov 	$7 ,	%r10
-
-	mov %rbx,	-8(%rbp)
-	mov	-104(%rbp), %rbx
-	mov 	$0 ,	%rbx
-
-	sub	$8 ,	%rbx
-
-
-	mov %r15,	-16(%rbp)
-	mov	-96(%rbp), %r15
-	mov 	%rbx,	%r15
-
-	mov %r14,	-24(%rbp)
-	mov	-136(%rbp), %r14
-	mov 	$0 ,	%r14
-
-	sub	$9 ,	%r14
-
-
-	mov %r13,	-56(%rbp)
-	mov	-128(%rbp), %r13
-	mov 	%r14,	%r13
-
-
-	mov %r12,	-48(%rbp)
-	mov	-144(%rbp), %r12
-	mov 	$10 ,	%r12
-
-	mov %r11,	-64(%rbp)
-	mov	-176(%rbp), %r11
-	mov 	$0 ,	%r11
-
-	sub	$11 ,	%r11
-
-
-	mov %r10,	-72(%rbp)
-	mov	-168(%rbp), %r10
-	mov 	%r11,	%r10
-
-
-	mov %rbx,	-104(%rbp)
-	mov	-184(%rbp), %rbx
-	mov 	$12 ,	%rbx
-
-
-	mov %r15,	-96(%rbp)
-	mov	-192(%rbp), %r15
-	mov 	$13 ,	%r15
-
-	mov %r14,	-136(%rbp)
-	mov	-224(%rbp), %r14
-	mov 	$0 ,	%r14
-
-	sub	$292 ,	%r14
-
-
-	mov %r13,	-128(%rbp)
-	mov	-216(%rbp), %r13
-	mov 	%r14,	%r13
-
-
-	mov %r12,	-144(%rbp)
-	mov	-232(%rbp), %r12
-	mov 	$23 ,	%r12
-
-
-	mov %r11,	-176(%rbp)
-	mov	-240(%rbp), %r11
-	mov 	$292 ,	%r11
-
-# PRINT/SCAN CALL INCOMING
-	push %rcx
-	push %rax
-
-
-	mov %r10,	-168(%rbp)
-	mov	-368(%rbp), %r10
-	lea -8(%rbp),	%r10
-
-	mov %rbx,	-184(%rbp)
-	mov	-376(%rbp), %rbx
-	lea -16(%rbp),	%rbx
-
-	mov %r15,	-192(%rbp)
-	mov	-384(%rbp), %r15
-	lea -24(%rbp),	%r15
-
-	mov %r14,	-224(%rbp)
-	mov	-392(%rbp), %r14
-	lea -48(%rbp),	%r14
-
-	mov %r13,	-216(%rbp)
-	mov	-400(%rbp), %r13
-	lea -64(%rbp),	%r13
-
-	mov %r12,	-232(%rbp)
-	mov	-408(%rbp), %r12
-	lea -72(%rbp),	%r12
-
-	mov %r11,	-240(%rbp)
-	mov	-416(%rbp), %r11
-	lea -96(%rbp),	%r11
-
-	mov %r10,	-368(%rbp)
-	mov	-424(%rbp), %r10
-	lea -128(%rbp),	%r10
-
-	mov %rbx,	-376(%rbp)
-	mov	-432(%rbp), %rbx
-	lea -144(%rbp),	%rbx
-
-	mov %r15,	-384(%rbp)
-	mov	-440(%rbp), %r15
-	lea -168(%rbp),	%r15
-
-	mov %r14,	-392(%rbp)
-	mov	-448(%rbp), %r14
-	lea -184(%rbp),	%r14
-
-	mov %r13,	-400(%rbp)
-	mov	-456(%rbp), %r13
-	lea -192(%rbp),	%r13
-
-	mov %r12,	-408(%rbp)
-	mov	-464(%rbp), %r12
-	lea -216(%rbp),	%r12
-
-	mov %r11,	-416(%rbp)
-	mov	-472(%rbp), %r11
-	lea -232(%rbp),	%r11
-
-	mov %r10,	-424(%rbp)
-	mov	-480(%rbp), %r10
-	lea -240(%rbp),	%r10
-
-# Debug: WB without flush
-	mov %r10,	-480(%rbp)
-	mov %r11,	-472(%rbp)
-	mov %r12,	-464(%rbp)
-	mov %r13,	-456(%rbp)
-	mov %r14,	-448(%rbp)
-	mov %r15,	-440(%rbp)
-	mov %rbx,	-432(%rbp)
-	mov 	$format2,	%rdi
-
-	mov %rbx,	-432(%rbp)
-	mov	-368(%rbp), %rbx
-	mov 	%rbx,	%rsi
-
-	mov %r15,	-440(%rbp)
-	mov	-376(%rbp), %r15
-	mov 	%r15,	%rdx
-
-	mov %r14,	-448(%rbp)
-	mov	-384(%rbp), %r14
-	mov 	%r14,	%rcx
-
-	mov %r13,	-456(%rbp)
-	mov	-392(%rbp), %r13
-	mov 	%r13,	%r8
-
-	mov %r12,	-464(%rbp)
-	mov	-400(%rbp), %r12
-	mov 	%r12,	%r9
-
-	mov %r11,	-472(%rbp)
-	mov	-408(%rbp), %r11
-
-	mov %r10,	-480(%rbp)
-	mov	-416(%rbp), %r10
-
-	mov %rbx,	-368(%rbp)
-	mov	-424(%rbp), %rbx
-
-	mov %r15,	-376(%rbp)
-	mov	-432(%rbp), %r15
-
-	mov %r14,	-384(%rbp)
-	mov	-440(%rbp), %r14
-
-	mov %r13,	-392(%rbp)
-	mov	-448(%rbp), %r13
-
-	mov %r12,	-400(%rbp)
-	mov	-456(%rbp), %r12
-
-	mov %r11,	-408(%rbp)
-	mov	-464(%rbp), %r11
-
-	mov %r10,	-416(%rbp)
-	mov	-472(%rbp), %r10
-
-	mov %rbx,	-424(%rbp)
-	mov	-480(%rbp), %rbx
-
-	mov %r10,	-472(%rbp)
-	mov %r11,	-464(%rbp)
-	mov %r12,	-456(%rbp)
-	mov %r13,	-448(%rbp)
-	mov %r14,	-440(%rbp)
-	mov %r15,	-432(%rbp)
-	mov %rbx,	-480(%rbp)
-	push	-480(%rbp)
-	push	-472(%rbp)
-	push	-464(%rbp)
-	push	-456(%rbp)
-	push	-448(%rbp)
-	push	-440(%rbp)
-	push	-432(%rbp)
-	push	-424(%rbp)
-	push	-416(%rbp)
-	push	-408(%rbp)
-	xor	%rax,	%rax
-	call	scanf
-	pop %rax
-	pop %rcx
 
 # PRINT/SCAN CALL INCOMING
 	push %rcx
@@ -411,81 +20,333 @@ main:
 	sub $8, %rsp
 
 # Debug: WB without flush
-	mov 	$format4,	%rdi
+	mov 	$format0,	%rdi
 
-	mov	-8(%rbp), %rbx
-	mov 	%rbx,	%rsi
-
-	mov	-16(%rbp), %r15
-	mov 	%r15,	%rdx
-
-	mov	-24(%rbp), %r14
-	mov 	%r14,	%rcx
-
-	mov	-48(%rbp), %r13
-	mov 	%r13,	%r8
-
-	mov	-64(%rbp), %r12
-	mov 	%r12,	%r9
-
-	mov	-72(%rbp), %r11
-
-	mov	-96(%rbp), %r10
-
-	mov %rbx,	-8(%rbp)
-	mov	-128(%rbp), %rbx
-
-	mov %r15,	-16(%rbp)
-	mov	-144(%rbp), %r15
-
-	mov %r14,	-24(%rbp)
-	mov	-168(%rbp), %r14
-
-	mov %r13,	-48(%rbp)
-	mov	-184(%rbp), %r13
-
-	mov %r12,	-64(%rbp)
-	mov	-192(%rbp), %r12
-
-	mov %r11,	-72(%rbp)
-	mov	-216(%rbp), %r11
-
-	mov %r10,	-96(%rbp)
-	mov	-232(%rbp), %r10
-
-	mov %r10,	-232(%rbp)
-	mov %r11,	-216(%rbp)
-	mov %r12,	-192(%rbp)
-	mov %r13,	-184(%rbp)
-	mov %r14,	-168(%rbp)
-	mov %r15,	-144(%rbp)
-	mov %rbx,	-128(%rbp)
-	push	-232(%rbp)
-	push	-216(%rbp)
-	push	-192(%rbp)
-	push	-184(%rbp)
-	push	-168(%rbp)
-	push	-144(%rbp)
-	push	-128(%rbp)
-	push	-96(%rbp)
-	push	-72(%rbp)
 	xor	%rax,	%rax
 	call	printf
 	pop %rax
 	pop %rcx
 
 
-	mov	-488(%rbp), %rbx
+	mov	-88(%rbp), %rbx
 	mov 	$0 ,	%rbx
 
-	mov %rbx,	-488(%rbp)
+	mov %rbx,	-88(%rbp)
 Label3:
 
-	mov	-488(%rbp), %rbx
-	mov	-520(%rbp), %r15
+	mov	-88(%rbp), %rbx
+	mov	-120(%rbp), %r15
 	mov 	%rbx,	%r15
 
-	cmp 	$3 ,	%r15
+	mov %r15,	-120(%rbp)
+	mov %rbx,	-88(%rbp)
+	mov	-120(%rbp), %rbx
+	cmp 	$5 ,	%rbx
+
+	mov $0,%rbx
+	setl %bl
+
+	mov	-136(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	mov %r15,	-136(%rbp)
+	mov %rbx,	-120(%rbp)
+	mov	-136(%rbp), %rbx
+	cmp 	$0 ,	%rbx
+
+	mov %rbx,	-136(%rbp)
+	je	Label1
+
+	lea	-80(%rbp), %rbx
+	mov	-88(%rbp), %r14
+	mov	%r14, %r15
+	imulq	$8, %r15
+	addq	%r15, %rbx
+	mov	-152(%rbp), %r13
+	mov %rbx,	%r13
+
+	mov %r13,	-152(%rbp)
+	mov %r14,	-88(%rbp)
+	lea	-40(%rbp), %r12
+	mov	%r14, %r11
+	imulq	$8, %r11
+	addq	%r11, %r12
+	movq	%r13, (%r12)
+
+# PRINT/SCAN CALL INCOMING
+	push %rcx
+	push %rax
+
+
+# Debug: WB without flush
+	mov %r13,	-152(%rbp)
+	mov %r14,	-88(%rbp)
+	mov 	$format2,	%rdi
+
+	mov %r13,	-152(%rbp)
+	mov %r14,	-88(%rbp)
+	lea	-40(%rbp), %r10
+	mov	%r14, %rbx
+	imulq	$8, %rbx
+	addq	%rbx, %r10
+	mov	(%r10), %r10
+	mov %r10,	%rsi
+
+	mov %r13,	-152(%rbp)
+	mov %r14,	-88(%rbp)
+	xor	%rax,	%rax
+	call	scanf
+	pop %rax
+	pop %rcx
+
+Label2:
+
+	mov	-88(%rbp), %rbx
+	mov	-176(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	add	$1 ,	%r15
+
+	mov	-192(%rbp), %r14
+	mov 	%r15,	%r14
+
+	mov 	%r14,	%rbx
+
+	mov %r14,	-192(%rbp)
+	mov %r15,	-176(%rbp)
+	mov %rbx,	-88(%rbp)
+	jmp	Label3
+
+Label1:
+
+
+	mov	-200(%rbp), %rbx
+	mov 	$0 ,	%rbx
+
+	mov %rbx,	-200(%rbp)
+Label6:
+
+	mov	-200(%rbp), %rbx
+	mov	-232(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	mov %r15,	-232(%rbp)
+	mov %rbx,	-200(%rbp)
+	mov	-232(%rbp), %rbx
+	cmp 	$5 ,	%rbx
+
+	mov $0,%rbx
+	setl %bl
+
+	mov	-248(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	mov %r15,	-248(%rbp)
+	mov %rbx,	-232(%rbp)
+	mov	-248(%rbp), %rbx
+	cmp 	$0 ,	%rbx
+
+	mov %rbx,	-248(%rbp)
+	je	Label4
+
+# PRINT/SCAN CALL INCOMING
+	push %rcx
+	push %rax
+
+
+# Debug: WB without flush
+	mov 	$format4,	%rdi
+
+	lea	-80(%rbp), %rbx
+	mov	-200(%rbp), %r14
+	mov	%r14, %r15
+	imulq	$8, %r15
+	addq	%r15, %rbx
+	mov	(%rbx), %rbx
+	mov %rbx,	%rsi
+
+	mov %r14,	-200(%rbp)
+	xor	%rax,	%rax
+	call	printf
+	pop %rax
+	pop %rcx
+
+Label5:
+
+	mov	-200(%rbp), %rbx
+	mov	-272(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	add	$1 ,	%r15
+
+	mov	-288(%rbp), %r14
+	mov 	%r15,	%r14
+
+	mov 	%r14,	%rbx
+
+	mov %r14,	-288(%rbp)
+	mov %r15,	-272(%rbp)
+	mov %rbx,	-200(%rbp)
+	jmp	Label6
+
+Label4:
+
+# PRINT/SCAN CALL INCOMING
+	push %rcx
+	push %rax
+
+
+# Debug: WB without flush
+	mov 	$format6,	%rdi
+
+	xor	%rax,	%rax
+	call	printf
+	pop %rax
+	pop %rcx
+
+
+	mov	-296(%rbp), %rbx
+	mov 	$0 ,	%rbx
+
+	mov %rbx,	-296(%rbp)
+Label16:
+
+	mov	-296(%rbp), %rbx
+	mov	-328(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	mov %r15,	-328(%rbp)
+	mov %rbx,	-296(%rbp)
+	mov	-328(%rbp), %rbx
+	cmp 	$5 ,	%rbx
+
+	mov $0,%rbx
+	setl %bl
+
+	mov	-344(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	mov %r15,	-344(%rbp)
+	mov %rbx,	-328(%rbp)
+	mov	-344(%rbp), %rbx
+	cmp 	$0 ,	%rbx
+
+	mov %rbx,	-344(%rbp)
+	je	Label7
+
+
+	mov	-352(%rbp), %rbx
+	mov 	$1 ,	%rbx
+
+	mov %rbx,	-352(%rbp)
+Label12:
+
+	mov	-376(%rbp), %rbx
+	mov 	$5 ,	%rbx
+
+	mov	-296(%rbp), %r15
+	sub	%r15,	%rbx
+
+	mov	-400(%rbp), %r14
+	mov 	%rbx,	%r14
+
+	mov	-352(%rbp), %r13
+	mov	-424(%rbp), %r12
+	mov 	%r13,	%r12
+
+	mov %r12,	-424(%rbp)
+	mov %r13,	-352(%rbp)
+	mov %r14,	-400(%rbp)
+	mov %r15,	-296(%rbp)
+	mov %rbx,	-376(%rbp)
+	mov	-400(%rbp), %rbx
+	mov	-424(%rbp), %r15
+	cmp 	%rbx,	%r15
+
+	mov $0,%r15
+	setl %r15b
+
+	mov	-440(%rbp), %r14
+	mov 	%r15,	%r14
+
+	mov %r14,	-440(%rbp)
+	mov %r15,	-424(%rbp)
+	mov %rbx,	-400(%rbp)
+	mov	-440(%rbp), %rbx
+	cmp 	$0 ,	%rbx
+
+	mov %rbx,	-440(%rbp)
+	je	Label9
+
+# PRINT/SCAN CALL INCOMING
+	push %rcx
+	push %rax
+
+
+# Debug: WB without flush
+	mov 	$format8,	%rdi
+
+	mov	-296(%rbp), %rbx
+	mov 	%rbx,	%rsi
+
+	mov	-352(%rbp), %r15
+	mov 	%r15,	%rdx
+
+	mov %r15,	-352(%rbp)
+	mov %rbx,	-296(%rbp)
+	xor	%rax,	%rax
+	call	printf
+	pop %rax
+	pop %rcx
+
+
+	lea	-80(%rbp), %rbx
+	mov	-352(%rbp), %r14
+	mov	%r14, %r15
+	imulq	$8, %r15
+	addq	%r15, %rbx
+	mov	(%rbx), %rbx
+	mov	-448(%rbp), %r13
+	mov	%rbx,	%r13
+
+	mov	-472(%rbp), %r12
+	mov 	%r14,	%r12
+
+	sub	$1 ,	%r12
+
+	mov	-480(%rbp), %r11
+	mov 	%r12,	%r11
+
+
+	mov %r11,	-480(%rbp)
+	mov %r12,	-472(%rbp)
+	mov %r13,	-448(%rbp)
+	mov %r14,	-352(%rbp)
+	lea	-80(%rbp), %r10
+	mov	%r11, %rbx
+	imulq	$8, %rbx
+	addq	%rbx, %r10
+	mov	(%r10), %r10
+	mov	-488(%rbp), %r15
+	mov	%r10,	%r15
+
+# PRINT/SCAN CALL INCOMING
+	push %rcx
+	push %rax
+
+
+	mov %r14,	-352(%rbp)
+	mov	-520(%rbp), %r14
+	mov 	%r13,	%r14
+
+	mov %r11,	-480(%rbp)
+	mov %r12,	-472(%rbp)
+	mov %r13,	-448(%rbp)
+	mov %r14,	-520(%rbp)
+	mov %r15,	-488(%rbp)
+	mov	-488(%rbp), %rbx
+	mov	-520(%rbp), %r15
+	cmp 	%rbx,	%r15
 
 	mov $0,%r15
 	setl %r15b
@@ -493,98 +354,392 @@ Label3:
 	mov	-536(%rbp), %r14
 	mov 	%r15,	%r14
 
-	cmp 	$0 ,	%r14
-
+# Debug: WB without flush
 	mov %r14,	-536(%rbp)
 	mov %r15,	-520(%rbp)
 	mov %rbx,	-488(%rbp)
-	je	Label1
+	mov 	$format10,	%rdi
 
-	sub $8, %rsp
+	mov	-448(%rbp), %r13
+	mov 	%r13,	%rsi
+
+	mov 	%rbx,	%rdx
+
+	mov 	%r14,	%rcx
+
+	mov %r13,	-448(%rbp)
+	mov %r14,	-536(%rbp)
+	mov %r15,	-520(%rbp)
+	mov %rbx,	-488(%rbp)
+	xor	%rax,	%rax
+	call	printf
+	pop %rax
+	pop %rcx
+
+	mov	-448(%rbp), %rbx
+	mov	-568(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	mov %r15,	-568(%rbp)
+	mov %rbx,	-448(%rbp)
+	mov	-488(%rbp), %rbx
+	mov	-568(%rbp), %r15
+	cmp 	%rbx,	%r15
+
+	mov $0,%r15
+	setl %r15b
+
+	mov	-584(%rbp), %r14
+	mov 	%r15,	%r14
+
+	cmp $0, 	%r14
+	mov %r14,	-584(%rbp)
+	mov %r15,	-568(%rbp)
+	mov %rbx,	-488(%rbp)
+	je	Label11
+
+# PRINT/SCAN CALL INCOMING
+	push %rcx
+	push %rax
+
+
+	mov	-352(%rbp), %rbx
+	mov	-608(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	sub	$1 ,	%r15
+
+	mov	-656(%rbp), %r14
+	mov 	%r15,	%r14
+
+	mov	-640(%rbp), %r13
+	mov 	%rbx,	%r13
+
+	sub	$1 ,	%r13
+
+	mov	-648(%rbp), %r12
+	mov 	%r13,	%r12
 
 # Debug: WB without flush
-	mov	-8(%rbp), %rbx
-	mov 	%rbx,	%rdi
+	mov %r12,	-648(%rbp)
+	mov %r13,	-640(%rbp)
+	mov %r14,	-656(%rbp)
+	mov %r15,	-608(%rbp)
+	mov %rbx,	-352(%rbp)
+	mov 	$format12,	%rdi
 
-	mov	-16(%rbp), %r15
-	mov 	%r15,	%rsi
+	mov 	%rbx,	%rsi
 
-	mov	-24(%rbp), %r14
 	mov 	%r14,	%rdx
 
-	mov	-48(%rbp), %r13
-	mov 	%r13,	%rcx
+	mov %r12,	-648(%rbp)
+	mov %r13,	-640(%rbp)
+	mov %r14,	-656(%rbp)
+	mov %r15,	-608(%rbp)
+	mov %rbx,	-352(%rbp)
+	lea	-80(%rbp), %r11
+	mov	%r12, %r10
+	imulq	$8, %r10
+	addq	%r10, %r11
+	mov	(%r11), %r11
+	mov %r11,	%rcx
 
-	mov	-64(%rbp), %r12
-	mov 	%r12,	%r8
+	mov %r15,	-608(%rbp)
+	mov %r13,	-640(%rbp)
+	mov %r12,	-648(%rbp)
+	mov %r14,	-656(%rbp)
+	mov %rbx,	-352(%rbp)
+	lea	-80(%rbp), %r15
+	mov	%rbx, %r13
+	imulq	$8, %r13
+	addq	%r13, %r15
+	mov	(%r15), %r15
+	mov %r15,	%r8
 
-	mov	-72(%rbp), %r11
-	mov 	%r11,	%r9
-
-	mov	-96(%rbp), %r10
-
-	mov %rbx,	-8(%rbp)
-	mov	-128(%rbp), %rbx
-
-	mov %r15,	-16(%rbp)
-	mov	-144(%rbp), %r15
-
-	mov %r14,	-24(%rbp)
-	mov	-168(%rbp), %r14
-
-	mov %r13,	-48(%rbp)
-	mov	-184(%rbp), %r13
-
-	mov %r12,	-64(%rbp)
-	mov	-192(%rbp), %r12
-
-	mov %r11,	-72(%rbp)
-	mov	-216(%rbp), %r11
-
-	mov %r10,	-96(%rbp)
-	mov	-232(%rbp), %r10
-
-	mov %rbx,	-128(%rbp)
-	mov	-240(%rbp), %rbx
-
-	mov %r10,	-232(%rbp)
-	mov %r11,	-216(%rbp)
-	mov %r12,	-192(%rbp)
-	mov %r13,	-184(%rbp)
-	mov %r14,	-168(%rbp)
-	mov %r15,	-144(%rbp)
-	mov %rbx,	-240(%rbp)
-	push	-240(%rbp)
-	push	-232(%rbp)
-	push	-216(%rbp)
-	push	-192(%rbp)
-	push	-184(%rbp)
-	push	-168(%rbp)
-	push	-144(%rbp)
-	push	-128(%rbp)
-	push	-96(%rbp)
+	mov %r12,	-648(%rbp)
+	mov %r14,	-656(%rbp)
+	mov %rbx,	-352(%rbp)
 	xor	%rax,	%rax
-	call	plsm_print
+	call	printf
+	pop %rax
+	pop %rcx
 
-Label2:
+	mov	-352(%rbp), %rbx
+	mov	-680(%rbp), %r15
+	mov 	%rbx,	%r15
 
-	mov	-488(%rbp), %rbx
-	mov	-560(%rbp), %r15
+	sub	$1 ,	%r15
+
+	mov	-688(%rbp), %r14
+	mov 	%r15,	%r14
+
+
+	mov %r14,	-688(%rbp)
+	mov %r15,	-680(%rbp)
+	mov %rbx,	-352(%rbp)
+	lea	-80(%rbp), %r13
+	mov	%r14, %r12
+	imulq	$8, %r12
+	addq	%r12, %r13
+	mov	(%r13), %r13
+	mov	-696(%rbp), %r11
+	mov	%r13,	%r11
+
+	mov	-720(%rbp), %r10
+	mov 	%rbx,	%r10
+
+	sub	$1 ,	%r10
+
+	mov %r15,	-680(%rbp)
+	mov	-728(%rbp), %r15
+	mov 	%r10,	%r15
+
+	mov %r10,	-720(%rbp)
+	mov %r11,	-696(%rbp)
+	mov %r14,	-688(%rbp)
+	mov %r15,	-728(%rbp)
+	mov %rbx,	-352(%rbp)
+	lea	-80(%rbp), %r13
+	mov	%rbx, %r12
+	imulq	$8, %r12
+	addq	%r12, %r13
+	mov	(%r13), %r13
+	mov %r14,	-688(%rbp)
+	mov %r11,	-696(%rbp)
+	mov %r10,	-720(%rbp)
+	mov %r15,	-728(%rbp)
+	mov %rbx,	-352(%rbp)
+	lea	-80(%rbp), %r14
+	mov	%r15, %r11
+	imulq	$8, %r11
+	addq	%r11, %r14
+	movq	%r13, (%r14)
+
+	mov %r10,	-720(%rbp)
+	mov	-696(%rbp), %r10
+	mov %r10,	-696(%rbp)
+	mov %r15,	-728(%rbp)
+	mov %rbx,	-352(%rbp)
+	lea	-80(%rbp), %r13
+	mov	%rbx, %r12
+	imulq	$8, %r12
+	addq	%r12, %r13
+	movq	%r10, (%r13)
+
+	mov %r10,	-696(%rbp)
+	mov %r15,	-728(%rbp)
+	mov %rbx,	-352(%rbp)
+Label11:
+
+Label10:
+
+	mov	-352(%rbp), %rbx
+	mov	-752(%rbp), %r15
 	mov 	%rbx,	%r15
 
 	add	$1 ,	%r15
 
-	mov	-576(%rbp), %r14
+	mov	-768(%rbp), %r14
 	mov 	%r15,	%r14
 
 	mov 	%r14,	%rbx
 
-	mov %r14,	-576(%rbp)
-	mov %r15,	-560(%rbp)
-	mov %rbx,	-488(%rbp)
-	jmp	Label3
+	mov %r14,	-768(%rbp)
+	mov %r15,	-752(%rbp)
+	mov %rbx,	-352(%rbp)
+	jmp	Label12
 
-Label1:
+Label9:
+
+
+	mov	-776(%rbp), %rbx
+	mov 	$0 ,	%rbx
+
+	mov %rbx,	-776(%rbp)
+Label15:
+
+	mov	-776(%rbp), %rbx
+	mov	-808(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	mov %r15,	-808(%rbp)
+	mov %rbx,	-776(%rbp)
+	mov	-808(%rbp), %rbx
+	cmp 	$5 ,	%rbx
+
+	mov $0,%rbx
+	setl %bl
+
+	mov	-824(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	mov %r15,	-824(%rbp)
+	mov %rbx,	-808(%rbp)
+	mov	-824(%rbp), %rbx
+	cmp 	$0 ,	%rbx
+
+	mov %rbx,	-824(%rbp)
+	je	Label13
+
+# PRINT/SCAN CALL INCOMING
+	push %rcx
+	push %rax
+
+
+# Debug: WB without flush
+	mov 	$format14,	%rdi
+
+	lea	-80(%rbp), %rbx
+	mov	-776(%rbp), %r14
+	mov	%r14, %r15
+	imulq	$8, %r15
+	addq	%r15, %rbx
+	mov	(%rbx), %rbx
+	mov %rbx,	%rsi
+
+	mov %r14,	-776(%rbp)
+	xor	%rax,	%rax
+	call	printf
+	pop %rax
+	pop %rcx
+
+Label14:
+
+	mov	-776(%rbp), %rbx
+	mov	-848(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	add	$1 ,	%r15
+
+	mov	-864(%rbp), %r14
+	mov 	%r15,	%r14
+
+	mov 	%r14,	%rbx
+
+	mov %r14,	-864(%rbp)
+	mov %r15,	-848(%rbp)
+	mov %rbx,	-776(%rbp)
+	jmp	Label15
+
+Label13:
+
+# PRINT/SCAN CALL INCOMING
+	push %rcx
+	push %rax
+
+
+# Debug: WB without flush
+	mov 	$format16,	%rdi
+
+	xor	%rax,	%rax
+	call	printf
+	pop %rax
+	pop %rcx
+
+Label8:
+
+	mov	-296(%rbp), %rbx
+	mov	-888(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	add	$1 ,	%r15
+
+	mov	-904(%rbp), %r14
+	mov 	%r15,	%r14
+
+	mov 	%r14,	%rbx
+
+	mov %r14,	-904(%rbp)
+	mov %r15,	-888(%rbp)
+	mov %rbx,	-296(%rbp)
+	jmp	Label16
+
+Label7:
+
+
+	mov	-912(%rbp), %rbx
+	mov 	$0 ,	%rbx
+
+	mov %rbx,	-912(%rbp)
+Label19:
+
+	mov	-912(%rbp), %rbx
+	mov	-944(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	mov %r15,	-944(%rbp)
+	mov %rbx,	-912(%rbp)
+	mov	-944(%rbp), %rbx
+	cmp 	$5 ,	%rbx
+
+	mov $0,%rbx
+	setl %bl
+
+	mov	-960(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	mov %r15,	-960(%rbp)
+	mov %rbx,	-944(%rbp)
+	mov	-960(%rbp), %rbx
+	cmp 	$0 ,	%rbx
+
+	mov %rbx,	-960(%rbp)
+	je	Label17
+
+# PRINT/SCAN CALL INCOMING
+	push %rcx
+	push %rax
+
+
+# Debug: WB without flush
+	mov 	$format18,	%rdi
+
+	lea	-80(%rbp), %rbx
+	mov	-912(%rbp), %r14
+	mov	%r14, %r15
+	imulq	$8, %r15
+	addq	%r15, %rbx
+	mov	(%rbx), %rbx
+	mov %rbx,	%rsi
+
+	mov %r14,	-912(%rbp)
+	xor	%rax,	%rax
+	call	printf
+	pop %rax
+	pop %rcx
+
+Label18:
+
+	mov	-912(%rbp), %rbx
+	mov	-984(%rbp), %r15
+	mov 	%rbx,	%r15
+
+	add	$1 ,	%r15
+
+	mov	-1000(%rbp), %r14
+	mov 	%r15,	%r14
+
+	mov 	%r14,	%rbx
+
+	mov %r14,	-1000(%rbp)
+	mov %r15,	-984(%rbp)
+	mov %rbx,	-912(%rbp)
+	jmp	Label19
+
+Label17:
+
+# PRINT/SCAN CALL INCOMING
+	push %rcx
+	push %rax
+
+
+# Debug: WB without flush
+	mov 	$format20,	%rdi
+
+	xor	%rax,	%rax
+	call	printf
+	pop %rax
+	pop %rcx
 
 
 	mov %rbp, %rsp
@@ -597,8 +752,24 @@ Label1:
 
 .data
 format0:
-	.asciz	"Here are your numbers: %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n"
+	.asciz	"Enter 5 elements : "
 format2:
-	.asciz	"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d"
+	.asciz	"%d"
 format4:
-	.asciz	"Here are your numbers: %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n"
+	.asciz	"%d "
+format6:
+	.asciz	"\n"
+format8:
+	.asciz	"Working on i=%d j=%d\n"
+format10:
+	.asciz	"%d %d %d\n"
+format12:
+	.asciz	"Swapping %d and %d ,  b[j-1]=%d and b[j]=%d\n"
+format14:
+	.asciz	"%d "
+format16:
+	.asciz	"\n"
+format18:
+	.asciz	"%d "
+format20:
+	.asciz	"\n"

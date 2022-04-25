@@ -12,16 +12,13 @@ func rev(a **int,b **int) {
 func p ()
 
 func main() {
-	a := 1
-	b := 2
-	c := &a
-	d := &b
-	e := &c
-	f := &d
+	var a[5],b[5] *int
+	var c[5],d[5] int
 
-	var a [5]int
 	for i:=0;i<5;i++{
-		a[i] = i
+		a[i] = &c[i]
+		b[i] 
+		scanf("%d %d".a[i],b[i])
 	}
 
 	rev(e,f)
