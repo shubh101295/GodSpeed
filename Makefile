@@ -31,7 +31,7 @@ clean_csv:
 	rm ./bin/*.csv
 
 asm1:
-	./bin/parser ./test/test14.go
+	./bin/parser ./test/test20.go
 	gcc -no-pie ./bin/output.s
 
 
