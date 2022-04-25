@@ -894,8 +894,6 @@ public:
 					else{
 						for(string s:curr){
 							if(s.substr(0,7)=="*-local"){
-								// hash<string> h1;
-								// r.temps[s] = "a" + to_string(h1(s)).substr(0,7);
 								off+=8;
 								r.locs[s] = {"",to_string(-off) + "(%rbp)"};
 							}

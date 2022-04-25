@@ -1730,19 +1730,8 @@ ReturnStmt:
 		$$->add_code_in_map(new Instruction("RETURNSTART"));
 		vector<Instruction*> temp_instrs; // we need to push the returns in the opposite order
 
-		//current_return_place = $2->current_place;
-		//vector<Instruction*> temp_instrs; // we need to push the returns in the opposite order
-
-		//current_return_place = $2->current_place;
-		//while(current_return_place!=NULL){
-		//	// we need to push the returns in the opposite order
-		//	temp_instrs.push_back(new Instruction("PUSHSTACK", current_return_place));
-		//	//$$->add_code_in_map(ins);
-		//	current_return_place= current_return_place->next_place;
-		//}	
 		for(int i=args_places.size()-1;i>=0;i--)
 		{
-			//$$->add_code_in_map(temp_instrs[i]);
 			$$->add_code_in_map(new Instruction("PUSHSTACK", args_places[i]));
 		}
 		$$->add_code_in_map(new Instruction("RETURNEND"));
@@ -2502,13 +2491,41 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
-			Instruction* ins2 = new Instruction("QUOT",$3->current_place,p1);
-			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
+			Place* temp1 = new Place($3->current_type);
+			//Place* temp1=new Place(new BasicType("int"));
+			Place* temp2=new Place(new BasicType("bool"));
+			Place* temp3= new Place(l->get_new_label());
+			Instruction* ins1 = new Instruction("USTOR",$3->current_place,temp1);
+			Instruction* ins2 = new Instruction("CMP",new Place("0",new BasicType("int")),temp1);
+			Instruction* ins3 = new Instruction("ISEQ",temp1);
+			Instruction* ins4 = new Instruction("USTOR",temp1,temp2);
+			Instruction* ins5 = new Instruction("JEQZ",temp2,temp3);
+			Instruction* ins6 = new Instruction("PRINTCALLINCOMING",new Place("0-printf"));
+			Instruction* ins7 = new Instruction("PUSHARG",new Place("0",new BasicType("int")),new Place("\"[ERROR Division by 0] INVALID DIVISION\\nAborting...\\n\""));
+			Instruction* ins8 = new Instruction("CALL",new Place("0-printf"));
+			Instruction* ins81= new Instruction("EXIT");
+			
+			Instruction* ins9 = new Instruction("LBL",temp3);
+			Instruction* ins10 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins11 = new Instruction("QUOT",$3->current_place,p1);
+			Instruction* ins12 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
 			$$->add_code_in_map(ins3);
+			$$->add_code_in_map(ins4);
+			$$->add_code_in_map(ins5);
+			$$->add_code_in_map(ins6);
+			$$->add_code_in_map(ins7);
+			$$->add_code_in_map(ins8);
+			$$->add_code_in_map(ins81);
+			
+			$$->add_code_in_map(ins9);
+			$$->add_code_in_map(ins10);
+			$$->add_code_in_map(ins11);
+			$$->add_code_in_map(ins12);
+			
+			
 		}
 	| Expression MOD Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
@@ -2544,13 +2561,42 @@ Expression:
 			$$->add_code_in_map($3->current_code);
 
 			Place* p1 = new Place($1->current_type);
-			Instruction* ins1 = new Instruction("USTOR",$1->current_place,p1);
-			Instruction* ins2 = new Instruction("MOD",$3->current_place,p1);
-			Instruction* ins3 = new Instruction("USTOR",p1,$$->current_place);
+
+			Place* temp1 = new Place($3->current_type);
+			//Place* temp1=new Place(new BasicType("int"));
+			Place* temp2=new Place(new BasicType("bool"));
+			Place* temp3= new Place(l->get_new_label());
+			Instruction* ins1 = new Instruction("USTOR",$3->current_place,temp1);
+			Instruction* ins2 = new Instruction("CMP",new Place("0",new BasicType("int")),temp1);
+			Instruction* ins3 = new Instruction("ISEQ",temp1);
+			Instruction* ins4 = new Instruction("USTOR",temp1,temp2);
+			Instruction* ins5 = new Instruction("JEQZ",temp2,temp3);
+			Instruction* ins6 = new Instruction("PRINTCALLINCOMING",new Place("0-printf"));
+			Instruction* ins7 = new Instruction("PUSHARG",new Place("0",new BasicType("int")),new Place("\"[Error Modulo by 0] INVALID MODULO\\nAborting...\\n\""));
+			Instruction* ins8 = new Instruction("CALL",new Place("0-printf"));
+			Instruction* ins81= new Instruction("EXIT");
+			
+			Instruction* ins9 = new Instruction("LBL",temp3);
+			
+			Instruction* ins10 = new Instruction("USTOR",$1->current_place,p1);
+			Instruction* ins11 = new Instruction("MOD",$3->current_place,p1);
+			Instruction* ins12 = new Instruction("USTOR",p1,$$->current_place);
 
 			$$->add_code_in_map(ins1);
 			$$->add_code_in_map(ins2);
 			$$->add_code_in_map(ins3);
+			$$->add_code_in_map(ins4);
+			$$->add_code_in_map(ins5);
+			$$->add_code_in_map(ins6);
+			$$->add_code_in_map(ins7);
+			$$->add_code_in_map(ins8);
+			$$->add_code_in_map(ins81);
+			
+			$$->add_code_in_map(ins9);
+			$$->add_code_in_map(ins10);
+			$$->add_code_in_map(ins11);
+			$$->add_code_in_map(ins12);
+
 		}
 	| Expression SHL Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
@@ -3880,7 +3926,7 @@ ExpressionList:
 		curr->current_type = $1->current_type;
 		curr->current_place = $1->current_place;
 		curr->add_code_in_map($1->current_code);
-		curr->current_type->next_type=NULL;
+		//curr->current_type->next_type=NULL;
 		cout<<$$->current_node_data->value<<endl;
 		$$ = curr;
 	}
