@@ -3920,7 +3920,7 @@ ExpressionList:
 		cout<<$$->current_node_data->value<<endl;
 		$$ = curr;
 	}
-	| Expression COMMA ExpressionList {
+	| ExpressionList COMMA Expression {
 		cout<<"ExpressionList COMMA Expression\n";
 		$$ = new Node("ExpressionList");
 		$$->add_non_terminal_children($1);
