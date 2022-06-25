@@ -2,9 +2,9 @@
 
 Compiler Design course project done under Prof. Amey Karkare and Prof. Subhajit Roy, 2021-22-II semester.
 SIT triplet:
-Source - Golang
-Implementation - C++
-Target - X86
+* Source - Golang
+* Implementation - C++
+* Target - X86
 
 ## Group Members
 
